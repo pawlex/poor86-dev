@@ -1,0 +1,5 @@
+(sym_lib_table
+	(version 7)
+	(lib (name "local") (type "KiCad") (uri "C:/Users/pawl/Documents/KiCad/Projects/poor86/PCB/Lib") (options "") (descr ""))
+	(lib (name "Lattice") (type "KiCad") (uri "${USRLOCALLIB}/LFE5U-25F-6BG256C") (options "") (descr ""))
+)

@@ -6,6 +6,52 @@
 	(paper "A4")
 	(lib_symbols)
 	(sheet
+		(at 106.045 19.05)
+		(size 53.975 34.29)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "332916af-3e11-4b31-930a-ff884aaa5dd6")
+		(property "Sheetname" "am5x86"
+			(at 106.045 18.3384 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "am5x86.kicad_sch"
+			(at 106.045 53.9246 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Poor86"
+				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
 		(at 62.23 19.05)
 		(size 36.195 34.29)
 		(exclude_from_sim no)

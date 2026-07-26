@@ -61,9 +61,9 @@
           "hatch_smoothing_value": 0.1,
           "hatch_thickness": 1.0,
           "min_clearance": 0.5,
-          "min_island_area": 10.0,
+          "min_island_area": 9.9999993548,
           "min_thickness": 0.25,
-          "pad_connection": 1,
+          "pad_connection": 2,
           "remove_islands": 0,
           "thermal_relief_gap": 0.5,
           "thermal_relief_spoke_width": 0.5
@@ -252,6 +252,10 @@
         {
           "diameter": 0.2,
           "drill": 0.1
+        },
+        {
+          "diameter": 0.2032,
+          "drill": 0.1778
         },
         {
           "diameter": 0.4,
@@ -791,7 +795,7 @@
         "uuid": "516eb290-d08d-4e43-95ba-5c21610df4ad"
       }
     ],
-    "used_designators": "U1-3,CDC1-38,#PWR1-59,C1-11",
+    "used_designators": "L1-3,U1-8,CDC1-38,C1-33,#PWR1-77,JP1-2,R1-9",
     "variants": []
   },
   "sheets": [
@@ -804,8 +808,8 @@
       "FPGA"
     ],
     [
-      "ab5c97a2-3d1d-4320-a414-0607c7e6fc10",
-      "386486SX"
+      "33040db0-1823-466c-a798-f66cde491f25",
+      "A_PGND"
     ],
     [
       "332916af-3e11-4b31-930a-ff884aaa5dd6",

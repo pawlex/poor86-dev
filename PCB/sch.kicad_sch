@@ -6,8 +6,8 @@
 	(paper "A4")
 	(lib_symbols)
 	(sheet
-		(at 106.045 19.05)
-		(size 53.975 34.29)
+		(at 20.32 19.685)
+		(size 42.545 56.515)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -20,9 +20,9 @@
 		(fill
 			(color 0 0 0 0)
 		)
-		(uuid "332916af-3e11-4b31-930a-ff884aaa5dd6")
-		(property "Sheetname" "am5x86"
-			(at 106.045 18.3384 0)
+		(uuid "33040db0-1823-466c-a798-f66cde491f25")
+		(property "Sheetname" "A_PGND"
+			(at 20.32 18.9734 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -32,54 +32,8 @@
 				(justify left bottom)
 			)
 		)
-		(property "Sheetfile" "am5x86.kicad_sch"
-			(at 106.045 53.9246 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left top)
-			)
-		)
-		(instances
-			(project "Poor86"
-				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad"
-					(page "4")
-				)
-			)
-		)
-	)
-	(sheet
-		(at 62.23 19.05)
-		(size 36.195 34.29)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(stroke
-			(width 0.1524)
-			(type solid)
-		)
-		(fill
-			(color 0 0 0 0)
-		)
-		(uuid "ab5c97a2-3d1d-4320-a414-0607c7e6fc10")
-		(property "Sheetname" "386486SX"
-			(at 62.23 18.3384 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left bottom)
-			)
-		)
-		(property "Sheetfile" "x86SX.kicad_sch"
-			(at 62.23 53.9246 0)
+		(property "Sheetfile" "AsicPowerGnd.kicad_sch"
+			(at 20.32 76.7846 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -98,7 +52,53 @@
 		)
 	)
 	(sheet
-		(at 16.51 18.415)
+		(at 187.96 26.67)
+		(size 53.975 34.29)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "332916af-3e11-4b31-930a-ff884aaa5dd6")
+		(property "Sheetname" "am5x86"
+			(at 187.96 25.9584 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "am5x86.kicad_sch"
+			(at 187.96 61.5446 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Poor86"
+				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 192.405 76.835)
 		(size 40.005 35.56)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -114,7 +114,7 @@
 		)
 		(uuid "f5ce6561-2c86-4db5-b459-e0d0c7cdf470")
 		(property "Sheetname" "FPGA"
-			(at 16.51 17.7034 0)
+			(at 192.405 76.1234 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -125,7 +125,7 @@
 			)
 		)
 		(property "Sheetfile" "FPGA.kicad_sch"
-			(at 16.51 54.5596 0)
+			(at 192.405 112.9796 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects

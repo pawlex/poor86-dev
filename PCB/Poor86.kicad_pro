@@ -557,7 +557,12 @@
     },
     "net_colors": null,
     "netclass_assignments": null,
-    "netclass_patterns": []
+    "netclass_patterns": [
+      {
+        "netclass": "Default",
+        "pattern": "/Memory/D(0|1|2|3|4|5|6|7)"
+      }
+    ]
   },
   "pcbnew": {
     "last_paths": {
@@ -795,7 +800,7 @@
         "uuid": "516eb290-d08d-4e43-95ba-5c21610df4ad"
       }
     ],
-    "used_designators": "L1-3,U1-8,CDC1-38,C1-33,#PWR1-77,JP1-2,R1-9",
+    "used_designators": "P1,SW1-4,J1-3,L1-3,U1-12,D1,C1-34,#PWR1-82,CDC1-38,JP1-2,R1-13",
     "variants": []
   },
   "sheets": [
@@ -814,6 +819,14 @@
     [
       "332916af-3e11-4b31-930a-ff884aaa5dd6",
       "am5x86"
+    ],
+    [
+      "38a3c512-d537-4c7d-89f6-f05cda80df7a",
+      "Memory"
+    ],
+    [
+      "40f66460-a850-4ddd-a7d2-0e5f4488d9c3",
+      "eternal_perif"
     ]
   ],
   "text_variables": {

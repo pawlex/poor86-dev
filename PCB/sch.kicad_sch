@@ -52,7 +52,7 @@
 		)
 	)
 	(sheet
-		(at 187.96 26.67)
+		(at 222.25 20.32)
 		(size 53.975 34.29)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -68,7 +68,7 @@
 		)
 		(uuid "332916af-3e11-4b31-930a-ff884aaa5dd6")
 		(property "Sheetname" "am5x86"
-			(at 187.96 25.9584 0)
+			(at 222.25 19.6084 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -79,7 +79,7 @@
 			)
 		)
 		(property "Sheetfile" "am5x86.kicad_sch"
-			(at 187.96 61.5446 0)
+			(at 222.25 55.1946 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -98,7 +98,99 @@
 		)
 	)
 	(sheet
-		(at 192.405 76.835)
+		(at 80.01 22.225)
+		(size 86.995 56.515)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "38a3c512-d537-4c7d-89f6-f05cda80df7a")
+		(property "Sheetname" "Memory"
+			(at 80.01 21.5134 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "mems.kicad_sch"
+			(at 80.01 79.3246 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Poor86"
+				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad"
+					(page "5")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 81.915 94.615)
+		(size 90.805 54.61)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "40f66460-a850-4ddd-a7d2-0e5f4488d9c3")
+		(property "Sheetname" "eternal_perif"
+			(at 81.915 93.9034 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "external_perif.kicad_sch"
+			(at 81.915 149.8096 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Poor86"
+				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad"
+					(page "6")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 235.585 61.595)
 		(size 40.005 35.56)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -114,7 +206,7 @@
 		)
 		(uuid "f5ce6561-2c86-4db5-b459-e0d0c7cdf470")
 		(property "Sheetname" "FPGA"
-			(at 192.405 76.1234 0)
+			(at 235.585 60.8834 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -125,7 +217,7 @@
 			)
 		)
 		(property "Sheetfile" "FPGA.kicad_sch"
-			(at 192.405 112.9796 0)
+			(at 235.585 97.7396 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects

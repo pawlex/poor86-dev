@@ -800,7 +800,7 @@
         "uuid": "516eb290-d08d-4e43-95ba-5c21610df4ad"
       }
     ],
-    "used_designators": "P1,SW1-4,J1-3,L1-3,U1-12,D1,C1-34,#PWR1-82,CDC1-38,JP1-2,R1-13",
+    "used_designators": "R1-13,JP1-2,CDC1-38,#PWR1-82,C1-34,D1,J1-3,L1-3,SW1-4,U1-13,P1",
     "variants": []
   },
   "sheets": [
@@ -827,6 +827,10 @@
     [
       "40f66460-a850-4ddd-a7d2-0e5f4488d9c3",
       "eternal_perif"
+    ],
+    [
+      "8f55fba7-2b48-44e0-a4b2-bfc9178c5413",
+      "VideoSubSystem"
     ]
   ],
   "text_variables": {

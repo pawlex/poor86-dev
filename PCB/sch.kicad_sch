@@ -144,7 +144,7 @@
 		)
 	)
 	(sheet
-		(at 81.915 94.615)
+		(at 133.35 98.425)
 		(size 90.805 54.61)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -160,7 +160,7 @@
 		)
 		(uuid "40f66460-a850-4ddd-a7d2-0e5f4488d9c3")
 		(property "Sheetname" "eternal_perif"
-			(at 81.915 93.9034 0)
+			(at 133.35 97.7134 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -171,7 +171,7 @@
 			)
 		)
 		(property "Sheetfile" "external_perif.kicad_sch"
-			(at 81.915 149.8096 0)
+			(at 133.35 153.6196 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -185,6 +185,63 @@
 			(project "Poor86"
 				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad"
 					(page "6")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 26.035 94.615)
+		(size 86.36 69.85)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "8f55fba7-2b48-44e0-a4b2-bfc9178c5413")
+		(property "Sheetname" "VideoSubSystem"
+			(at 26.035 93.9034 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "video.kicad_sch"
+			(at 26.035 165.0496 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(property "Field2" ""
+			(at 26.035 94.615 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(instances
+			(project "Poor86"
+				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad"
+					(page "7")
 				)
 			)
 		)

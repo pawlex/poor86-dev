@@ -6150,159 +6150,6 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Regulator_Linear:AMS1117-2.5"
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "U"
-				(at -3.81 3.175 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "AMS1117-2.5"
-				(at 0 3.175 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Footprint" "Package_TO_SOT_SMD:SOT-223-3_TabPin2"
-				(at 0 5.08 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" "http://www.advanced-monolithic.com/pdf/ds1117.pdf"
-				(at 2.54 -6.35 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "1A Low Dropout regulator, positive, 2.5V fixed output, SOT-223"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "linear regulator ldo fixed positive"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_fp_filters" "SOT?223*TabPin2*"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "AMS1117-2.5_0_1"
-				(rectangle
-					(start -5.08 -5.08)
-					(end 5.08 1.905)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-			)
-			(symbol "AMS1117-2.5_1_1"
-				(pin power_in line
-					(at 0 -7.62 90)
-					(length 2.54)
-					(name "GND"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_out line
-					(at 7.62 0 180)
-					(length 2.54)
-					(name "VO"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at -7.62 0 0)
-					(length 2.54)
-					(name "VI"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "Regulator_Switching:TLV62569DBV"
 			(exclude_from_sim no)
 			(in_bom yes)
@@ -12107,16 +11954,6 @@
 	)
 	(wire
 		(pts
-			(xy 179.07 60.96) (xy 179.07 66.04)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0aa10969-f56a-439d-a7e0-aeae4334da4d")
-	)
-	(wire
-		(pts
 			(xy 232.41 78.74) (xy 232.41 73.66)
 		)
 		(stroke
@@ -13727,16 +13564,6 @@
 	)
 	(wire
 		(pts
-			(xy 179.07 25.4) (xy 179.07 30.48)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a1caf814-6c65-4315-acc1-d2e24bcface2")
-	)
-	(wire
-		(pts
 			(xy 219.71 27.94) (xy 219.71 29.21)
 		)
 		(stroke
@@ -14497,16 +14324,6 @@
 	)
 	(wire
 		(pts
-			(xy 163.83 60.96) (xy 163.83 66.04)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d45b24b7-aba1-4dc6-9995-956d14d2f10f")
-	)
-	(wire
-		(pts
 			(xy 95.25 91.44) (xy 95.25 93.98)
 		)
 		(stroke
@@ -14554,16 +14371,6 @@
 			(type default)
 		)
 		(uuid "dadac10d-863a-4021-be5a-12a3236103f5")
-	)
-	(wire
-		(pts
-			(xy 163.83 25.4) (xy 163.83 30.48)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "db6a1f76-590a-4f72-95e3-32848658933c")
 	)
 	(wire
 		(pts
@@ -15025,7 +14832,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 238.76 35.56 0)
 			(hide yes)
 			(show_name no)
@@ -15183,7 +14990,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -15264,7 +15071,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 43.18 0)
 			(hide yes)
 			(show_name no)
@@ -15336,14 +15143,14 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 36.1949 158.75 90)
+			(at 38.1 156.2099 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
+				(justify right)
 			)
 		)
 		(property "Footprint" ""
@@ -15424,7 +15231,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" ""
 			(at 29.21 144.78 0)
 			(hide yes)
 			(show_name no)
@@ -15505,7 +15312,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 111.76 0)
 			(hide yes)
 			(show_name no)
@@ -15586,7 +15393,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 22.86 0)
 			(hide yes)
 			(show_name no)
@@ -15821,7 +15628,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 104.14 0)
 			(hide yes)
 			(show_name no)
@@ -15979,7 +15786,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 257.81 35.56 0)
 			(hide yes)
 			(show_name no)
@@ -16028,84 +15835,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GNDD")
-		(at 171.45 38.1 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "12e096a5-de1e-4a2f-b189-f1a1f7be0cfc")
-		(property "Reference" "#PWR075"
-			(at 171.45 44.45 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "GNDD"
-			(at 171.45 41.91 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 171.45 38.1 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 171.45 38.1 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GNDD\" , digital ground"
-			(at 171.45 38.1 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "32f95fdc-5201-4def-ae84-5991bd2f16e1")
-		)
-		(instances
-			(project "Poor86"
-				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad/33040db0-1823-466c-a798-f66cde491f25"
-					(reference "#PWR075")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:C_Small")
 		(at 97.79 78.74 90)
 		(unit 1)
@@ -16138,7 +15867,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 78.74 0)
 			(hide yes)
 			(show_name no)
@@ -16219,7 +15948,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 35.56 0)
 			(hide yes)
 			(show_name no)
@@ -16390,7 +16119,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 219.71 67.31 0)
 			(hide yes)
 			(show_name no)
@@ -16471,7 +16200,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 71.12 0)
 			(hide yes)
 			(show_name no)
@@ -16552,7 +16281,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 45.72 0)
 			(hide yes)
 			(show_name no)
@@ -16710,7 +16439,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 101.6 0)
 			(hide yes)
 			(show_name no)
@@ -16782,13 +16511,14 @@
 			)
 		)
 		(property "Value" "GNDD"
-			(at 270.51 119.38 0)
+			(at 273.05 116.6494 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -16860,7 +16590,7 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 31.115 22.86 0)
+			(at 34.925 20.32 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -16947,7 +16677,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 53.34 0)
 			(hide yes)
 			(show_name no)
@@ -17768,10 +17498,6 @@
 					(reference "U3")
 					(unit 1)
 				)
-				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad/332916af-3e11-4b31-930a-ff884aaa5dd6"
-					(reference "U3")
-					(unit 1)
-				)
 			)
 		)
 	)
@@ -17808,7 +17534,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 96.52 0)
 			(hide yes)
 			(show_name no)
@@ -17966,7 +17692,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 245.11 35.56 0)
 			(hide yes)
 			(show_name no)
@@ -18047,7 +17773,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 86.36 0)
 			(hide yes)
 			(show_name no)
@@ -18128,7 +17854,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 99.06 0)
 			(hide yes)
 			(show_name no)
@@ -18200,13 +17926,14 @@
 			)
 		)
 		(property "Value" "GNDD"
-			(at 270.51 82.55 0)
+			(at 273.05 79.8194 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -18287,7 +18014,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 33.02 0)
 			(hide yes)
 			(show_name no)
@@ -18368,7 +18095,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 238.76 107.95 0)
 			(hide yes)
 			(show_name no)
@@ -18449,7 +18176,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 226.06 35.56 0)
 			(hide yes)
 			(show_name no)
@@ -18530,7 +18257,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 76.2 0)
 			(hide yes)
 			(show_name no)
@@ -18688,7 +18415,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 68.58 0)
 			(hide yes)
 			(show_name no)
@@ -18770,7 +18497,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" ""
 			(at 209.042 31.75 90)
 			(hide yes)
 			(show_name no)
@@ -18851,7 +18578,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 81.28 0)
 			(hide yes)
 			(show_name no)
@@ -19208,84 +18935,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+1V1")
-		(at 179.07 60.96 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "49ffe8e0-fcb6-42ae-b6c7-912c3ff2e5d7")
-		(property "Reference" "#PWR077"
-			(at 179.07 64.77 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "+2V5"
-			(at 179.07 55.88 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 179.07 60.96 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 179.07 60.96 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+1V1\""
-			(at 179.07 60.96 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "2b36d849-7e7c-4a7f-a8c6-8b8478ef8e29")
-		)
-		(instances
-			(project "Poor86"
-				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad/33040db0-1823-466c-a798-f66cde491f25"
-					(reference "#PWR077")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:R")
 		(at 210.82 111.76 0)
 		(unit 1)
@@ -19319,7 +18968,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" ""
 			(at 209.042 111.76 90)
 			(hide yes)
 			(show_name no)
@@ -19401,7 +19050,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" ""
 			(at 209.042 39.37 90)
 			(hide yes)
 			(show_name no)
@@ -19482,7 +19131,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 232.41 71.12 0)
 			(hide yes)
 			(show_name no)
@@ -19563,7 +19212,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 63.5 0)
 			(hide yes)
 			(show_name no)
@@ -19644,7 +19293,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 48.26 0)
 			(hide yes)
 			(show_name no)
@@ -19725,7 +19374,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 25.4 0)
 			(hide yes)
 			(show_name no)
@@ -20028,13 +19677,14 @@
 			)
 		)
 		(property "Value" "GNDD"
-			(at 196.85 46.99 0)
+			(at 199.39 44.2594 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -20192,7 +19842,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 38.1 0)
 			(hide yes)
 			(show_name no)
@@ -20273,7 +19923,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" ""
 			(at 29.21 68.58 0)
 			(hide yes)
 			(show_name no)
@@ -20354,7 +20004,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 245.11 107.95 0)
 			(hide yes)
 			(show_name no)
@@ -20503,13 +20153,14 @@
 			)
 		)
 		(property "Value" "GNDD"
-			(at 270.51 46.99 0)
+			(at 273.05 44.2594 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -20590,7 +20241,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Bridged_Pad1.0x1.5mm"
+		(property "Footprint" ""
 			(at 214.63 95.25 0)
 			(hide yes)
 			(show_name no)
@@ -20739,13 +20390,14 @@
 			)
 		)
 		(property "Value" "GNDD"
-			(at 142.24 146.05 0)
+			(at 144.78 143.3194 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -20903,7 +20555,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" ""
 			(at 29.21 121.92 0)
 			(hide yes)
 			(show_name no)
@@ -20984,7 +20636,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 232.41 35.56 0)
 			(hide yes)
 			(show_name no)
@@ -21065,7 +20717,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 251.46 71.12 0)
 			(hide yes)
 			(show_name no)
@@ -21137,13 +20789,14 @@
 			)
 		)
 		(property "Value" "GNDD"
-			(at 196.85 119.38 0)
+			(at 199.39 116.6494 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -21224,7 +20877,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" ""
 			(at 270.51 71.12 0)
 			(hide yes)
 			(show_name no)
@@ -21273,84 +20926,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GNDD")
-		(at 171.45 73.66 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "7d6ac90b-4fc5-436b-ba5e-64b7875748cc")
-		(property "Reference" "#PWR076"
-			(at 171.45 80.01 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "GNDD"
-			(at 171.45 77.47 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 171.45 73.66 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 171.45 73.66 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GNDD\" , digital ground"
-			(at 171.45 73.66 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "4237ff5d-dae1-476e-a604-4d56ded71d68")
-		)
-		(instances
-			(project "Poor86"
-				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad/33040db0-1823-466c-a798-f66cde491f25"
-					(reference "#PWR076")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:R")
 		(at 210.82 67.31 0)
 		(unit 1)
@@ -21384,7 +20959,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" ""
 			(at 209.042 67.31 90)
 			(hide yes)
 			(show_name no)
@@ -21542,7 +21117,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 60.96 0)
 			(hide yes)
 			(show_name no)
@@ -21614,13 +21189,14 @@
 			)
 		)
 		(property "Value" "+5V"
-			(at 189.23 19.05 0)
+			(at 191.77 22.8599 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -21701,7 +21277,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 58.42 0)
 			(hide yes)
 			(show_name no)
@@ -21782,7 +21358,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" ""
 			(at 29.21 50.8 0)
 			(hide yes)
 			(show_name no)
@@ -21854,13 +21430,14 @@
 			)
 		)
 		(property "Value" "GNDD"
-			(at 196.85 82.55 0)
+			(at 199.39 79.8194 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -21941,7 +21518,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 55.88 0)
 			(hide yes)
 			(show_name no)
@@ -22180,13 +21757,14 @@
 			)
 		)
 		(property "Value" "+1V1"
-			(at 111.76 132.08 0)
+			(at 114.3 135.8899 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -22421,7 +21999,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Inductor_SMD:L_1008_2520Metric"
+		(property "Footprint" ""
 			(at 204.47 102.87 0)
 			(hide yes)
 			(show_name no)
@@ -22502,7 +22080,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 251.46 35.56 0)
 			(hide yes)
 			(show_name no)
@@ -22660,7 +22238,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" ""
 			(at 264.16 35.56 0)
 			(hide yes)
 			(show_name no)
@@ -22741,7 +22319,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 106.68 0)
 			(hide yes)
 			(show_name no)
@@ -22813,13 +22391,14 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 270.51 91.44 0)
+			(at 273.05 95.2499 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -22900,7 +22479,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 226.06 71.12 0)
 			(hide yes)
 			(show_name no)
@@ -22981,7 +22560,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Inductor_SMD:L_1008_2520Metric"
+		(property "Footprint" ""
 			(at 204.47 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -23261,89 +22840,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Regulator_Linear:AMS1117-2.5")
-		(at 171.45 66.04 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim yes)
-		(in_bom no)
-		(on_board no)
-		(in_pos_files no)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "9ede3f92-2519-4963-bcbb-1cf06e9207a9")
-		(property "Reference" "U7"
-			(at 171.45 59.69 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "AMS1117-2.5"
-			(at 171.45 62.23 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Package_TO_SOT_SMD:SOT-223-3_TabPin2"
-			(at 171.45 60.96 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" "http://www.advanced-monolithic.com/pdf/ds1117.pdf"
-			(at 173.99 72.39 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "1A Low Dropout regulator, positive, 2.5V fixed output, SOT-223"
-			(at 171.45 66.04 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "24189c66-e432-4b95-8c82-9eb780a9aff4")
-		)
-		(pin "2"
-			(uuid "3fdb626b-c081-4879-9661-8d3b16a367d7")
-		)
-		(pin "3"
-			(uuid "71c2a4fd-8fea-467c-b96e-db5e51c73529")
-		)
-		(instances
-			(project "Poor86"
-				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad/33040db0-1823-466c-a798-f66cde491f25"
-					(reference "U7")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:C_Small")
 		(at 97.79 93.98 90)
 		(unit 1)
@@ -23376,7 +22872,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 93.98 0)
 			(hide yes)
 			(show_name no)
@@ -23535,7 +23031,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" ""
 			(at 209.042 74.93 90)
 			(hide yes)
 			(show_name no)
@@ -23616,7 +23112,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 50.8 0)
 			(hide yes)
 			(show_name no)
@@ -23697,7 +23193,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 114.3 0)
 			(hide yes)
 			(show_name no)
@@ -23769,13 +23265,14 @@
 			)
 		)
 		(property "Value" "GNDD"
-			(at 111.76 146.05 0)
+			(at 114.3 143.3194 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -23901,84 +23398,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+3V3")
-		(at 163.83 25.4 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "a8ea8c9d-590d-4d24-b868-3c44af3f0ded")
-		(property "Reference" "#PWR073"
-			(at 163.83 29.21 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "+3V3"
-			(at 163.83 20.32 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 163.83 25.4 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 163.83 25.4 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 163.83 25.4 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "05c41bdd-80d4-44a5-a50d-6ba3f5fa8157")
-		)
-		(instances
-			(project "Poor86"
-				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad/33040db0-1823-466c-a798-f66cde491f25"
-					(reference "#PWR073")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:C_Small")
 		(at 219.71 31.75 0)
 		(unit 1)
@@ -24011,7 +23430,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 219.71 31.75 0)
 			(hide yes)
 			(show_name no)
@@ -24092,7 +23511,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 30.48 0)
 			(hide yes)
 			(show_name no)
@@ -24250,7 +23669,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 226.06 107.95 0)
 			(hide yes)
 			(show_name no)
@@ -24331,7 +23750,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" ""
 			(at 264.16 107.95 0)
 			(hide yes)
 			(show_name no)
@@ -24412,7 +23831,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 73.66 0)
 			(hide yes)
 			(show_name no)
@@ -24493,7 +23912,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 116.84 0)
 			(hide yes)
 			(show_name no)
@@ -24565,13 +23984,14 @@
 			)
 		)
 		(property "Value" "+5V"
-			(at 189.23 54.61 0)
+			(at 191.77 58.4199 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -24643,13 +24063,14 @@
 			)
 		)
 		(property "Value" "+2V5"
-			(at 142.24 132.08 0)
+			(at 144.78 135.8899 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -24884,7 +24305,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 27.94 0)
 			(hide yes)
 			(show_name no)
@@ -24956,13 +24377,14 @@
 			)
 		)
 		(property "Value" "+5V"
-			(at 189.23 91.44 0)
+			(at 191.77 95.2499 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -25043,7 +24465,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 88.9 0)
 			(hide yes)
 			(show_name no)
@@ -25522,7 +24944,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 245.11 71.12 0)
 			(hide yes)
 			(show_name no)
@@ -25603,7 +25025,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -25684,7 +25106,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 238.76 71.12 0)
 			(hide yes)
 			(show_name no)
@@ -25833,14 +25255,14 @@
 			)
 		)
 		(property "Value" "GNDD"
-			(at 95.2499 120.65 90)
+			(at 97.79 117.9194 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -25921,7 +25343,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 109.22 0)
 			(hide yes)
 			(show_name no)
@@ -25964,89 +25386,6 @@
 			(project "Poor86"
 				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad/33040db0-1823-466c-a798-f66cde491f25"
 					(reference "CDC4")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Regulator_Linear:AMS1117-2.5")
-		(at 171.45 30.48 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim yes)
-		(in_bom no)
-		(on_board no)
-		(in_pos_files no)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "d00c14a6-7bec-4f98-8369-97f86bc34298")
-		(property "Reference" "U8"
-			(at 171.45 24.13 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "AMS1117-1.2"
-			(at 171.45 26.67 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Package_TO_SOT_SMD:SOT-223-3_TabPin2"
-			(at 171.45 25.4 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" "http://www.advanced-monolithic.com/pdf/ds1117.pdf"
-			(at 173.99 36.83 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "1A Low Dropout regulator, positive, 2.5V fixed output, SOT-223"
-			(at 171.45 30.48 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "70ea0003-d4d7-4dff-a59f-020a1b767a0b")
-		)
-		(pin "2"
-			(uuid "6d865295-fb27-4b34-bc6a-b8e79271069e")
-		)
-		(pin "3"
-			(uuid "ecc351f6-1ae9-4af2-ad2b-e01ef1f5d8f1")
-		)
-		(instances
-			(project "Poor86"
-				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad/33040db0-1823-466c-a798-f66cde491f25"
-					(reference "U8")
 					(unit 1)
 				)
 			)
@@ -27198,7 +26537,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" ""
 			(at 270.51 107.95 0)
 			(hide yes)
 			(show_name no)
@@ -27279,7 +26618,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" ""
 			(at 209.042 96.52 90)
 			(hide yes)
 			(show_name no)
@@ -27360,7 +26699,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 257.81 71.12 0)
 			(hide yes)
 			(show_name no)
@@ -27409,84 +26748,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+1V1")
-		(at 179.07 25.4 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "d31e459b-39a5-45a3-bb7d-f155c66c245d")
-		(property "Reference" "#PWR074"
-			(at 179.07 29.21 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "+1V1"
-			(at 179.07 20.32 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 179.07 25.4 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 179.07 25.4 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+1V1\""
-			(at 179.07 25.4 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "018aee81-589c-41d5-addc-23485ecdf29f")
-		)
-		(instances
-			(project "Poor86"
-				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad/33040db0-1823-466c-a798-f66cde491f25"
-					(reference "#PWR074")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:L_Small")
 		(at 204.47 30.48 0)
 		(unit 1)
@@ -27519,7 +26780,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Inductor_SMD:L_1008_2520Metric"
+		(property "Footprint" ""
 			(at 204.47 30.48 0)
 			(hide yes)
 			(show_name no)
@@ -27600,7 +26861,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 232.41 107.95 0)
 			(hide yes)
 			(show_name no)
@@ -27749,13 +27010,14 @@
 			)
 		)
 		(property "Value" "+1V1"
-			(at 270.51 19.05 0)
+			(at 273.05 22.8599 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -27836,7 +27098,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" ""
 			(at 264.16 71.12 0)
 			(hide yes)
 			(show_name no)
@@ -27917,7 +27179,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 257.81 107.95 0)
 			(hide yes)
 			(show_name no)
@@ -27989,13 +27251,14 @@
 			)
 		)
 		(property "Value" "+2V5"
-			(at 270.51 54.61 0)
+			(at 273.05 58.4199 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -28076,7 +27339,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -28157,7 +27420,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" ""
 			(at 29.21 63.5 0)
 			(hide yes)
 			(show_name no)
@@ -28238,7 +27501,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 219.71 104.14 0)
 			(hide yes)
 			(show_name no)
@@ -28396,7 +27659,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 251.46 107.95 0)
 			(hide yes)
 			(show_name no)
@@ -28477,7 +27740,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" ""
 			(at 270.51 35.56 0)
 			(hide yes)
 			(show_name no)
@@ -29096,7 +28359,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_Molex:Molex_Mini-Fit_Jr_5566-20A_2x10_P4.20mm_Vertical"
+		(property "Footprint" ""
 			(at 127 175.26 0)
 			(hide yes)
 			(show_name no)
@@ -29193,84 +28456,6 @@
 			(project "Poor86"
 				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad/33040db0-1823-466c-a798-f66cde491f25"
 					(reference "J3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:+3V3")
-		(at 163.83 60.96 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "f04372c4-3dd6-478f-b567-6d1825c37444")
-		(property "Reference" "#PWR072"
-			(at 163.83 64.77 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "+3V3"
-			(at 163.83 55.88 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 163.83 60.96 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 163.83 60.96 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 163.83 60.96 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "40d7b277-5978-4565-a0fa-eb3ec39c3abc")
-		)
-		(instances
-			(project "Poor86"
-				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad/33040db0-1823-466c-a798-f66cde491f25"
-					(reference "#PWR072")
 					(unit 1)
 				)
 			)
@@ -29463,7 +28648,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" ""
 			(at 209.042 104.14 90)
 			(hide yes)
 			(show_name no)
@@ -29544,7 +28729,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" ""
 			(at 97.79 91.44 0)
 			(hide yes)
 			(show_name no)
@@ -29625,7 +28810,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" ""
 			(at 29.21 139.7 0)
 			(hide yes)
 			(show_name no)

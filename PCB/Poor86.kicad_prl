@@ -57,7 +57,7 @@
     "zone_display_mode": 0
   },
   "git": {
-    "integration_disabled": false,
+    "integration_disabled": true,
     "repo_type": "https",
     "repo_username": "pawl",
     "ssh_key": ""

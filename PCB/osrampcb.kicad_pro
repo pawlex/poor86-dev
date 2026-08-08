@@ -74,27 +74,9 @@
           "gap": 0.0,
           "via_gap": 0.0,
           "width": 0.0
-        },
-        {
-          "gap": 0.9,
-          "via_gap": 0.0,
-          "width": 0.9
         }
       ],
-      "drc_exclusions": [
-        [
-          "hole_to_hole|29650000|76750000|7dbd9287-b292-4a84-8f68-a3d6867140d5|86d3373d-54aa-4c78-86d0-d978790c4df9",
-          ""
-        ],
-        [
-          "hole_to_hole|29650000|76750000|86d3373d-54aa-4c78-86d0-d978790c4df9|ef1d06a6-ef9a-4b7b-98c1-338c7d2cafa5",
-          ""
-        ],
-        [
-          "silk_overlap|66809524|22330000|810bf95e-9c74-4700-a2ac-9b945ebbbb21|b586a2d5-ce5b-4026-9b8c-e8d1a67fcd86",
-          ""
-        ]
-      ],
+      "drc_exclusions": [],
       "meta": {
         "version": 2
       },
@@ -164,7 +146,7 @@
       },
       "rules": {
         "max_error": 0.005,
-        "min_clearance": 0.05,
+        "min_clearance": 0.0,
         "min_connection": 0.0,
         "min_copper_edge_clearance": 0.0,
         "min_groove_width": 0.0,
@@ -176,8 +158,8 @@
         "min_silk_clearance": 0.0,
         "min_text_height": 0.0,
         "min_text_thickness": 0.0,
-        "min_through_hole_diameter": 0.2,
-        "min_track_width": 0.09,
+        "min_through_hole_diameter": 0.508,
+        "min_track_width": 0.0,
         "min_via_annular_width": 0.0,
         "min_via_diameter": 0.0,
         "solder_mask_to_copper_clearance": 0.0,
@@ -185,11 +167,11 @@
       },
       "teardrop_options": [
         {
-          "td_onpthpad": false,
+          "td_onpthpad": true,
           "td_onroundshapesonly": false,
-          "td_onsmdpad": false,
-          "td_ontrackend": true,
-          "td_onvia": false
+          "td_onsmdpad": true,
+          "td_ontrackend": false,
+          "td_onvia": true
         }
       ],
       "teardrop_parameters": [
@@ -229,7 +211,7 @@
       ],
       "track_widths": [
         0.0,
-        0.09,
+        0.1,
         0.15,
         0.2,
         0.25,
@@ -268,11 +250,11 @@
           "drill": 0.0
         },
         {
-          "diameter": 0.45,
-          "drill": 0.2
+          "diameter": 0.2,
+          "drill": 0.1
         },
         {
-          "diameter": 0.45,
+          "diameter": 0.4,
           "drill": 0.3
         },
         {
@@ -577,7 +559,7 @@
     "last_paths": {
       "idf": "",
       "netlist": "",
-      "plot": "mfg/",
+      "plot": "",
       "specctra_dsn": "",
       "vrml": ""
     },
@@ -1013,7 +995,7 @@
         "uuid": "516eb290-d08d-4e43-95ba-5c21610df4ad"
       }
     ],
-    "used_designators": "J1-6,R1-18,JP1-3,CDC1-38,L1-3,Y1,D1,#PWR1-106,C1-50,SW1-4,U1-13,U16-19,P1",
+    "used_designators": "P1,U1-13,U16-19,SW1-4,L1-3,C1-45,#PWR1-101,D1,CDC1-38,JP1-3,R1-18,J1-6",
     "variants": []
   },
   "sheets": [

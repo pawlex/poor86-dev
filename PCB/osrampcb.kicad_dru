@@ -126,8 +126,7 @@
 # NOTE: This is not stated specifically, but is implied by other rules.
 (rule "JLCPCB: Via/Pad to Via/Pad Clearance (Different Nets)"
 	(condition "(A.Type == 'Pad' || A.Type == 'Via') && (B.Type == 'Pad' || B.Type == 'Via') && A.Net != B.Net")
-	#(constraint clearance (min 0.127mm))
-	(constraint clearance (min 0.09mm))
+	(constraint clearance (min 0.127mm))
 )
 
 # NOTE: This is not stated specifically, but is implied by other rules.

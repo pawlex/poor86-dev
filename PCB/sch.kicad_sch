@@ -144,7 +144,7 @@
 		)
 	)
 	(sheet
-		(at 133.35 98.425)
+		(at 191.135 107.315)
 		(size 90.805 54.61)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -160,7 +160,7 @@
 		)
 		(uuid "40f66460-a850-4ddd-a7d2-0e5f4488d9c3")
 		(property "Sheetname" "eternal_perif"
-			(at 133.35 97.7134 0)
+			(at 191.135 106.6034 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -171,7 +171,7 @@
 			)
 		)
 		(property "Sheetfile" "external_perif.kicad_sch"
-			(at 133.35 153.6196 0)
+			(at 191.135 162.5096 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -185,6 +185,52 @@
 			(project "Poor86"
 				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad"
 					(page "6")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 116.205 94.615)
+		(size 73.025 66.675)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "68d5b3c6-170d-484f-9c8b-c35976e5a0c3")
+		(property "Sheetname" "Untitled Sheet"
+			(at 116.205 93.9034 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "untitled.kicad_sch"
+			(at 116.205 161.8746 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Poor86"
+				(path "/516eb290-d08d-4e43-95ba-5c21610df4ad"
+					(page "8")
 				)
 			)
 		)

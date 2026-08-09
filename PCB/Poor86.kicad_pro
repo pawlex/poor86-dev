@@ -1013,8 +1013,12 @@
         "uuid": "516eb290-d08d-4e43-95ba-5c21610df4ad"
       }
     ],
-    "used_designators": "J1-6,R1-18,JP1-3,CDC1-38,L1-3,Y1,D1,#PWR1-106,C1-50,SW1-4,U1-13,U16-19,P1",
-    "variants": []
+    "used_designators": "J1-6,R1-18,JP1-6,CDC1-38,L1-3,Y1,D1,#PWR1-108,C1-50,SW1-4,U1-13,U16-19,P1",
+    "variants": [
+      {
+        "name": "smoll"
+      }
+    ]
   },
   "sheets": [
     [

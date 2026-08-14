@@ -1068,3 +1068,97 @@ Open:
       testbench choice, not a design one.
 - [ ] Packet buffer is 16 KiB — one EBR.
 
+
+
+## Design goal: modern memory — which makes the cache the central choice
+
+**The main store should be a modern memory part.** What "modern" means
+precisely is **not yet defined**, and this section records the goal and
+the tension it creates rather than a decision.
+
+Two characteristics are wanted:
+
+- **Synchronous, not asynchronous.** Clocked, pipelined, with a defined
+  command protocol — not the FPM/EDO-style asynchronous DRAM of the
+  period, with its `RAS`/`CAS`/`OE`/`WE` timing to be met in the
+  controller.
+- **Burstable.** Long transfers amortised against a fixed setup cost.
+
+### The mismatch, stated plainly
+
+**Modern memory is bandwidth-oriented. A 386 or 486 is latency-bound.**
+They want opposite things, and this is the central problem of the memory
+subsystem rather than an implementation detail.
+
+| | what it does |
+|---|---|
+| 386SX | **no burst at all.** Every access is its own address-then-data cycle, 16 bits wide |
+| 486 | bursts **only** for cache line fills — four transfers, 16 bytes. Everything else is a single cycle |
+| modern synchronous memory | pays a fixed setup cost (row activate, CAS latency, bus turnaround), then streams cheaply |
+
+So the CPU issues exactly the access pattern that modern memory is worst
+at: **small, frequently random, one at a time.**
+
+### The trap
+
+**Bursting buys bandwidth and usually costs latency.** Wider bursts,
+deeper pipelines and higher clocks all improve throughput while making
+the first word arrive later. A 386SX asking for two bytes does not care
+about GB/s — it cares how many nanoseconds pass before the data is
+there. Optimising the memory subsystem on the obvious metric makes the
+machine *slower*.
+
+Some rough calibration, illustrative rather than exact:
+
+- A 386SX at 25 MHz has a 40 ns clock, so a two-cycle access is an ~80 ns
+  budget.
+- An Am5x86 on a 33 MHz bus has a 30 ns clock; a four-transfer burst at
+  2-1-1-1 is five cycles, roughly 150 ns for 16 bytes.
+
+Against modern parts those budgets are generous — **but only if the row
+is already open and the controller adds little of its own.** A random
+access that misses the open row pays activate and precharge on top, and
+that is the case the CPU generates most.
+
+### Why the cache is therefore the important design choice
+
+**The cache is the impedance matcher between the two.** It is what turns
+the CPU's small, random, latency-sensitive accesses into the memory's
+preferred large sequential ones, and it is the only place that
+conversion can happen.
+
+- On a hit, memory latency is invisible.
+- On a miss, a line fill is exactly the long sequential burst the memory
+  wants — so the miss path is *where the memory's strength is used*.
+- Line size is the knob with the sharpest trade: longer lines burst more
+  efficiently and waste more fill on poor locality.
+
+**Memory choice and cache design are therefore one decision, not two.**
+Choosing a burst-oriented part commits to a cache whose line size and
+fill policy are matched to that part's efficient burst length. Choosing
+them separately produces a controller that is fast on paper and slow in
+the machine.
+
+This also connects to a problem already recorded: the Am5x86's
+**write-back L1** means the CPU can hold dirty lines the chipset does not
+have, so write policy and coherency are part of the same decision
+(see the Am5x86 bus section above).
+
+### Candidates already in the tree
+
+Observation, not decision — the KiCad libraries carry symbols for both a
+parallel **PSRAM** (`IS66WVE4M16`) and a **HyperRAM**
+(`IS66WVH8M8ALL`). Those two bracket the trade neatly:
+
+- **HyperRAM** is extremely pin-efficient, which matters against an FPGA
+  I/O budget, but has high initial latency and is strongly
+  burst-oriented — the extreme case of the tension above.
+- **Parallel PSRAM** costs pins and gives lower access latency.
+
+The right answer depends on the cache, which is the point of this
+section.
+
+- [ ] Define what "modern" means concretely, **together with** the cache
+      line size, associativity and write policy — not before them.
+- [ ] Establish the latency budget from the CPU side first, since that is
+      the fixed constraint; bandwidth is the free variable.

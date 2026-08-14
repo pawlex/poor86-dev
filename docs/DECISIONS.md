@@ -1144,6 +1144,35 @@ This also connects to a problem already recorded: the Am5x86's
 have, so write policy and coherency are part of the same decision
 (see the Am5x86 bus section above).
 
+### What a cache costs to build here, measured
+
+The one hard resource figure available so far, and it comes from a
+measurement already paid for in
+[ao486-cpu-oss](https://github.com/pawlex/ao486-cpu-oss). On an
+LFE5U-85F there are **two separate memory pools**, and a cache wants
+both:
+
+| pool | size on the 85F | suits |
+|---|---|---|
+| EBR (`DP16KD`, 18 Kbit each) | 208 blocks | data arrays — density |
+| distributed RAM (RAM LUTs) | 10,455 | tag stores, small FIFOs, line buffers — async read |
+
+The distinction matters because **tags want an async or single-cycle
+read** to resolve a hit without adding a pipeline stage, which is what
+distributed RAM is for; data arrays want density, which is what EBR is
+for. Sizing them against the wrong pool is an easy mistake.
+
+The measurement: **ao486 consumes 260 RAM LUTs — 2%** — leaving roughly
+**10,195 for everything else**, cache ways included. Its 12 EBR of 208
+is similarly light. So on the hard-CPU path, where no x86 soft core is
+instantiated at all, essentially the entire budget of both pools is
+available to the chipset and its cache.
+
+Worth stating because the instinct is to assume an FPGA design is
+LUT-limited. Here the general LUT4 pool is what a soft x86 core makes
+expensive; **the pools a cache actually competes for are close to
+untouched.**
+
 ### Candidates already in the tree
 
 Observation, not decision — the KiCad libraries carry symbols for both a

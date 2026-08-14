@@ -209,6 +209,7 @@ Two corollaries that have saved a great deal of work:
 | repo | what it is |
 |---|---|
 | [vexrv-cpu-oss](https://github.com/pawlex/vexrv-cpu-oss) | the RISC-V soft core, the x86 interpreter payload, and the Verilator co-simulation the chipset is developed against |
+| [ao486-cpu-oss](https://github.com/pawlex/ao486-cpu-oss) | the ao486 486-class x86 soft core packaged for the open toolchain — Verilator regression suite, plus synthesis and place-and-route with no vendor tools. Places and routes on an ECP5-85F at 32.87 MHz |
 | [tiny386](https://github.com/pawlex/tiny386) | fork of the x86 interpreter, ported to bare-metal RV32 |
 | [ecp5-oss-skeleton](https://github.com/pawlex/ecp5-oss-skeleton) | ECP5 project template and the block-RAM findings behind it |
 

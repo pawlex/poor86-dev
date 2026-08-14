@@ -1173,6 +1173,30 @@ LUT-limited. Here the general LUT4 pool is what a soft x86 core makes
 expensive; **the pools a cache actually competes for are close to
 untouched.**
 
+### ao486's role here: traffic generator, not bus model
+
+Recorded to head off a wrong assumption. **ao486 does not have a 486
+bus interface.** Its top-level memory port is Avalon-MM —
+`avm_address`, `avm_burstcount`, `avm_waitrequest`, `avm_readdatavalid`
+— with cache control reduced to a single `cache_disable` input. There is
+no `ADS#`, `BRDY#`, `BLAST#`, `KEN#`, `FLUSH#`, `AHOLD` or `EADS#`.
+
+So it **cannot** validate the chipset's 486 front end, and the
+cycle-accurate 486 BFM recorded against the BIU work stands as written.
+It is a 486-compatible CPU, not a 486 bus master.
+
+What it *is* good for is the layer this section cares about. A real
+486 core running real software produces **realistic memory traffic** —
+access sizes, burst counts, locality, reuse — and that is exactly the
+evidence needed to choose a cache line size, associativity and write
+policy, and to estimate a hit rate. Transaction level is the wrong layer
+for bus protocol and the right one for cache design.
+
+That makes it potentially useful **earlier** than "when real hardware
+needs it": a trace from ao486 running DOS would let the cache be designed
+against measurement rather than intuition, which is the same empirical
+approach already sketched for sizing on-chip memory.
+
 ### Candidates already in the tree
 
 Observation, not decision — the KiCad libraries carry symbols for both a

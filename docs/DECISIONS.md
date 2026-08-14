@@ -1195,6 +1195,61 @@ So the memory subsystem is not being avoided. **It is waiting for its
 requirements**, which do not exist until the CPU-side budget is
 established and the cache is designed.
 
+### The four-word ceiling inverts the usual choice
+
+**A 486 burst is four transfers. Sixteen bytes. That is the entire
+amortisation window**, and there is nothing longer anywhere in the
+machine — the SX has no burst at all.
+
+A memory part with a long fixed setup cost cannot amortise it across
+four words; the setup simply dominates every access. Which means the
+usual instinct — pick the part with the best sustained bandwidth — is
+backwards here. **Low latency beats high bandwidth, and it is not close.**
+
+That likely favours **parallel SRAM or parallel PSRAM**: more pins, no
+row activation to hide, access latency close to the CPU's own budget.
+And it likely disfavours HyperRAM, whose pin efficiency is attractive
+against an FPGA I/O budget but whose high initial latency wants long
+bursts that this machine will never issue.
+
+Capacity is not the constraint it would normally be. A 386SX cannot
+address beyond 16 MiB at all, and a DOS machine wants single-digit
+megabytes — so the usual reason to accept latency in exchange for
+density does not apply either.
+
+### Supporting the SX roughly doubles the work here
+
+The cost of SX support was first recorded as a second *bus* front end.
+**The memory subsystem is the larger half**, and it was not visible at
+the time:
+
+| | access pattern |
+|---|---|
+| 386SX | single 16-bit transfers, **no burst at all** |
+| Am5x86 | four-transfer 32-bit line fills, single cycles otherwise |
+
+A controller tuned for one is not tuned for the other — different width,
+different burst behaviour, and quite possibly a different cache design,
+since the question of whether the SX path gets a cache at all is
+separate.
+
+**The open question, and it is genuinely open:**
+
+- **One subsystem serving both.** One design, one validation, and
+  optimal for neither — compromised on width, line size and fill policy.
+- **Two paths.** Each right for its CPU, twice the design and twice the
+  validation. The difference between them is itself worth understanding,
+  and this is the part of the project the author actually wants to build.
+- **A third framing worth testing before choosing:** this is programmable
+  logic, so "two paths" may be two *configurations* of one parameterised
+  design rather than two designs — the same argument already made for
+  the bus front end. Whether that holds depends on how much of the
+  difference is parameter (width, burst length, line size) and how much
+  is structure. Worth establishing early, because it decides whether the
+  cost is 2x or closer to 1.2x.
+
+- [ ] **Decide whether the SX is supported**, knowing the memory
+      subsystem cost and not only the bus front-end cost.
 - [ ] Establish the latency budget from the CPU side first. It is the
       fixed constraint; bandwidth is the free variable.
 - [ ] Design the cache against that budget — line size, associativity,

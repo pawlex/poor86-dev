@@ -1158,7 +1158,46 @@ parallel **PSRAM** (`IS66WVE4M16`) and a **HyperRAM**
 The right answer depends on the cache, which is the point of this
 section.
 
-- [ ] Define what "modern" means concretely, **together with** the cache
-      line size, associativity and write policy — not before them.
-- [ ] Establish the latency budget from the CPU side first, since that is
-      the fixed constraint; bandwidth is the free variable.
+### And this is the real justification for deferring the memory subsystem
+
+The deferral is recorded elsewhere as discipline — not starting with the
+most interesting part, so the surrounding work gets finished. **That is
+true but it is the weaker reason. The stronger one is that the ordering
+is simply correct.**
+
+The dependency runs one way:
+
+```
+  CPU latency budget   (fixed -- the CPU is chosen)
+        |
+        v
+  cache: line size, associativity, write policy
+        |
+        v
+  memory subsystem     (the free variable)
+```
+
+The memory subsystem is **downstream of the cache, which is downstream
+of a latency budget set by the CPU.** Specifying it first means
+optimising a component before its requirements exist — and the instinct
+one optimises on, bandwidth, is precisely the one that hurts here.
+
+The failure mode is concrete and worth naming: **a high-bandwidth memory
+subsystem that cripples the bus interface with latency.** Deep
+pipelining, transaction reordering, long bursts and elaborate scheduling
+all improve throughput and all delay the first word. If the BIU cannot
+hide that — because the cache is small, or the line size is mismatched,
+or a region is deliberately uncached — the result is better memory
+numbers and a slower machine. It would be entirely possible to build
+something impressive in isolation that makes this machine worse.
+
+So the memory subsystem is not being avoided. **It is waiting for its
+requirements**, which do not exist until the CPU-side budget is
+established and the cache is designed.
+
+- [ ] Establish the latency budget from the CPU side first. It is the
+      fixed constraint; bandwidth is the free variable.
+- [ ] Design the cache against that budget — line size, associativity,
+      write policy.
+- [ ] *Then* define what "modern memory" means concretely, and match its
+      efficient burst length to the line size already chosen.

@@ -231,6 +231,71 @@ D2±, CK±.
 | **1** | **`TPD12S521`** | — | **yes** | **replaces the entire discrete front end** — see below |
 | 2 | capacitor | 0.1 µF | **yes** | `ESD_BYP` (pin 37) is mandatory; `HOTPLUG_DET_OUT` (pin 20) raises the ESD rating |
 
+#### Superseded — the `PTN3365` regenerates TMDS rather than protecting it
+
+**Decision: `PTN3365BS`, populated, not DNP.** The `TPD12S521` analysis
+below is kept because the reasoning still holds for what it does; it is
+simply the lesser answer.
+
+**The difference is what happens to the signal.** The `TPD12S521` clamps
+and passes TMDS through untouched — whatever the FPGA emitted arrives at
+the connector, emulated warts and all. The `PTN3365` **converts four
+lanes of low-swing AC-coupled differential input into DVI v1.0 and HDMI
+v1.4b compliant open-drain current-steering output**, terminated into
+50 Ω to 3.3 V at the sink.
+
+Read that input description again: *low-swing, AC-coupled,
+differential.* **That is exactly what an FPGA emulated-differential
+output through series capacitors produces.** The part is specified for
+the signal this board already makes, and emits the signal a monitor
+actually wants.
+
+| | |
+|---|---|
+| package | **HVQFN32** — not a BGA, and **in JLCPCB's assembly library at <$2 @ qty 1**, so factory placement is routine |
+| supply | single **3.3 V**, 230 mW typical |
+| rate | **3.0 Gbit/s per lane** |
+| DDC | active buffer, 3.3 V source ↔ 5 V sink |
+| HPD | active buffer, 5 V sink → 3.3 V source |
+
+**What this changes, and what it does not:**
+
+- **It removes the signal-integrity risk class.** The output is compliant
+  TMDS, not an emulation hoping to be accepted. The one gap this document
+  said only our own board could close — *"whether emulated differential
+  survives to the connector"* — largely stops existing. What remains is
+  ordinary high-speed layout.
+- **It does not raise the FPGA's ceiling, and the mode table is
+  unchanged.** 3.0 Gbit/s is the *part's* capability. The FPGA still
+  cannot serialise faster than **500 Mb/s on PT** or 624/700/800 Mb/s on
+  PL/PR by speed grade. **A 3 Gbit/s part on the far side of a 500 Mb/s
+  serialiser is still a 500 Mb/s link** — the gearing analysis above
+  stands untouched, and the PT-versus-geared-edge decision is unaffected.
+- **It makes DDC nearly free** — an active DDC buffer is present whether
+  or not it is used. That does not reverse the EDID-from-ROM decision, but
+  it does mean the 0 Ω bodge pads now sit on a part already doing the
+  translation.
+- **"Required, not DNP" is right here.** The DNP pattern elsewhere buys
+  optional capability. This is core signal path, and at JLC assembly
+  prices there is nothing to defer.
+
+**Open — verify before layout.** NXP's documentation was not reachable
+during this write-up, so three things are recorded as unconfirmed rather
+than assumed:
+
+- [ ] **Connector-side ESD rating.** If the `PTN3365` does not provide
+      IEC 61000-4-2 level 4 at the connector, a dedicated low-capacitance
+      ESD array is still wanted downstream of it. **This is the one item
+      that could keep a second part in the BOM.**
+- [ ] **Whether the 49.9 Ω pull-ups are still required.** The part
+      specifies its own input handling for low-swing AC-coupled
+      differential, so they may be redundant — which would reduce the
+      front end to `FPGA → 100 nF → PTN3365 → connector`.
+- [ ] **`OE_N` behaviour on this specific part.** Family datasheets
+      describe inputs going high-impedance when `OE_N` is high. If it
+      exists here it can almost certainly be strapped, but confirm it does
+      not want driving before assuming zero FPGA pins.
+
 #### The `TPD12S521` collapses this to one part
 
 A single-chip HDMI **transmitter-side** port protection and interface IC,

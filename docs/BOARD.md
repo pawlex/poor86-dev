@@ -518,6 +518,15 @@ fabrication.
 | BOM | reduced-BOM is a stated design goal, not a preference |
 | Expansion slots | **none**, and the form factor could not hold them |
 
+## Reserved resources
+
+- **ECP5 bank 8 — configuration and DFx only.** 13 balls, all
+  configuration functions, and the interface the FPGA boots through.
+  SPI NOR, the QSPI PSRAM sharing its bus, and DFx are permitted;
+  anything else needs a waiver recorded in
+  [PLAN_OF_RECORD.md](PLAN_OF_RECORD.md). Do not count these balls as
+  general I/O in any pin budget.
+
 ## Irreversible at layout — decide these first
 
 The recurring theme of the whole project. Everything in this list is

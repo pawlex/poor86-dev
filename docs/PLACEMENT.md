@@ -68,7 +68,11 @@ consequential placement fact available today.
 | **PB** | **SPI NOR + QSPI PSRAM** | 7 of 13 | bank 8 *is* the configuration bank — see below |
 | leftovers | HDMI, ESP32, SD, transceiver control, clocks | ~34 of ~49 | distributed into PT/PR/PL slack |
 
-### PB is the configuration bank, and that settles it
+### PB is the configuration bank — and is now formally reserved
+
+**Bank 8 is reserved for configuration and DFx only**, recorded in
+[PLAN_OF_RECORD.md](PLAN_OF_RECORD.md). Anything else there requires a
+waiver.
 
 All 13 balls of bank 8 carry configuration functions:
 

@@ -1300,6 +1300,40 @@ Open:
 
 
 
+## Reserved: ECP5 bank 8 is configuration and DFx only
+
+**Bank 8 of the LFE5U-85F CABGA381 is reserved. Nothing but
+configuration and DFx may be assigned to it without an explicit waiver
+recorded here.**
+
+All 13 of its balls carry configuration functions:
+
+```
+D0-D7 / IO0-IO7      SPI flash data
+MOSI, MISO, MOSI2, MISO2
+CSSPIN, CSON, CS1N, SN/CSN
+HOLDN/DI/BUSY/CEN, DOUT, WRITEN
+```
+
+This is the interface the FPGA boots through. Anything else placed there
+either collides with configuration or silently constrains it — and the
+failure would appear at bring-up, on a board that cannot be reprogrammed
+to fix it.
+
+**Permitted without a waiver:**
+
+- SPI NOR configuration flash
+- QSPI PSRAM sharing that bus (one chip select), since it is on the flash
+  bus by design
+- DFx — JTAG, test points, bring-up and debug access
+
+**Requires a waiver:** anything else. The waiver goes in this file, names
+the signal, and states why no other bank will serve.
+
+This was nearly got wrong once already: a placement draft assigned HDMI
+to bank 8 on the grounds that it had differential pair sites and was too
+small to be useful for a bus. See [PLACEMENT.md](PLACEMENT.md).
+
 ## Nomenclature: cache levels
 
 **Canonical for this project. Any document using these terms differently

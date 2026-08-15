@@ -120,10 +120,18 @@ HDMI needs **4 pairs** (3 data, 1 clock). Pair sites by edge:
 | PL | 16 | yes |
 | PB | 6 | **reserved — bank 8** |
 
-Every usable edge has ample pairs, so **HDMI placement is free among
-PT/PL/PR** and should be chosen by proximity to the connector rather
-than by capability. Bank 8 is excluded because it is reserved for
-configuration and DFx, not because of its pair count.
+Every usable edge has ample pairs. Bank 8 is excluded because it is
+reserved for configuration and DFx, not because of its pair count.
+
+> **Correction — pair count is not the binding constraint.** This
+> previously read *"HDMI placement is free among PT/PL/PR"*. That is
+> wrong. Emulated differential output is available on every bank, but the
+> **output gearing is on the left and right sides only** — the top side
+> supports 1x gearing only, which caps it at **500 Mb/s**, or 800×600.
+> 1024×768 needs a geared edge and a -7 part; 720p needs a geared edge and
+> a -8 part. See [FAKE_TMDS.md](FAKE_TMDS.md) for the datasheet quotes and
+> the mode table. **HDMI on PT is a permanent 800×600 ceiling**, which is
+> a board-spin decision rather than a bitstream one.
 
 **No VCCIO constraint either: every VCCIO rail is 3.3 V.** With a single
 I/O voltage across the device there is no bank-sharing conflict to
@@ -198,9 +206,15 @@ and **PR** facing the CPU.
 - [ ] **Which of PT+PR or PT+PL carries the CPU.** Both fit. The choice
       is decided by where the CPU can physically sit given the rear I/O
       and the mezzanine, not by ball count.
-- [ ] **Which edge carries HDMI**, decided by where the rear panel is
-      once the FPGA rotation is chosen. 8 balls from slack, preferring
-      adjacent A/B pair sites.
+- [ ] **Which edge carries HDMI** — now a capability question, not a
+      geometry one. PT caps video at 800×600 (1x gearing); PL/PR reach
+      1024×768 or 720p depending on speed grade, but both already carry a
+      wide bus. Blocked on the display-acceptance test in
+      [FAKE_TMDS.md](FAKE_TMDS.md): if 640×480 is accepted, PT is fine and
+      costs nothing.
+- [ ] **Speed grade of the LFE5U-85F**, which is recorded nowhere and now
+      has a video consequence: -6 tops out at 800×600, -7 at 1024×768, -8
+      at 720p.
 - [ ] **Bank VCCIO grouping** against the 3.3 V CPU bus and the video
       pairs — banks sharing a VCCIO rail must share a voltage.
       `Data/pinmap_ecp5_cabga381_power.csv` has the rails.

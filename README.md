@@ -102,7 +102,7 @@ binding constraint.
 rather than claimed. What has characterised it: check for the existing
 thing before building a new one; measure instead of arguing; and keep
 the corrections on the record — several conclusions in
-[docs/DECISIONS.md](docs/DECISIONS.md) reversed once evidence arrived,
+[docs/PLAN_OF_RECORD.md](docs/PLAN_OF_RECORD.md) reversed once evidence arrived,
 and the superseded reasoning still sits beside what replaced it.
 
 There is a lot of noise about what this technology is for. This is one

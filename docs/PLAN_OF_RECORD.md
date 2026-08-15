@@ -1,4 +1,4 @@
-# Design decisions
+# Plan of record
 
 The architecture record for Poor86: what is decided, what is open, and
 **why** — including the reasoning that was wrong on the way, because a
@@ -19,7 +19,40 @@ Two conventions carried throughout:
 Implementation and the simulation environment live in
 [vexrv-cpu-oss](https://github.com/pawlex/vexrv-cpu-oss).
 
-## Decided: one soldered CPU, SX-class bus, 3.3 V
+## Status: nothing here is built, and almost nothing is chosen
+
+**Read this first.** *Plan of record* is meant literally: this is the
+currently-agreed plan, and it is expected to change. It is not a
+specification and it is not a commitment.
+
+No hardware exists. Nothing is committed to, nothing is irreversible,
+and several conclusions in this document reversed within the
+conversation that produced them. What exists is a co-simulation, some
+measurements, and a set of things that have been **ruled out**.
+
+That is not a weak position. **Ruling something out is forward
+progress, and the more durable kind** — an elimination backed by a
+reason survives new information, where a selection made early usually
+does not. "PCI is out, because the bus is 16-bit and SeaBIOS supports
+non-PCI as a first-class configuration" stays true regardless of what
+comes next. "We will use serial PSRAM" would not.
+
+So the headings are labelled by what they actually are:
+
+| label | meaning |
+|---|---|
+| **Requirement** | given as a constraint, not derived here. Not up for re-derivation. |
+| **Eliminated** | ruled out, with a reason intended to outlive the moment |
+| **Direction** | the current preference and its reasoning. **Not settled.** |
+| **Design goal** | a property the machine should have |
+| **OPEN** | actively unresolved, and blocking something |
+
+A record is allowed to hold two positions in tension; a specification is
+not. **This is a record.** Where two sections disagree — and some do,
+marked *Contested* — that is the document working correctly, not a
+defect to be tidied away.
+
+## Requirement: one soldered CPU, SX-class bus, 3.3 V
 
 **There is no socket.** All parts are soldered down, and there is exactly
 one CPU — a **386/486 SL/SLC-class part in PGA100, 3.3 V VCC**.
@@ -99,18 +132,21 @@ underneath a dirty line the CPU has not flushed.
 
 Three ways out, in increasing order of cost:
 
-1. **Never assert `KEN#`.** External memory is uncacheable, the L1 is
+**A.** **Never assert `KEN#`.** External memory is uncacheable, the L1 is
    effectively disabled, coherency evaporates. Simplest possible chipset
    — and throws away most of what the 133 MHz part was bought for.
-2. **Cacheable but no burst.** Assert `KEN#`, answer each of the four
+**B.** **Cacheable but no burst.** Assert `KEN#`, answer each of the four
    transfers with a normal ready rather than `BRDY#`. Line fills cost 4
    cycles instead of a burst, but the cache works. Still needs a
    coherency answer.
-3. **Selective cacheability plus snooping.** `KEN#` asserted only for
-   regions no other agent writes, snooping via `AHOLD`/`EADS#` for the
-   rest. Fastest and hardest.
 
-Note (1) and (2) make the *coherency* question mostly disappear, which is
+**C.** **Selective cacheability plus snooping.** `KEN#` asserted only for
+   regions no other agent writes, snooping via `AHOLD`/`EADS#` for the
+   rest. Fastest and hardest. A behavioural sketch of this one exists —
+   see [BIU_MEMSS.md](BIU_MEMSS.md), **Concept C** — which is an
+   exploration, not a proposal.
+
+Note (A) and (B) make the *coherency* question mostly disappear, which is
 worth weighing: the difficulty is not evenly distributed across the
 options.
 
@@ -153,6 +189,130 @@ mitigations are cheap only if taken up front:
       needs none of this. **The cheap CPU has the cheap chipset and the
       fast CPU has the expensive one**, so the two variants are not
       equally far from done.
+
+### One BIU per CPU variant, sharing everything below it
+
+**The BIU is per-variant, not universal.** The SX-class BIU omits `KEN#`
+and burst because its CPU has neither; the Am5x86 BIU carries them from
+the start, because retrofitting burst restructures a front end rather
+than extending it.
+
+This follows from decisions already made rather than adding a new idea:
+
+- **The cache is already the abstraction boundary.** If DRAM width is
+  invisible *above* it, CPU bus protocol should be invisible *below* it.
+  Swappable BIUs is that same principle applied upward.
+- **Only one is instantiated per bitstream**, so two source modules cost
+  no area — the "bitstream difference, not a redesign" argument again.
+- **It matches the sequencing.** The SX BIU can be finished, verified and
+  shipping while the Am5x86 one is still being developed. A single
+  unified BIU could not be: the easy path would be blocked on the hard
+  one.
+- Each module is smaller, with a smaller state space, and is therefore
+  easier to verify than one conditional-laden module spanning both.
+
+#### The requirement this creates
+
+**Every BIU must present an identical interface to L2.** If the two hand
+the cache different contracts, the variation has not been eliminated —
+it has been pushed downstream into the cache, which then has to handle
+both. That buys two front ends *and* a more complicated back end, which
+is worse than either alternative.
+
+So the L2-facing interface is fixed **first**, and the BIUs conform to
+it. It must not emerge from whichever BIU happens to get written first.
+
+#### The divergence risk, which needs active care
+
+**Address decode, region cacheability and the posted-write buffer are
+common to both BIUs.** Copy-pasted into two modules they *will* diverge
+silently — one receives a fix the other does not, and the difference
+surfaces as a bug in whichever variant was not being tested that week.
+
+They want factoring into shared blocks, leaving each BIU as genuinely
+only the bus-protocol layer. **This is the specific thing that makes or
+breaks the multi-BIU model**, and it is a discipline rather than a
+design: nothing prevents the duplication except deciding not to.
+
+#### SX-class parts may have L1 — design for its presence
+
+**Settled: assume an SX-class CPU may carry an L1.** The reference for
+the capable end is the **TI 486SXLC2** — 386SX-pin-compatible, but with
+an on-die cache and clock doubling. So "SX-class" describes the *bus*,
+not the absence of a cache, and the SX BIU cannot assume there is
+nothing above it.
+
+That reopens the L1 write policy question on the cheap variant. SX-class
+caches differ by vendor in whether they are write-through or write-back,
+and the difference is not cosmetic: **write-through makes the coherency
+problem largely vanish on that variant; write-back reproduces the
+Am5x86's problem on the cheap CPU.** Unverified for the specific parts.
+
+##### Settled: only cached SX-class parts are designed for
+
+**Assume L1 is present.** The SX BIU is built for a CPU that has a
+cache, and no BIU variant is written for an uncached part.
+
+The 3.3 V requirement had largely decided this already. Uncached
+SX-class parts are overwhelmingly **5 V**, which puts them outside the
+supported set on voltage grounds before cache is considered at all — the
+Intel 386SX-16 among them. The lone 3.3 V uncached candidate is the
+**AMD 386SXL**, and holding a design decision open for a single part of
+uncertain availability is not a trade worth making.
+
+Nor would anyone reasonably choose an uncached 386SX-16 on this
+platform, given what else it can be built with.
+
+**What this buys:** `KEN#` and `FLUSH#` are always present, the SX BIU
+has one shape rather than two, and the multi-BIU set stays at two
+members rather than three.
+
+**What it does not do is foreclose anything.** The CPU is soldered, so a
+board is built for one part regardless; an uncached part would simply
+leave the cache control signals unused, which the BIU can be
+reconfigured for if it ever matters. This is "not designed for", not
+"cannot work".
+
+##### One tension worth naming, not reopening
+
+The requirement provenance records **two** machines as the reason the
+project exists: a 386SX as a first computer, and a 486SLC2 as the first
+upgrade. This decision keeps the SLC2 class and excludes the plain 386SX
+— on voltage and availability, which are real constraints rather than
+preferences.
+
+Recorded so it is a conscious trade rather than a silent drift. If the
+386SX specifically matters more than the reasoning above, this is the
+decision to revisit, and the cost of revisiting it is one more BIU
+variant.
+
+- [ ] **Compare the datasheets across the cached SX-class parts** — TI
+      486SXLC2, Cyrix 486SLC, IBM 486SLC2 — and establish whether their
+      pinouts actually agree. The original framing of this task was
+      "most advanced versus least advanced"; with the uncached parts out
+      of scope, the real question is whether the *cached* parts are
+      mutually compatible.
+
+      The trap remains renaming rather than addition: cache and
+      power-management control on these parts lands on pins the base
+      386SX pinout used differently or left unconnected. A pin that is
+      NC on one part and `FLUSH#` on another is invisible in a pin-count
+      comparison and fatal in layout.
+
+      **This is precisely the case the "route every CPU signal to the
+      FPGA" rule exists for.** The BIU can be told which part is fitted
+      at bitstream time; the PCB cannot be told anything after
+      fabrication.
+
+#### What this resolves
+
+- **The burst contradiction dissolves.** "Structured so bursts can be
+  added later" and "bursts change what the front end is" are both true,
+  scoped to different BIUs. Neither statement was wrong; the assumption
+  of a single BIU spanning both variants was.
+- **The SX cost becomes precise.** Not "2x or 1.2x" — **the BIU doubles,
+  the memory subsystem does not.** Two front ends, one cache, one LLC,
+  one memory controller.
 
 ### Two CPU options: a bitstream difference, and a footprint problem
 
@@ -233,7 +393,7 @@ the community's hands beats optimising a path nobody has yet used.
 - The GD5428 attach question is simplified too: there is only one bus for
   it to match.
 
-## Decided: no PCI (follows from the above)
+## Eliminated: PCI (follows from the above)
 
 **PCI is out.** It pushes real complexity onto the chipset — configuration
 space, BAR allocation, interrupt routing — for a device set that is
@@ -285,7 +445,7 @@ BIOS, so this costs a channel rather than a capability.
 - [ ] Drop `bios-geometry` from the reset-image plan; keep `bootorder`,
       which does not depend on PCI.
 
-## Video: HDMI on-board, framebuffer in external DRAM
+## Direction: HDMI on-board, framebuffer in external DRAM
 
 **On-board video is HDMI driven directly from the ECP5** ("fake TMDS" —
 differential pairs from the FPGA's own I/O, no transmitter chip). The
@@ -317,6 +477,76 @@ are separable questions.
 - [ ] **VLB is still on the table** for optional real VGA hardware, as a
       separate path from on-board HDMI. Specification pending; not
       recorded here.
+
+### OPEN: can HDMI be driven the cheap way, and does video share memory?
+
+Two questions, in order, because the first gates the second — and the
+second gates the memory part, which gates the cache.
+
+#### 1. Can "fake TMDS" from the ECP5 actually drive a display?
+
+Driving the DVI/HDMI differential pairs directly from FPGA outputs, with
+no transmitter chip. If this does not work the FPGA video path does not
+exist, a real CL-GD5428 becomes the only display option, and scanout
+leaves the memory subsystem entirely.
+
+**Starting points, links and the arithmetic are in
+[FAKE_TMDS.md](FAKE_TMDS.md).** Short version: the ULX3S is an ECP5-85F
+board that already does this over a TMDS-tolerant LVDS connector using
+the ECP5's own `ODDRX1F`, with two open implementations to work from —
+so **no custom hardware is needed to answer the question.**
+
+- [ ] Run the feasibility study. Not started, and not urgent *provided*
+      the decoupling below is taken.
+
+#### 2. If FPGA video exists, does its framebuffer share CPU memory?
+
+This is the coupling that makes the question urgent rather than
+cosmetic:
+
+| video path | framebuffer | scanout on the memory subsystem |
+|---|---|---|
+| CL-GD5428 | the chip's own DRAM | **none** |
+| FPGA to HDMI | external DRAM | **~135 MB/s** at 1024x768x24 |
+
+**If both paths are options on the same PCB, the shared case wins by
+default** — the board must support FPGA video whether or not a GD5428 is
+fitted, so the memory has to carry scanout regardless.
+
+The chain worth keeping in view: **which video output -> which memory
+part -> what the cache must do.** An apparently peripheral display
+decision sits upstream of the memory subsystem and the cache.
+
+#### Governing principle: do not design the memory subsystem around video
+
+**The video unit is a question mark, and the memory subsystem must not
+be designed around a question mark.** Everything downstream of the
+memory choice — the cache, the LLC, the thing this project is actually
+for — would then be resting on an unresolved display decision.
+
+Two ways out, and they are not exclusive:
+
+- **Collapse the question mark early.** Prove or disprove fake-TMDS
+  output on existing hardware, before it can constrain anything. Cheap,
+  and see the prior art below.
+- **Decouple permanently: give video its own memory channel.** Serial
+  parts make an extra channel nearly free in pins, and unpopulated
+  footprints cost nothing in BOM. The two clients then separate
+  entirely — CPU memory chosen for latency, video memory for bandwidth,
+  both video paths supportable, no arbitration, and **no dependency of
+  the memory subsystem on the video decision at all.**
+
+The second is the stronger answer, because it holds even if the video
+decision changes later. It reduces a coupled architectural question to a
+pin-assignment decision.
+
+- [ ] Decide whether video gets a dedicated channel. **This is a
+      pin-assignment decision and must be made before layout freezes**,
+      alongside the other items in that class.
+- [ ] With that decided, the memory subsystem can be specified against
+      the CPU alone — which is where the latency and four-word-ceiling
+      reasoning applies cleanly, rather than being contested by scanout
+      bandwidth.
 
 ### Two video paths, and they are alternatives worth keeping distinct
 
@@ -402,7 +632,7 @@ banked or linear framebuffer writes and would be fine.
       That makes the VGA BIOS another reset-vector-placed image.
 - [ ] Decide whether BitBLT is ever in scope, or explicitly out.
 
-## Decided in principle: sound synthesis is software
+## Direction: sound synthesis is software
 
 The SB16 / AdLib **register interface** is period-correct, like every
 other front end. The **synthesis is not RTL** — it runs as software on a
@@ -636,7 +866,7 @@ what bus. Nothing needs to change to accommodate this.
       bar; enough to reach a diagnostic prompt without any off-chip part
       is a higher and more useful one.
 
-## Decided: firmware configuration goes over fw_cfg, not CMOS
+## Direction: firmware configuration over fw_cfg, not CMOS
 
 Configuration reaches the BIOS through the fw_cfg port interface
 (`0x510`/`0x511`) rather than legacy RTC/CMOS registers. Implemented in
@@ -660,7 +890,7 @@ The CMOS device stays for time and the shutdown status byte.
       device presence, board revision. Currently only what SeaBIOS needs
       to size memory.
 
-## Decided: CMOS is a compatibility surface, populated at reset-exit
+## Direction: CMOS as a compatibility surface, populated at reset-exit
 
 fw_cfg (above) is the platform-to-firmware channel. **CMOS is a
 different thing and both are needed**: guest operating systems read CMOS
@@ -741,7 +971,7 @@ one at first — see the block storage section below.
 - [ ] Settle the config transport (SPI vs I2C) when the board
       controller interface is defined.
 
-## Decided: block storage is backed by the ESP32
+## Direction: block storage backed by the ESP32
 
 The board controller services the block-storage back end, as it does the
 network. The guest-visible device stays a period-correct IDE/ATA
@@ -1032,7 +1262,7 @@ Two things to watch:
       eject button, but the guest-visible behaviour still has to be
       right.
 
-## Decided: networking is NE2000, serviced by the ESP32
+## Direction: networking via NE2000, serviced by the ESP32
 
 The board controller provides the network. The guest-visible device is
 an **NE2000** — "good enough for DOS", which has packet drivers and
@@ -1069,6 +1299,28 @@ Open:
 - [ ] Packet buffer is 16 KiB — one EBR.
 
 
+
+## Nomenclature: cache levels
+
+**Canonical for this project. Any document using these terms differently
+is wrong and should be corrected, not reinterpreted.**
+
+| level | is | notes |
+|---|---|---|
+| **L1** | the CPU's **on-die** cache | **May or may not exist.** A plain 386SX has none; an SLC-class part has a small one; the Am5x86 has 16 KiB write-back. Where coherency problems live, because it is the one cache the chipset cannot see into. |
+| **L2** | the **chipset** cache | Inside the FPGA. May be direct-mapped or N-way set-associative. |
+| **L3** | **external** cache | Most likely direct-mapped, or some other form of streaming buffer. |
+| **LLC** | whichever level is **last before far memory** | A **role, not a number** — it may be L2, L3, or a distinct on-die structure. Use LLC in architecture text; name the mechanism (e.g. "stream buffer") only when describing a specific implementation. Concept C's LLC is an on-die stream buffer, and it has **no L3 at all**. |
+
+Two things follow that are easy to get wrong:
+
+- **"The cache" is ambiguous** in any sentence where both the CPU's and
+  the chipset's could be meant. The write-back coherency problem is an
+  **L1** problem; the associativity and BRAM-budget discussions are
+  **L2** problems.
+- **L1 being optional is a real design variable**, not a footnote. The
+  SX-class and Am5x86 paths differ in whether L1 exists at all, which
+  changes what L2 is compensating for.
 
 ## Design goal: modern memory — which makes the cache the central choice
 
@@ -1248,7 +1500,7 @@ tapping 8 bits for its own internal peripherals. Simpler and far
 cheaper in I/O. It was considered here and rejected, for the reason
 below.
 
-### Decided: the cache data array lives in FPGA block RAM
+### Direction: the cache data array lives in FPGA block RAM
 
 **The cache is N-way set associative, and its data array is on-chip.**
 That decision is what rules out the control-plane-only architecture
@@ -1299,6 +1551,39 @@ more on a non-blocking design than the capacity does.
 and with it the pin count M8SBC-486 avoided. That is the trade, taken
 deliberately.
 
+### The CPU is not the only client, and may not be the dominant one
+
+Everything above reasons about CPU access patterns. **The video decision
+puts the framebuffer in external DRAM, described as shared** — and if
+that is the same memory, the analysis above is being drawn from the
+*minority* client.
+
+| client | wants | rough traffic |
+|---|---|---|
+| CPU | low latency, small random accesses | ~10-20 MB/s at 33 MHz |
+| video scanout | sustained bandwidth, purely sequential | 1024x768x24 @ 60 Hz ≈ **135 MB/s** |
+
+Scanout is an order of magnitude larger, entirely sequential, and
+latency-insensitive — it is the one client that genuinely *wants*
+burst-oriented memory. If the two share a channel, the part gets chosen
+for video bandwidth and the CPU's latency problem becomes something
+solved on top of that choice rather than by it. Which is precisely what
+Concept C does.
+
+The figure scales hard with mode: 640x480x8 is ~18 MB/s, 1024x768x24 is
+~135 MB/s. So the decision depends on which modes are actually
+supported, not on video in the abstract.
+
+- [ ] **Decide whether the framebuffer shares guest memory or has its
+      own.** Separate lets CPU memory be chosen purely for latency and
+      video purely for bandwidth, decoupling two requirements that pull
+      in opposite directions — at the cost of a second part.
+      [BIU_MEMSS.md](BIU_MEMSS.md) notes a cheaper variant of the same
+      idea: a second *channel* rather than a second part, which serial
+      memory makes nearly free in pins.
+- [ ] Until that is settled, treat the latency-versus-bandwidth
+      conclusion above as provisional.
+
 ### And this is the real justification for deferring the memory subsystem
 
 The deferral is recorded elsewhere as discipline — not starting with the
@@ -1347,6 +1632,14 @@ four words; the setup simply dominates every access. Which means the
 usual instinct — pick the part with the best sustained bandwidth — is
 backwards here. **Low latency beats high bandwidth, and it is not close.**
 
+**Contested.** [BIU_MEMSS.md](BIU_MEMSS.md) (Concept C) argues the
+opposite: accept a high-latency serial part and ensure the CPU never
+sees the latency, hiding steady state behind L2 and transitions behind
+the LLC stream buffer. That buys fewer pins, lower cost per megabyte and
+a smaller package. The two positions cannot both be right, and the
+difference between them is an L2 hit-rate figure — measurable, and not
+yet measured. Do not treat the paragraph below as settled.
+
 That likely favours **parallel SRAM or parallel PSRAM**: more pins, no
 row activation to hide, access latency close to the CPU's own budget.
 And it likely disfavours HyperRAM, whose pin efficiency is attractive
@@ -1373,6 +1666,19 @@ A controller tuned for one is not tuned for the other — different width,
 different burst behaviour, and quite possibly a different cache design,
 since the question of whether the SX path gets a cache at all is
 separate.
+
+**Superseded — see "One BIU per CPU variant" above.** The cost is now
+stated precisely: the BIU doubles, the memory subsystem does not.
+Concept C's argument below is the reasoning that got there.
+
+**Concept C claims to largely dissolve this**, and the claim deserves
+weighing rather than dismissing. If the cache sits inside the FPGA as
+the boundary between CPU and far memory — with no external wiring on
+that interface — then the far memory's width stops mattering at the bus
+level, and the two CPU variants differ only in the cache's CPU-side port
+and tag width. That is a parameterised design rather than two designs,
+and it would make the cost nearer 1.2x than 2x. See
+[BIU_MEMSS.md](BIU_MEMSS.md), "CPU-variant independence".
 
 **The open question, and it is genuinely open:**
 

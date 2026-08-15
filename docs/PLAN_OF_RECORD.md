@@ -1314,9 +1314,10 @@ geometry alone.**
 
 It follows naturally from the rest of the design — the CPU is a 3.3 V
 part chosen so its bus reaches the FPGA without level shifters, and
-fake-TMDS video drives ordinary 3.3 V I/O. The one place 5 V appears is
-the mezzanine, which sits behind translating transceivers and therefore
-does not reach an FPGA bank at all.
+fake-TMDS video drives ordinary 3.3 V I/O. **The mezzanine is 3.3 V and
+not 5 V tolerant**, a hard specification, so no legacy voltage reaches
+the baseboard at all: a daughterboard needing 5 V translates on the
+daughterboard.
 
 Consequence for layout: the pin budget and bank allocation have no
 voltage dimension, and the level-shifter footprints recorded as

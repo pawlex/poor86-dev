@@ -107,15 +107,15 @@
   <!-- mezzanine -->
   <path class="bus" d="M696 448 V614"/>
   <text class="ts" x="712" y="500">raw 486 bus</text>
-  <text class="tt" x="712" y="516">unbuffered on baseboard</text>
+  <text class="tt" x="712" y="516">buffers optional, non-translating</text>
   <rect class="mezz" x="196" y="614" width="574" height="52" rx="3"/>
   <text class="tb" x="483" y="636" text-anchor="middle">MEZZANINE CONNECTOR — raw 486 bus</text>
-  <text class="ts" x="483" y="654" text-anchor="middle">replicated bus + 4 transceiver-control lines · no extra FPGA pins</text>
+  <text class="ts" x="483" y="654" text-anchor="middle">3.3 V only — NOT 5 V tolerant · replicated bus + 4 control lines</text>
 
   <!-- daughterboard -->
   <rect class="daugh" x="260" y="694" width="460" height="60" rx="4"/>
-  <text class="t" x="490" y="714" text-anchor="middle">daughterboard — bus transceivers · CL-GD5428 · own DRAM · VGA</text>
-  <text class="tt" x="490" y="731" text-anchor="middle">transceivers and level translation live HERE, not on the baseboard</text>
+  <text class="t" x="490" y="714" text-anchor="middle">daughterboard — CL-GD5428 · own DRAM · VGA</text>
+  <text class="tt" x="490" y="731" text-anchor="middle">translates its own voltage if it needs to — baseboard never provides 5 V</text>
   <text class="tt" x="490" y="746" text-anchor="middle">off the critical path; own schedule; own voltage domain</text>
 
   <!-- budget panel -->

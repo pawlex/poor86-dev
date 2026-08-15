@@ -183,21 +183,23 @@ a daughterboard.
 
 **Costs and cautions:**
 
-- **The transceivers live on the mezzanine, not the baseboard.** The
-  connector carries the raw 486 bus plus four lines to drive the
-  transceivers; buffering and level translation happen on the
-  daughterboard. Consequences:
-  - **The baseboard carries no transceiver BOM or area** — roughly seven
-    packages that would otherwise sit next to the connector.
-  - **The baseboard stays a single 3.3 V domain.** Translation is the
-    mezzanine's business, so **each daughterboard chooses its own
-    voltage** — 5 V for a period part, 3.3 V for something modern —
-    without the baseboard committing to either.
-  - **The bus is unbuffered on the baseboard side.** With no mezzanine
-    fitted the stub is just the connector and its short trace, unloaded.
-    With one fitted, the transceivers sit immediately at the far end, so
-    the loaded stub stays short. Keep the run to the connector short and
-    fold it into the conservative-routing rule.
+- **HARD SPEC: the mezzanine interface is 3.3 V and is NOT 5 V
+  tolerant.** This is a protection requirement, not a preference — a
+  daughterboard driving 5 V into the connector damages the baseboard.
+  It must appear on the connector pinout, in any mezzanine template, and
+  silkscreened at the connector.
+- **Any translation a daughterboard needs, it does itself.** There is no
+  requirement for 5 V at the mezzanine, and no 5 V is provided for
+  signalling. A 5 V period part is perfectly usable on a mezzanine — it
+  just translates on the mezzanine, where the part is.
+- **Baseboard transceivers are optional and non-translating.** Buffers
+  may sit between the bus and the connector, but they are 3.3 V on both
+  sides. What they buy is isolation rather than translation: the
+  connector stub and a daughterboard's loading are kept off the
+  CPU-side nets, and a faulty mezzanine cannot drag the CPU bus with it.
+- Without them the stub is just the connector and its short trace,
+  unloaded when nothing is fitted. Either way, keep the run to the
+  connector short and fold it into the conservative-routing rule.
 - A ~33 MHz bus through a board-to-board connector is well within reach:
   ISA ran at 8 MHz through card edges and VL-Bus at 33-50 MHz.
 - **Height and case clearance** on mini-ITX. A low-profile board-to-board
@@ -205,22 +207,21 @@ a daughterboard.
 - The connector itself is BOM and area whether or not a mezzanine is
   ever fitted.
 
-**The transceivers can also translate voltage — which is the larger
-consequence.**
+**The interface is 3.3 V throughout, and the daughterboard owns its own
+voltage problem.**
 
-The 3.3 V requirement exists so the CPU connects to the FPGA without
-level shifters. It does **not** have to constrain the mezzanine: with
-translating transceivers at the connector, **5 V period parts can live
-on the mezzanine** while the core of the machine stays 3.3 V throughout.
+The mezzanine connector is a **3.3 V, non-5 V-tolerant** interface. That
+is a hard specification: a daughterboard that drives 5 V into it damages
+the baseboard.
 
-That matters immediately — period Cirrus parts are 5 V devices, and the
-CL-GD5428's supply should be confirmed rather than assumed — and it
-matters more generally, because it makes the mezzanine a home for the
-entire 5 V period parts bin rather than only for parts that happen to
-exist in 3.3 V.
+This does not exclude 5 V period parts — period Cirrus devices among
+them — it relocates the responsibility. A daughterboard carrying a 5 V
+part translates on the daughterboard, next to the part, where the
+designer of that board can see the requirement. The baseboard never
+takes a position on anyone else's voltage.
 
-**So: a modern-voltage core with a level-translated legacy expansion
-bus.** Any period peripheral expecting a 486 or ISA-style bus can live
+**So: a 3.3 V machine with a 3.3 V expansion bus**, and any legacy
+voltage handled where the legacy part lives. Any period peripheral expecting a 486 or ISA-style bus can live
 there — video, sound, whatever comes later. That quietly restores
 expandability to a board with no expansion slots, at the cost of one
 connector and a handful of transceivers. It is also the same bus the

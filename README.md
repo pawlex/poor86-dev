@@ -13,10 +13,12 @@ window, that is what decides how a machine actually feels. It is
 specified and open end to end, with slack left in on purpose: room to
 grow, and room to tinker, if you are up for it.
 
-The reasoning behind every decision is written down — wrong turns
-included — so the work can be picked up, argued with and carried
-further. Not a weekend demo that impresses once and is never touched
-again.
+These are the constraints, and this is the best machine we could design
+inside them. The framework is laid, and the reasoning is written down —
+wrong turns included — because source records *what* was built, while
+only a decision record explains *why*. That is where the spirit of this
+project lives, and it is why the work would outlast us: **continuable by
+someone else, not merely forkable.**
 
 ---
 

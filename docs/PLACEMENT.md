@@ -164,7 +164,7 @@ and **PR** facing the CPU.
         |    SD                                           |
         |                                                 |
         |   ========== MEZZANINE CONNECTOR ==========     |
-        |     raw 486 bus + 4 transceiver-control lines   |
+        |     386SX bus, 3.3 V + 4 xcvr-control lines   |
         +=================================================+
             daughterboard: transceivers + level translation
                            CL-GD5428 + own DRAM + VGA

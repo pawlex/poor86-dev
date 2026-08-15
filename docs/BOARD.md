@@ -284,12 +284,39 @@ designer of that board can see the requirement. The baseboard never
 takes a position on anyone else's voltage.
 
 **So: a 3.3 V machine with a 3.3 V expansion bus**, and any legacy
-voltage handled where the legacy part lives. Any period peripheral expecting a 486 or ISA-style bus can live
+voltage handled where the legacy part lives. Any period peripheral expecting a 386SX- or ISA-style bus can live
 there — video, sound, whatever comes later. That quietly restores
 expandability to a board with no legacy expansion slots, at the cost of one
 connector and a handful of transceivers. It is also the same bus the
 soft core drives when no hard CPU is fitted, so mezzanine peripherals
 work on both paths without special handling.
+
+#### And that makes the mezzanine the upgrade path, deliberately cheaply
+
+Keeping translation off the baseboard has a consequence beyond the BOM:
+it makes the connector **a plain 3.3 V edge interface with no opinions**,
+which is the cheapest possible thing to build against.
+
+A daughterboard is therefore a **two-layer board from any low-cost PCB
+house** — not a project in its own right. The baseboard imposes only the
+bus and the 3.3 V limit, so the designer picks their own voltage domain,
+their own parts and their own rules, and pays for translation only if
+they actually need it. Translating centrally would have chosen for
+everyone, and charged every daughterboard for a 5 V capability most of
+them will never use.
+
+**What that makes tractable is not only period video.** Another FPGA with
+its own memory, an accelerator, a peripheral nobody has proposed yet —
+each is an edge-connector board and a bitstream, with no change to the
+machine underneath and no permission required from this repository.
+
+And it can be developed **before any board exists.** The co-simulation in
+[vexrv-cpu-oss](https://github.com/pawlex/vexrv-cpu-oss) runs the chipset
+against real RTL, so a mezzanine can be written, driven and debugged in
+simulation first. The testbench is published rather than left as an
+exercise — which is the same reasoning as the rest of the project: the
+next person should inherit the working starting point, not reconstruct
+it.
 
 - [ ] Decide whether the mezzanine is specified as a **general
       peripheral bus** rather than a video-specific connector. Costs

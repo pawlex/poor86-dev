@@ -35,6 +35,20 @@ cheapest options are nearly free and are the ones most often skipped:
 |---|---|---|
 | **Route it** | a track | unused CPU control signals, spare FPGA I/O |
 | **Cuttable bridge + series footprint** | **board area only, zero BOM** | mezzanine isolation, anywhere a part might later need inserting in series |
+
+> **DNP has a package-class limit, and it is easy to miss.** Leaving a
+> footprint unpopulated only defers a decision if **a person can actually
+> place the part later.** That holds for passives, SOT-23 and SOIC. It
+> does **not** hold for fine-pitch QFN or BGA, which need fab placement,
+> hot air and a stencil — for most people building a single board, an
+> unpopulated QFN is not an option kept open, it is **an option
+> foreclosed** while still paying for the area.
+>
+> So the rule splits by package: **hand-placeable parts may be DNP;
+> fine-pitch parts are decided at layout and populated at the factory, or
+> they are not on the board at all.** Where such a part is cheap and
+> factory-assembled anyway, populating it is the *conservative* choice —
+> the opposite of the instinct that applies to everything else here.
 | **Footprint, unpopulated (DNP)** | board area only | second memory channel, GD5428, alternate power entry |
 | **Populate it anyway** | a few dollars, plus area | a part whose need is likely but unproven |
 | **Respin** | everything | — |

@@ -275,9 +275,13 @@ actually wants.
   or not it is used. That does not reverse the EDID-from-ROM decision, but
   it does mean the 0 Ω bodge pads now sit on a part already doing the
   translation.
-- **"Required, not DNP" is right here.** The DNP pattern elsewhere buys
-  optional capability. This is core signal path, and at JLC assembly
-  prices there is nothing to defer.
+- **"Required, not DNP" is forced, not preferred.** The DNP pattern
+  elsewhere assumes a person can place the part later with an iron. **An
+  HVQFN32 cannot be added as a rework by most people building one board**
+  — it needs fab placement, hot air and a stencil. Leaving it unpopulated
+  would not defer the decision, it would *foreclose* it. So it is decided
+  now and placed at the factory, which at JLC assembly prices costs
+  nothing to commit to.
 
 **Open — verify before layout.** NXP's documentation was not reachable
 during this write-up, so three things are recorded as unconfirmed rather

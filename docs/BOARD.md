@@ -694,6 +694,50 @@ not a rework.**
 **G9 — CPU footprints**: one variant per board, or both present on a
 170 mm square.
 
+**G10 — HDMI front end: direct, or via a `PTN3365`?**
+([FAKE_TMDS.md](FAKE_TMDS.md) — full analysis and part numbers there.)
+
+**Blocks PCB.** The two paths differ in placement, routing and BOM, so it
+cannot be deferred past layout.
+
+*The summary:* a `PTN3365` converts the FPGA's emulated differential into
+**compliant DVI/HDMI output**, which matters more here than usual —
+**with EDID dropped there is no runtime fallback, so a refused mode is a
+blank screen.** It is also **back-power safe** against a powered monitor
+on an unpowered board.
+
+*But it is additive, not substitutive.* The passive count is unchanged —
+the eight resistors merely shift from biasing to attenuating — a
+system-level **ESD array is required either way**, and it adds a QFN32
+plus a `REXT`. It also needs **series attenuation designed and
+simulated**, because its inputs are DisplayPort/PCIe-class low-swing and
+an `LVCMOS33D` pair is several times that. That conditioning is what
+**unrolls the elegance** of the direct approach, whose whole appeal is an
+FPGA driving a monitor through eight capacitors and nothing else.
+
+*Decides:* the HDMI front end, its board area, and whether a fine-pitch
+part joins the fab-placement list.
+
+*Decided by — in order:*
+
+1. **Measurement.** The Tang Nano 9K runs the direct path on hardware
+   already here. If it drives the target displays at the target modes,
+   the cheap path is **earned with evidence** rather than hoped for.
+2. **Room and time.** If the measurement is ambiguous, this is the
+   tiebreaker, and it is a *resource* judgement rather than a
+   philosophical one: **does the layout have the area near the rear I/O,
+   and the schedule for the extra controlled-impedance routing and the
+   attenuator simulation?** If yes, fit it. If the board is tight or the
+   spin is due, the direct path is proven on two reference designs and
+   is not a gamble.
+
+*Standing recommendation if unresolved:* **populate it on the first
+prototype.** The first board's job is to work, so that when something is
+broken it is known not to be video. Removing it later is a documented,
+evidence-backed decision; adding it later is a spin.
+
+*Depends on:* G2.
+
 ### Why these come first
 
 Every one is hours-to-days of work. Between them they determine the

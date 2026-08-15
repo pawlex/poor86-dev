@@ -711,6 +711,23 @@ From `PCB/AsicPowerGnd.kicad_sch` — this is what exists, not a proposal.
 | rails | **+3V3, +2V5, +1V1** from +5 V |
 | adjust | **JP6 solder jumper — "Closed = 3.3 V, Open = 3.5 V"** |
 
+### +5 V exists on the board — it just never touches the FPGA
+
+**Distinguish the rail from the domain.** The board takes +5 V in and
+derives +3V3, +2V5 and +1V1 from it, so **a 5 V rail is available** for
+connectors, USB VBUS, an HDMI sink's +5 V pin, fans, and anything else
+that wants it.
+
+**What is prohibited is a 5 V *signal* reaching an FPGA pin.** The ECP5
+is 3.3 V and not 5 V tolerant. Every crossing needs translation or
+isolation, and the burden sits with whatever needs 5 V — the same
+principle already applied at the mezzanine.
+
+This matters because *"no 5 V on the board"* is wrong and would rule out
+things that are perfectly fine — powering USB, feeding a display's +5 V
+pin. **"Nothing in the 5 V domain connects directly to the FPGA"** is the
+actual constraint, and it is the one to state in reviews.
+
 The schematic annotations give the feedback maths for a 0.6 V reference:
 
 ```

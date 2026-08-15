@@ -111,9 +111,10 @@ not have to be.
 
 - **DDC is out entirely — no I²C master, and the pins are not brought
   out to the connector.** `SCL`, `SDA` and `CEC` are left unconnected at
-  the HDMI connector. That removes the I²C master in RTL, the 5 V
-  level-shifting domain on an otherwise 3.3 V board, and the runtime
-  negotiation path.
+  the HDMI connector. That removes the I²C master in RTL, a **5 V-to-3.3 V
+  crossing into the FPGA** (see
+  [BOARD.md](BOARD.md) — the board has a 5 V rail; what it will not have
+  is 5 V reaching an FPGA pin), and the runtime negotiation path.
 - **EDID — the data structure — stays in the design**, supplied from **a
   small ROM** rather than read off the display.
 
@@ -149,10 +150,12 @@ spin.**
 Applies to `SCL`, `SDA`, `CEC` and `HPD`.
 
 > **The 3.3 V rule still holds on the bodge path.** Any pull-ups added
-> during such a rework go to **3.3 V, never 5 V** — the board is not 5 V
-> tolerant and that does not relax for a bodge. DDC is open-drain, so
-> 3.3 V pull-ups work with most sinks; the sink's own EEPROM does not
-> care what voltage the bus idles at.
+> during such a rework go to **3.3 V, never 5 V.** A 5 V rail *is*
+> available on the board, which is exactly what makes this worth writing
+> down — the temptation during rework is to reach for the nearest supply,
+> and the far end of that bodge is an FPGA pin that is not 5 V tolerant.
+> DDC is open-drain, so 3.3 V pull-ups work with most sinks; the sink's
+> own EEPROM does not care what voltage the bus idles at.
 
 > **Not the same pins:** `+5V` (pin 18) and `HPD` (pin 19) are separate
 > from DDC and serve a different purpose — a sink draws that rail and
@@ -358,10 +361,10 @@ question the datasheet cannot answer.
 
 ### Open
 
-- [ ] **Decide whether `+5V` (pin 18) is populated**, independently of
-      the DDC decision above. Some sinks want the rail present before they
-      treat a source as connected. It is a power pin, so the 0 Ω bodge
-      treatment does not cover it — decide it on its own merits.
+- [x] **`+5V` (pin 18) — populate it.** The board has a 5 V rail, the pin
+      is connector-only and never reaches the FPGA, and some sinks want it
+      present before treating a source as connected. No reason to withhold
+      it.
 - [ ] **Confirm `HPD` (pin 19) is worth a 0 Ω pad**, given it is now the
       only way to know a display is attached at all. Cheap to leave in;
       the question is only whether anything would ever consume it.

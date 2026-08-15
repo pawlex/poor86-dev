@@ -198,15 +198,31 @@ a daughterboard.
   sides. What they buy is isolation rather than translation: the
   connector stub and a daughterboard's loading are kept off the
   CPU-side nets, and a faulty mezzanine cannot drag the CPU bus with it.
-- **The part is an `xx245` octal bus transceiver — footprint present,
-  DNP by default, bypassed by a cuttable bridge.** Since whether
-  isolation is needed is open, the mezzanine path carries the footprint
+- **Survivability: `xx245` octal bus transceiver — footprint present,
+  DNP by default, bypassed by a cuttable bridge.** Filed under
+  survivability rather than performance: whether the mezzanine path needs
+  isolation is **open**, and the cost of being wrong is a respin —
+  hundreds of dollars and weeks of overseas transit — against a cost of
+  being right of zero. The mezzanine path therefore carries the footprint
   in series with a bridge that shorts across it:
-  - **default** — bridge intact, `xx245` not fitted, signal passes
-    straight through. Nothing to assemble, nothing to decide before the
-    boards are made.
-  - **if isolation proves necessary** — cut the bridges and populate the
-    `xx245`s.
+  **Invariant: exactly one of the two is present. Bridge OR transceiver,
+  never both.**
+
+  | | bridge | `xx245` |
+  |---|---|---|
+  | **default** | intact | DNP |
+  | **isolated** | **cut** | stuffed |
+
+  Default costs nothing to assemble and requires no decision before the
+  boards are made. **If you stuff the 245, you cut the bridge** — the two
+  are alternatives, not layers.
+
+  **Getting that wrong is worse than getting no isolation.** A stuffed
+  `xx245` with the bridge left intact is a transceiver driving into a
+  short across its own output. The signal still passes — through the
+  bridge — so the board appears to work while the isolation silently does
+  not exist, and the transceiver is fighting a copper short every time it
+  drives. Note it on the silkscreen next to the bridges, not only here.
 
   Roughly **nine packages** cover the bus at 8 bits each: 4 for the 32
   data lines, 3 for `A2-A23` under the pin-saver option, 2 for control.

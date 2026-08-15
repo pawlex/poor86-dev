@@ -105,6 +105,22 @@ and both chose **series capacitors in the 100–220 nF band.** That is the
 shared ESD clamp array — eight lines, so two four-channel parts. Plus DDC
 pull-ups, which are not optional if EDID is ever to be read.
 
+> **Prototype build note — use a large footprint for the 49.9 Ω
+> pull-ups.** On prototype boards these eight resistors should be an
+> oversized package — 0805 or 1206 rather than 0402 — specifically so
+> they are **easy to lift with an iron.**
+>
+> The pull-up is the one part of this front end taken on the authority of
+> someone else's board rather than measured on ours. If it turns out to
+> be wrong here — wrong value, or unwanted against a particular sink —
+> the fix is removing or changing eight parts on assembled hardware.
+> Making that a five-minute rework instead of a careful one costs nothing
+> at prototype stage and can be dropped to the small package once the
+> value is confirmed.
+>
+> Same reasoning as the DNP footprints and cuttable bridges elsewhere in
+> [BOARD.md](BOARD.md): file it under survivability.
+
 ### How the output is actually coupled — capacitors, not resistors
 
 **Correction.** Earlier notes here described the interface as a resistor

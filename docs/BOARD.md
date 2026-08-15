@@ -694,6 +694,40 @@ Those findings stand on their own. The part choices around them do not.
       study and what is redrawn. The value is in the annotations and the
       worked details, not in the placement.
 
+## Clocking: a single 50 MHz oscillator on GPLL0
+
+**One 50 MHz oscillator, into a GPLL0 input.** Everything else is
+synthesised on-chip — CPU bus clock, memory clock, pixel clock — so the
+board carries one clock source rather than several. That is the right
+trade on a pin-constrained design: a dedicated PLL input costs one pin
+and removes the need for separate oscillators and their pins elsewhere.
+
+**It must land on a dedicated GPLL input**, not general I/O. There are
+four GPLL0 inputs, one per die corner:
+
+| corner | true (T) | comp (C) | bank | edge |
+|---|---|---|---|---|
+| upper-left | **A4** | A5 | 7 | PL |
+| lower-left | **P3** | P4 | 6 | PL |
+| upper-right | **C18** | D17 | 2 | PR |
+| lower-right | **U16** | T17 | 3 | PR |
+
+(GPLL1 also exists at the two upper corners on PT — A6/B6 in bank 0 and
+A19/B20 in bank 1.)
+
+**Cost is one pin** for a single-ended oscillator: drive the **T** input
+and leave the C pin free. Two only if a differential source is ever used.
+
+- [ ] **Pick the corner.** A left-hand GPLL0 — **A4** or **P3** — puts
+      the PLL nearest the memory on PL, which is where the timing-critical
+      logic will be. PL also has the slack: 52 of 65 balls allocated. The
+      right-hand corners sit under the CPU bus, which is the busier edge.
+- [ ] **Check the pixel clock is synthesisable from 50 MHz.** 33 MHz for
+      the CPU bus is a straightforward ratio, but exact VGA pixel clocks
+      are not — 25.175 MHz from 50 MHz needs a fractional ratio the PLL
+      may only approximate. Displays generally tolerate a small error,
+      but this belongs in gate G2 rather than being assumed.
+
 ## Reserved resources
 
 - **ECP5 bank 8 — configuration and DFx only.** 13 balls, all

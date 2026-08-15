@@ -99,6 +99,12 @@
   <text class="ts" x="540" y="258">4 diff pairs</text>
   <text class="tt" x="540" y="274">from PT slack</text>
 
+  <!-- oscillator -->
+  <rect class="part" x="336" y="196" width="112" height="44" rx="3"/>
+  <text class="tb" x="392" y="216" text-anchor="middle">50 MHz osc</text>
+  <text class="ts" x="392" y="232" text-anchor="middle">to GPLL0</text>
+  <path class="bus" d="M392 240 V300" stroke-dasharray="4 3"/>
+
   <!-- SD -->
   <rect class="part" x="196" y="524" width="120" height="52" rx="3"/>
   <text class="tb" x="256" y="546" text-anchor="middle">SD card</text>

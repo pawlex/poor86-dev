@@ -24,7 +24,7 @@ Counted from the datasheet-derived CSVs, not estimated.
 | SD card, 4-bit | 6 |
 | ESP32 link | 8 |
 | Mezzanine transceiver control | 4 |
-| Clocks, reset, config, misc | 8 |
+| Clocks (50 MHz osc on GPLL0), reset, config, misc | 8 |
 | **total** | **190** |
 | available, CABGA381 PIO | 205 |
 | **spare** | **15** |

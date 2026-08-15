@@ -133,6 +133,10 @@ geometry alone.
 
 ## Board floorplan
 
+![placement](placement.svg)
+
+*(ASCII version below, for diffing.)*
+
 Relative placement only. Rear I/O at the top. The FPGA is oriented with
 **PT toward the rear** (so HDMI has a short run to its connector), **PB
 downward** toward the SPI flash it must serve, **PL** facing the memory

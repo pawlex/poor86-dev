@@ -107,7 +107,7 @@
   <!-- mezzanine -->
   <path class="bus" d="M696 448 V614"/>
   <text class="ts" x="712" y="500">486 bus · 3.3 V</text>
-  <text class="tt" x="712" y="516">series xcvr footprints +</text>
+  <text class="tt" x="712" y="516">xx245 footprints, DNP +</text>
   <text class="tt" x="712" y="530">cuttable bridges (bypassed)</text>
   <rect class="mezz" x="196" y="614" width="574" height="52" rx="3"/>
   <text class="tb" x="483" y="636" text-anchor="middle">MEZZANINE CONNECTOR — raw 486 bus</text>

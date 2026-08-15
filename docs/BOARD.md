@@ -198,23 +198,29 @@ a daughterboard.
   sides. What they buy is isolation rather than translation: the
   connector stub and a daughterboard's loading are kept off the
   CPU-side nets, and a faulty mezzanine cannot drag the CPU bus with it.
-- **Provide them as cuttable bridges in series with unpopulated
-  footprints.** Since whether isolation is needed is open, the mezzanine
-  path carries a **series transceiver footprint bypassed by a cuttable
-  bridge**:
-  - **default** — bridge intact, signal passes straight through, no
-    parts fitted, nothing to assemble
+- **The part is an `xx245` octal bus transceiver — footprint present,
+  DNP by default, bypassed by a cuttable bridge.** Since whether
+  isolation is needed is open, the mezzanine path carries the footprint
+  in series with a bridge that shorts across it:
+  - **default** — bridge intact, `xx245` not fitted, signal passes
+    straight through. Nothing to assemble, nothing to decide before the
+    boards are made.
   - **if isolation proves necessary** — cut the bridges and populate the
-    transceivers
-  The cost is board area and nothing else: no BOM, no assembly step, and
-  no decision required before the boards are made. It is the cheapest
-  entry on the cost hierarchy above.
+    `xx245`s.
 
-  Two practical notes. **Cutting is per signal**, so a buffered bus of
-  ~56 lines means ~56 cuts — tedious, and worth laying the bridges out
-  in accessible rows rather than scattering them under parts. And a cut
-  is **reversible only by soldering**, so treat it as a one-way decision
-  per board.
+  Roughly **nine packages** cover the bus at 8 bits each: 4 for the 32
+  data lines, 3 for `A2-A23` under the pin-saver option, 2 for control.
+
+  **One part number across all three groups is deliberate.** Address and
+  control are unidirectional and would strictly want an `xx244` buffer,
+  but using `xx245` throughout with direction strapped costs nothing
+  electrically and keeps the BOM and the assembly to a single line item.
+
+  Two practical notes. **Cutting is per signal**, so a fully buffered bus
+  means on the order of seventy cuts — tedious, and worth laying the
+  bridges out in accessible rows rather than scattering them under
+  parts. And a cut is **reversible only by soldering**, so treat it as a
+  one-way decision per board.
 - Without them the stub is just the connector and its short trace,
   unloaded when nothing is fitted. Either way, keep the run to the
   connector short and fold it into the conservative-routing rule.

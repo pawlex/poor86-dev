@@ -396,6 +396,56 @@ swing"*, so treat it as required.
   shifted — so every timing question stays upstream, where the gearing
   analysis above already put it.
 
+##### Takeaway: the `PTN3365` is additive, not substitutive
+
+**It buys compliance at the monitor and costs elegance at the FPGA.**
+Stated plainly, because the earlier framing here read as if one part
+replaced a pile of others, and the datasheet does not support that.
+
+| | **direct — the "poor" path** | **via `PTN3365`** |
+|---|---|---|
+| coupling caps | 8 | 8 |
+| 8-resistor group | pull-ups / bias | **attenuators** |
+| `REXT` | — | 1 |
+| level shifter IC | — | **1, QFN32, factory-only** |
+| **ESD array** | **1 — required** | **1 — still required** |
+
+**The passive count does not change.** The eight resistors merely change
+job — from biasing the line, to attenuating a CMOS output down into a
+DisplayPort-class receiver. **The ESD array is required either way**,
+because a user-accessible connector needs system-level protection
+regardless of what drives it. So the `PTN3365` removes nothing from the
+board; it adds an IC and a reference resistor.
+
+**And it does dull the idea.** The appeal of the direct approach is that
+an FPGA talks to a monitor through eight capacitors and nothing else.
+Adding a stage whose *input* needs conditioning trades that away — and
+the irony is that both paths face the same electrical problem, driving
+CMOS into a 50 Ω termination. The `PTN3365` does not remove that problem;
+it **relocates** it, and pays an IC for a compliant result on the far
+side.
+
+**What it genuinely buys**, and this is not small:
+
+- **Compliant DVI/HDMI output** rather than an emulation hoping to be
+  accepted — which matters more here than usual, because with EDID gone
+  there is no runtime fallback and a refused mode is a blank screen.
+- **Back-power safety** against a powered monitor on an unpowered board.
+- **Removal of a risk class** before a board spin, on a board whose author
+  estimates spins in months.
+
+**So it is a risk-versus-elegance trade, and it should be settled by
+measurement rather than taste** — see the display-acceptance gate below.
+The Tang Nano 9K runs the direct path, in emulated differential through
+AC coupling, on hardware already here. **If it drives the target displays
+at the target modes, the cheap path is earned with evidence** and the
+`PTN3365` can be dropped in a later spin with the reasoning on record.
+If it is marginal, the trade has paid for itself.
+
+The recommendation is unchanged and deliberately conservative: **populate
+it on the first prototype regardless.** The first board's job is to work,
+so that when something is broken it is known not to be video.
+
 #### The `TPD12S521` collapses this to one part
 
 A single-chip HDMI **transmitter-side** port protection and interface IC,

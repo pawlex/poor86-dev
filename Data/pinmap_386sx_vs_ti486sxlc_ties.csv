@@ -1,0 +1,9 @@
+pin,ti486sxlc,intel386sx,tie_required,fitted_0R_connects_to,omitted_DNP
+20,SMADS#,NC,YES,FPGA,open - Intel requires N/C left unconnected
+29,KEN#,NC,YES,FPGA,open - Intel requires N/C left unconnected
+30,FLUSH#,NC,YES,FPGA,open - Intel requires N/C left unconnected
+31,A20#,NC,YES,FPGA,open - Intel requires N/C left unconnected
+43,SUSP#,NC,YES,FPGA,open - Intel requires N/C left unconnected
+44,SUSPA#,NC,YES,FPGA,open - Intel requires N/C left unconnected
+45,VCC5,NC,YES,+5V rail,open - Intel requires N/C left unconnected
+47,SMI#,NC,YES,FPGA,open - Intel requires N/C left unconnected

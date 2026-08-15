@@ -1,0 +1,101 @@
+pin,name,group
+1,D0,Data
+2,VSS,Ground
+3,HLDA,Control
+4,HOLD,Control
+5,VSS,Ground
+6,NA#,Control
+7,READY#,Control
+8,VCC,Power
+9,VCC,Power
+10,VCC,Power
+11,VSS,Ground
+12,VSS,Ground
+13,VSS,Ground
+14,VSS,Ground
+15,CLK2,Control
+16,ADS#,Control
+17,BLE#,Control
+18,A1,Address
+19,BHE#,Control
+20,NC,No connect
+21,VCC,Power
+22,VSS,Ground
+23,M/IO#,Control
+24,D/C#,Control
+25,W/R#,Control
+26,LOCK#,Control
+27,NC,No connect
+28,FLT#,Control
+29,NC,No connect
+30,NC,No connect
+31,NC,No connect
+32,VCC,Power
+33,RESET,Control
+34,BUSY#,Control
+35,VSS,Ground
+36,ERROR#,Control
+37,PEREQ,Control
+38,NMI,Control
+39,VCC,Power
+40,INTR,Control
+41,VSS,Ground
+42,VCC,Power
+43,NC,No connect
+44,NC,No connect
+45,NC,No connect
+46,NC,No connect
+47,NC,No connect
+48,VCC,Power
+49,VSS,Ground
+50,VSS,Ground
+51,A2,Address
+52,A3,Address
+53,A4,Address
+54,A5,Address
+55,A6,Address
+56,A7,Address
+57,VCC,Power
+58,A8,Address
+59,A9,Address
+60,A10,Address
+61,A11,Address
+62,A12,Address
+63,VSS,Ground
+64,A13,Address
+65,A14,Address
+66,A15,Address
+67,VSS,Ground
+68,VSS,Ground
+69,VCC,Power
+70,A16,Address
+71,VCC,Power
+72,A17,Address
+73,A18,Address
+74,A19,Address
+75,A20,Address
+76,A21,Address
+77,VSS,Ground
+78,VSS,Ground
+79,A22,Address
+80,A23,Address
+81,D15,Data
+82,D14,Data
+83,D13,Data
+84,VCC,Power
+85,VSS,Ground
+86,D12,Data
+87,D11,Data
+88,D10,Data
+89,D9,Data
+90,D8,Data
+91,VCC,Power
+92,D7,Data
+93,D6,Data
+94,D5,Data
+95,D4,Data
+96,D3,Data
+97,VCC,Power
+98,VSS,Ground
+99,D2,Data
+100,D1,Data

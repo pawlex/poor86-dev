@@ -104,20 +104,19 @@
   <text class="tb" x="256" y="546" text-anchor="middle">SD card</text>
   <text class="ts" x="256" y="564" text-anchor="middle">6 pins</text>
 
-  <!-- transceivers + mezzanine -->
-  <rect class="part" x="620" y="524" width="150" height="46" rx="3"/>
-  <text class="t" x="695" y="545" text-anchor="middle">bus transceivers</text>
-  <text class="ts" x="695" y="561" text-anchor="middle">level translate 3.3 ↔ 5 V</text>
-  <path class="bus" d="M696 448 V524"/>
+  <!-- mezzanine -->
+  <path class="bus" d="M696 448 V614"/>
+  <text class="ts" x="712" y="500">raw 486 bus</text>
+  <text class="tt" x="712" y="516">unbuffered on baseboard</text>
   <rect class="mezz" x="196" y="614" width="574" height="52" rx="3"/>
-  <text class="tb" x="483" y="636" text-anchor="middle">MEZZANINE CONNECTOR — 486 bus, buffered</text>
-  <text class="ts" x="483" y="654" text-anchor="middle">replicated bus + transceiver control · no extra FPGA pins</text>
-  <path class="bus" d="M695 570 V614"/>
+  <text class="tb" x="483" y="636" text-anchor="middle">MEZZANINE CONNECTOR — raw 486 bus</text>
+  <text class="ts" x="483" y="654" text-anchor="middle">replicated bus + 4 transceiver-control lines · no extra FPGA pins</text>
 
   <!-- daughterboard -->
-  <rect class="daugh" x="300" y="694" width="380" height="52" rx="4"/>
-  <text class="t" x="490" y="716" text-anchor="middle">daughterboard — CL-GD5428 + own DRAM + VGA</text>
-  <text class="tt" x="490" y="734" text-anchor="middle">off the critical path; own schedule</text>
+  <rect class="daugh" x="260" y="694" width="460" height="60" rx="4"/>
+  <text class="t" x="490" y="714" text-anchor="middle">daughterboard — bus transceivers · CL-GD5428 · own DRAM · VGA</text>
+  <text class="tt" x="490" y="731" text-anchor="middle">transceivers and level translation live HERE, not on the baseboard</text>
+  <text class="tt" x="490" y="746" text-anchor="middle">off the critical path; own schedule; own voltage domain</text>
 
   <!-- budget panel -->
   <text class="tb" x="24" y="470">pin budget</text>
@@ -128,7 +127,7 @@
   <text class="ts" x="24" y="564">NOR + PSRAM CS         7</text>
   <text class="ts" x="24" y="582">SD                     6</text>
   <text class="ts" x="24" y="600">ESP32                  8</text>
-  <text class="ts" x="24" y="618">transceiver ctrl       4</text>
+  <text class="ts" x="24" y="618">xcvr control (to mezz)  4</text>
   <text class="ts" x="24" y="636">clocks / misc          8</text>
   <line x1="24" y1="646" x2="132" y2="646" stroke="#999"/>
   <text class="tb" x="24" y="664">total            182</text>

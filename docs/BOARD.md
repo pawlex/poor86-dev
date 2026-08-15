@@ -183,12 +183,21 @@ a daughterboard.
 
 **Costs and cautions:**
 
-- **Buffered, not stubbed.** Because the mezzanine sits behind bus
-  transceivers rather than tapping the bus directly, it does not load
-  the CPU-side nets — and with output-enable deasserted an unpopulated
-  mezzanine is electrically absent. That removes the signal-integrity
-  concern a direct tap would have created. Cost is roughly seven
-  transceiver packages (data, address, control) plus their board area.
+- **The transceivers live on the mezzanine, not the baseboard.** The
+  connector carries the raw 486 bus plus four lines to drive the
+  transceivers; buffering and level translation happen on the
+  daughterboard. Consequences:
+  - **The baseboard carries no transceiver BOM or area** — roughly seven
+    packages that would otherwise sit next to the connector.
+  - **The baseboard stays a single 3.3 V domain.** Translation is the
+    mezzanine's business, so **each daughterboard chooses its own
+    voltage** — 5 V for a period part, 3.3 V for something modern —
+    without the baseboard committing to either.
+  - **The bus is unbuffered on the baseboard side.** With no mezzanine
+    fitted the stub is just the connector and its short trace, unloaded.
+    With one fitted, the transceivers sit immediately at the far end, so
+    the loaded stub stays short. Keep the run to the connector short and
+    fold it into the conservative-routing rule.
 - A ~33 MHz bus through a board-to-board connector is well within reach:
   ISA ran at 8 MHz through card edges and VL-Bus at 33-50 MHz.
 - **Height and case clearance** on mini-ITX. A low-profile board-to-board

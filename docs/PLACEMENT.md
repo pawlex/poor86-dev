@@ -162,11 +162,11 @@ and **PR** facing the CPU.
         |                                                 |
         |    SD                                           |
         |                                                 |
-        |   [bus transceivers]                            |
         |   ========== MEZZANINE CONNECTOR ==========     |
-        |              486 bus, level translated          |
+        |     raw 486 bus + 4 transceiver-control lines   |
         +=================================================+
-                   daughterboard: CL-GD5428 + own DRAM + VGA
+            daughterboard: transceivers + level translation
+                           CL-GD5428 + own DRAM + VGA
 ```
 
 ### Rationale
@@ -181,8 +181,9 @@ and **PR** facing the CPU.
   constraint.
 - **HDMI from the slack on whichever big edge faces the rear panel**,
   preferring adjacent A/B pair sites for skew.
-- **Mezzanine at the board edge**, behind transceivers, so a daughterboard
-  can overhang without fouling anything and the stubs stay short.
+- **Mezzanine at the board edge.** The transceivers are on the
+  daughterboard, so the baseboard passes the raw bus to the connector and
+  keeps a single 3.3 V domain.
 - **ESP32 near the rear** for antenna keep-out, away from the CPU bus.
 - **SD wherever slack allows** — few pins, latency-insensitive.
 - **The CPU on the side away from the rear panel**, which keeps the

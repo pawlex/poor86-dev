@@ -115,8 +115,10 @@ PT/PL/PR** and should be chosen by proximity to the connector rather
 than by capability. Bank 8 is excluded because it is reserved for
 configuration and DFx, not because of its pair count.
 
-The remaining constraint is VCCIO: the chosen bank must sit at the
-voltage the signalling needs, and banks sharing a rail must agree.
+**No VCCIO constraint either: every VCCIO rail is 3.3 V.** With a single
+I/O voltage across the device there is no bank-sharing conflict to
+resolve, so HDMI, the CPU bus and the memory groups can be assigned by
+geometry alone.
 
 ---
 

@@ -1300,6 +1300,29 @@ Open:
 
 
 
+## Decided: all ECP5 VCCIO rails are 3.3 V
+
+**Every VCCIO bank runs at 3.3 V.** One I/O voltage across the whole
+device.
+
+This removes a class of constraint rather than merely settling one.
+Banks that share a VCCIO rail must share a voltage, so a mixed-voltage
+design forces signal groups into particular banks and can strand I/O
+that is electrically fine but at the wrong potential. With a single rail
+there is nothing to resolve: **signal groups are assigned to banks by
+geometry alone.**
+
+It follows naturally from the rest of the design — the CPU is a 3.3 V
+part chosen so its bus reaches the FPGA without level shifters, and
+fake-TMDS video drives ordinary 3.3 V I/O. The one place 5 V appears is
+the mezzanine, which sits behind translating transceivers and therefore
+does not reach an FPGA bank at all.
+
+Consequence for layout: the pin budget and bank allocation have no
+voltage dimension, and the level-shifter footprints recorded as
+insurance in [BOARD.md](BOARD.md) protect the CPU-bus margin only, not a
+bank-voltage decision.
+
 ## Reserved: ECP5 bank 8 is configuration and DFx only
 
 **Bank 8 of the LFE5U-85F CABGA381 is reserved. Nothing but

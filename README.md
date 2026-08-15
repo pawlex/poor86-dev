@@ -13,6 +13,11 @@ window, that is what decides how a machine actually feels. It is
 specified and open end to end, with slack left in on purpose: room to
 grow, and room to tinker, if you are up for it.
 
+The reasoning behind every decision is written down — wrong turns
+included — so the work can be picked up, argued with and carried
+further. Not a weekend demo that impresses once and is never touched
+again.
+
 ---
 
 ## Why

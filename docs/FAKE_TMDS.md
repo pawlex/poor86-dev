@@ -227,31 +227,64 @@ D2±, CK±.
 | qty | part | value | populate | why |
 |---:|---|---|:-:|---|
 | 8 | resistor, **0805 or 1206** | 49.9 Ω 1% | **yes** | pull-up to +3V3; source-side bias and ~50 Ω termination. **Oversized package deliberately** — the one value taken on another board's authority, so make it liftable |
-| 8 | capacitor | 100 nF | **yes** | series AC coupling; blocks DC so the swing rides the sink's own bias |
-| 2 | ESD clamp array, 4-channel | `RCLAMP0524P` or equivalent | **yes** | see selection note below |
+| 8 | capacitor | 100 nF | **yes** | series AC coupling; blocks DC so the swing rides the sink's own bias. **Still external** — the companion chip below does not provide these |
+| **1** | **`TPD12S521`** | — | **yes** | **replaces the entire discrete front end** — see below |
+| 2 | capacitor | 0.1 µF | **yes** | `ESD_BYP` (pin 37) is mandatory; `HOTPLUG_DET_OUT` (pin 20) raises the ESD rating |
 
-> **ESD part selection is not a free swap.** A TMDS-rated clamp must be
-> **ultra-low capacitance — well under ~1 pF per channel.** A general
-> purpose TVS array will load the line enough to degrade the eye at these
-> rates. Match the capacitance spec, not the package.
+#### The `TPD12S521` collapses this to one part
+
+A single-chip HDMI **transmitter-side** port protection and interface IC,
+and it fits this design almost suspiciously well.
+
+| what it replaces | |
+|---|---|
+| 2× 4-channel ESD arrays | **0.8 pF** per TMDS channel, 0.05 pF matched across each pair, IEC 61000-4-2 level 4 at ±8 kV |
+| the DDC/CEC level shifter | bidirectional, `LV_SUPPLY` system side ↔ 5 V for `SDA`/`SCL`/`HPD`, 3.3 V for `CEC` |
+| a 5 V load switch for pin 18 | `5V_OUT` with on-chip current limiting |
+
+**Four things make it the right choice rather than merely a convenient
+one:**
+
+- **38-pin TSSOP (DBT), 0.5 mm pitch — not a BGA.** It satisfies the hard
+  packaging constraint outright and can be placed by hand.
+- **It costs zero FPGA pins.** The pin list is fully accounted for with
+  **no enable, OE or control pins** — 2 supplies, 10 grounds, 16 TMDS, 4
+  system-side logic, 4 connector-side logic, `ESD_BYP`, `5V_OUT`. The part
+  is transparent and always on, so nothing has to drive it.
+- **`LV_SUPPLY` accepts 1–5.5 V and is specified at 3.3 V typical**, which
+  is the system-side rail this board already has.
+- **The pin order follows the HDMI connector**, at connector pitch, so the
+  differential pairs pass straight through without crossing. TMDS in/out
+  pin pairs are tied inline on the PCB — the part sits *in* the line
+  rather than beside it.
+
+Lifecycle is **ACTIVE**.
+
+> **Why the capacitance number mattered.** The earlier note here said an
+> ESD clamp must be well under ~1 pF per channel or it loads the line.
+> This part is **0.8 pF**, which is the reason it qualifies — a general
+> purpose TVS array in the same footprint would not.
 
 **DDC / EDID path — nothing reaches the FPGA:**
-`connector → 0 Ω (DNP) → level shifter (DNP) → isolated pad → bodge wire → PMOD`
+`connector → TPD12S521 → 0 Ω (DNP) → isolated pad → bodge wire → PMOD`
+
+The companion chip already performs the level shift, so **the separate
+shifter footprint is no longer needed.** The 0 Ω pads move to the chip's
+**system-side** pins.
 
 | qty | part | value | populate | why |
 |---:|---|---|:-:|---|
-| 4 | resistor | 0 Ω | **DNP** | series pads on `SCL`, `SDA`, `CEC`, `HPD`; far side to an isolated pad, not a routed net |
-| 1 | I²C level shifter | `PCA9306` / `TXS0102` class | **DNP** | 5 V connector side ↔ 3.3 V FPGA side. One package beats discrete FETs during rework |
-| 2 | resistor | 1.5 kΩ to **+5 V** | **DNP** | connector-side DDC pull-ups; correct **only** with the shifter stuffed |
+| 4 | resistor | 0 Ω | **DNP** | series pads on `DDC_CLK_IN`, `DDC_DAT_IN`, `CE_REMOTE_IN`, `HOTPLUG_DET_IN` (pins 16–19); far side to an isolated pad |
+| 2 | resistor | pull-ups, **3.3 V** system side | **DNP** | I²C still needs them; system side is `LV_SUPPLY`-referenced, so 3.3 V — the 5 V side is the chip's problem, not ours |
 | 4 | pad / test point | — | — | bodge target for spare PMOD I/O |
 
 **Connector, other pins:**
 
 | pin | signal | populate | note |
 |---:|---|:-:|---|
-| 18 | `+5V` | **yes** | board has the rail; connector-only, never reaches the FPGA. Some sinks want it before treating a source as active |
-| 19 | `HPD` | 0 Ω DNP + pad | open — only worth it if something consumes it |
-| 13/15/16 | `CEC`, `SCL`, `SDA` | **not routed** | 0 Ω pads only, per above |
+| 18 | `+5V` | **yes** | driven from the chip's `5V_OUT`, current-limited. Never reaches the FPGA |
+| 19 | `HPD` | via chip | level-shifted by the chip; system side lands on a 0 Ω pad |
+| 13/15/16 | `CEC`, `SCL`, `SDA` | **not routed to FPGA** | pass through the chip; system side to 0 Ω pads only |
 
 **EDID itself is data, not a wire** — served from a small ROM,
 supplyable upstream by the ESP32 over the same reset-exit vector that

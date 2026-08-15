@@ -102,8 +102,35 @@ and both chose **series capacitors in the 100–220 nF band.** That is the
 
 **For the BOM here** that means, per line: one series capacitor
 (100 nF is the value both converge on), a 49.9 Ω pull-up to 3.3 V, and a
-shared ESD clamp array — eight lines, so two four-channel parts. Plus DDC
-pull-ups, which are not optional if EDID is ever to be read.
+shared ESD clamp array — eight lines, so two four-channel parts.
+
+### DDC and EDID are out of scope — decided
+
+**The machine will not read EDID.** It emits a small fixed set of VESA
+modes and the display accepts them or does not. That is the whole reason
+VESA timings exist, and a DOS machine has nothing to negotiate: the guest
+picks its mode, and nothing downstream is going to choose a better one
+from a capability list.
+
+What that removes is not just parts — it is an I²C master in RTL, a 5 V
+level-shifting domain on an otherwise 3.3 V board, and a runtime
+mode-negotiation path with failure modes of its own.
+
+**Keep the DDC pads and pull-up footprints, DNP.** Same pattern as
+everywhere else here: the footprints cost board area and no BOM, and
+without them adding EDID later is a board spin.
+
+**Two consequences worth stating plainly:**
+
+- **A sink does not require the source to read it.** DVI and HDMI
+  displays sync without DDC; EDID exists for the source's benefit. So
+  nothing breaks by omitting it on a direct monitor connection.
+- **But it removes the ability to detect refusal, so the output mode must
+  be one that always works.** Without EDID there is no runtime fallback —
+  a refused mode is simply a blank screen. That argues for **a fixed,
+  safely-accepted output mode with the guest's mode scaled into it**,
+  rather than switching the output to follow the guest. It strengthens
+  the scaler case rather than weakening it.
 
 > **Prototype build note — use a large footprint for the 49.9 Ω
 > pull-ups.** On prototype boards these eight resistors should be an
@@ -336,9 +363,11 @@ project. **Do not build any test infrastructure before this is known.**
 **Revised: the FPGA half is settled on paper, so the gate is now a
 display-acceptance test on hardware already here.**
 
-- [ ] **Read the EDID of every display that matters**, before touching an
-      FPGA. Established Timings I names 720×400@70 and 640×480@60
-      explicitly. Costs nothing and may answer most of it.
+- [ ] **Read the EDID of every display that matters — from a PC, as a
+      bench measurement.** This is how the supported mode list gets
+      chosen; it is not a product feature, and the board will not do this
+      at runtime (see above). Established Timings I names 720×400@70 and
+      640×480@60 explicitly. Costs nothing and may answer most of it.
 - [ ] **Drive the candidate modes from the Tang Nano 9K** — 720×400@70,
       640×480@60, 800×600@60 — and record which are accepted, refused, or
       accepted-but-wrong.

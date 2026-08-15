@@ -92,17 +92,31 @@ one of its spare balls.
 **HDMI therefore does not go on PB.** It takes 8 balls from the slack on
 whichever of PT/PR/PL faces the rear panel.
 
-### HDMI does not need true LVDS
+### HDMI needs differential pairs, not true LVDS
 
-Worth stating, because it widens where HDMI can live. The fake-TMDS
-approach drives the pairs as **antiphase LVCMOS33**, not true LVDS, so
-designated LVDS-output sites are not required and HDMI is not restricted
-to particular banks.
+**Fake TMDS does not require true LVDS. The restriction is on
+differential pairs.**
 
-Adjacent **A/B PIO pair sites** are still preferable — they are laid out
-as pairs inside the package, which helps skew — but they are a
-preference, not a constraint. Pair-site counts by edge: PT 29, PR 17,
-PL 16, PB 6.
+So the constraint is not which banks support LVDS output — it is whether
+adjacent **A/B PIO pair sites** are available, since the two halves of
+each pair must be matched or skew destroys the signal at these rates.
+
+HDMI needs **4 pairs** (3 data, 1 clock). Pair sites by edge:
+
+| edge | A/B pair sites | enough for HDMI |
+|---|---:|---|
+| PT | 29 | yes |
+| PR | 17 | yes |
+| PL | 16 | yes |
+| PB | 6 | **reserved — bank 8** |
+
+Every usable edge has ample pairs, so **HDMI placement is free among
+PT/PL/PR** and should be chosen by proximity to the connector rather
+than by capability. Bank 8 is excluded because it is reserved for
+configuration and DFx, not because of its pair count.
+
+The remaining constraint is VCCIO: the chosen bank must sit at the
+voltage the signalling needs, and banks sharing a rail must agree.
 
 ---
 

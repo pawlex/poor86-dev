@@ -215,6 +215,14 @@ Two corollaries that have saved a great deal of work:
 - **Video**, either from the FPGA over HDMI, or a real **CL-GD5428** on
   the local bus for driving a CRT.
 
+![General placement of the Poor86 board](docs/placement.svg)
+
+*General placement only — orientation is not fixed. What is fixed is
+which block connects to which FPGA edge, because that is derivable from
+the datasheets now rather than discovered during layout. Pin counts are
+counted from `Data/pinmap_*.csv`, not estimated. See
+[PLACEMENT.md](docs/PLACEMENT.md).*
+
 ---
 
 ## Sub-projects

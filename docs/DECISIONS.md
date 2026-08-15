@@ -1211,6 +1211,94 @@ parallel **PSRAM** (`IS66WVE4M16`) and a **HyperRAM**
 The right answer depends on the cache, which is the point of this
 section.
 
+### External evidence: M8SBC-486
+
+A working homebrew 486 with an FPGA chipset —
+[M8SBC-486](https://github.com/maniekx86/M8SBC-486), Spartan II, VHDL
+sources published, runs MS-DOS, FreeDOS and Linux. The same topology as
+this project, and the first outside evidence bearing on the burst and
+cache question.
+
+Read from its constraints file and chipset sources:
+
+| present | absent |
+|---|---|
+| `ADS#`, `RDY#`, **`KEN#`**, `BS8#`, `BS16#` | **`BRDY#`, `BLAST#`** |
+| `W/R#`, `M/IO#`, `D/C#`, `BE0-3` | `FLUSH#`, `AHOLD`, `EADS#`, `INV` |
+
+Cacheability comes from address decode —
+`OUT_KEN <= '0' WHEN ((ROM_CACHE = '0') OR (RAM_CACHE = '0')) ELSE '1';`
+— with a known bug acknowledged in their own source
+(`-- To fix: doesn't work on ROM`). There is no burst anywhere; the only
+`BRDY` in the tree is a datasheet quote in a comment. It also drives
+`BS8#`/`BS16#` for dynamic bus sizing, and uses **4 MB of parallel
+SRAM** at a 24 MHz FSB.
+
+**So "selective cacheability by address region, no burst, no snooping"
+is a proven working point**, not a theoretical compromise — it runs real
+operating systems on real 486 silicon. That materially de-risks
+deferring burst support. It also arrived independently at parallel SRAM,
+which the four-word ceiling above argues for on separate grounds.
+
+**The instructive part is its pin budget.** That FPGA uses **91 pins
+total and taps only 8 bits of CPU data.** The data path never crosses
+it: SRAM and ISA sit directly on the CPU data bus behind transceivers,
+and the FPGA is a *control plane* — address decode, strobes, clocks —
+tapping 8 bits for its own internal peripherals. Simpler and far
+cheaper in I/O. It was considered here and rejected, for the reason
+below.
+
+### Decided: the cache data array lives in FPGA block RAM
+
+**The cache is N-way set associative, and its data array is on-chip.**
+That decision is what rules out the control-plane-only architecture
+above, so the two belong together.
+
+**Associativity is the reason, and it is a hard one.** A direct-mapped
+cache can keep its data external — one lookup, one bank, one access.
+**N-way requires all N ways to be read simultaneously** so the tag
+comparison can select among them in the same cycle. Externally that
+means N independent banks: N sets of address pins, N data buses, N
+chips, scaling with associativity. On-chip block RAM provides those
+parallel reads for nothing.
+
+So keeping the data external does not merely limit capacity — **it caps
+the design at direct-mapped**, the associativity with the worst
+conflict-miss behaviour. That is the opportunity being protected here,
+and it is the part of the machine most worth designing.
+
+**The budget supports it.** On the hard-CPU path no x86 soft core is
+instantiated, so essentially the whole pool is available:
+
+| | EBR used |
+|---|---|
+| total on an LFE5U-85F | 208 blocks = 468 KiB |
+| 128 KiB data array | ~57 (27%) |
+| 256 KiB data array | ~114 (55%) |
+
+Period 486 boards shipped 128-512 KiB of L2, so this range is both
+era-appropriate and comfortable.
+
+Two things fall out neatly:
+
+- **A 16-byte line is exactly one 486 burst.** Four transfers, sixteen
+  bytes: one fill is one burst, with no partial-line handling and no
+  multi-burst fills. The line size the CPU wants and the line size the
+  memory delivers efficiently are the same number.
+- **Tags are nearly free.** A 256 KiB 4-way with 16-byte lines is 4096
+  sets, and against a machine with far less than 4 GiB populated the
+  tags land around 8-16 bits — roughly 16-32 KiB total. A candidate for
+  distributed RAM precisely because of the async-read argument above,
+  keeping the hit decision out of the block RAM read latency.
+
+ECP5 block RAM is genuinely dual-port, so a fill write and a CPU-side
+read can proceed concurrently rather than contending — which matters
+more on a non-blocking design than the capacity does.
+
+**The accepted cost:** this forces the full CPU data bus into the FPGA,
+and with it the pin count M8SBC-486 avoided. That is the trade, taken
+deliberately.
+
 ### And this is the real justification for deferring the memory subsystem
 
 The deferral is recorded elsewhere as discipline — not starting with the

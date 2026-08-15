@@ -149,13 +149,38 @@ spin.**
 
 Applies to `SCL`, `SDA`, `CEC` and `HPD`.
 
+**And a level-shifter footprint on that path, also DNP.** Cheap in board
+area, nothing in BOM, and it turns a compromise into the conventional
+circuit. The chain becomes:
+
+```
+HDMI connector  →  0 Ω (DNP)  →  level shifter (DNP)  →  bodge pad  →  PMOD I/O
+                   5 V side  ────────────────────────  3.3 V side
+```
+
+With it stuffed, **the connector side can be pulled up to 5 V the way
+DDC normally is** — the Tang Nano uses 1.5 kΩ to +5 V — while the FPGA
+side stays 3.3 V. This is what the ULX3S does too: its GPDI carries a
+3.3 V↔5 V bidirectional I²C level shifter.
+
+A single small bidirectional part (a `PCA9306`-class device, or a
+`TXS0102`) is preferable here to the discrete dual-MOSFET arrangement,
+despite being slightly dearer: **during a rework, fewer parts to stuff is
+worth more than a cheaper BOM line** that will most likely never be
+bought.
+
 > **The 3.3 V rule still holds on the bodge path.** Any pull-ups added
-> during such a rework go to **3.3 V, never 5 V.** A 5 V rail *is*
-> available on the board, which is exactly what makes this worth writing
-> down — the temptation during rework is to reach for the nearest supply,
-> and the far end of that bodge is an FPGA pin that is not 5 V tolerant.
-> DDC is open-drain, so 3.3 V pull-ups work with most sinks; the sink's
-> own EEPROM does not care what voltage the bus idles at.
+> **the FPGA side is 3.3 V, always.** A 5 V rail *is* available on the
+> board, which is exactly what makes this worth writing down — the
+> temptation during rework is to reach for the nearest supply, and the far
+> end of that bodge is a pin that is not 5 V tolerant.
+>
+> **With the level shifter stuffed**, 5 V pull-ups on the *connector* side
+> are correct and conventional. **Without it**, everything on the path
+> stays 3.3 V — DDC is open-drain, so that works with most sinks, and the
+> sink's own EEPROM does not care what voltage the bus idles at. Both are
+> valid; what is never valid is 5 V continuing past the shifter position
+> toward the FPGA.
 
 > **Not the same pins:** `+5V` (pin 18) and `HPD` (pin 19) are separate
 > from DDC and serve a different purpose — a sink draws that rail and

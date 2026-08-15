@@ -184,12 +184,18 @@ a daughterboard.
 
 **Costs and cautions:**
 
-- **HARD SPEC: the mezzanine is a 486SX-class bus — 16-bit data, 24-bit
-  address — not a 32-bit 486 bus.** The naming is deliberate diligence
-  rather than shorthand. It promises the **intersection of both CPU
-  variants**, so a daughterboard designed against it works whichever CPU
-  is fitted; a mezzanine written against a 32-bit bus would break the
-  moment an SX-class part was populated.
+- **HARD SPEC: the mezzanine is a 386SX-class bus — 16-bit data, 24-bit
+  address — not a 32-bit 486 bus.** It promises the **intersection of
+  both CPU variants**, so a daughterboard designed against it works
+  whichever CPU is fitted; a mezzanine written against a 32-bit bus would
+  break the moment an SX-class part was populated.
+
+  **Call it 386SX, never 486SX.** The Intel **486SX is a 32-bit part** —
+  a 486 with the FPU disabled — so "486SX bus" reads as a full 32-bit
+  486 bus, which is precisely the misreading this label exists to
+  prevent. The 16-bit lineage is the **386SX** and the SLC/SXLC parts
+  that share its pinout, `TI486SXLC` among them: the "SX" in those names
+  refers to the 386SX pinout, not to the Intel 486SX.
 
   It also lines up with decisions already made: the pin-saver option puts
   both variants at a 16 MB address space anyway, and the CL-GD5428 has a
@@ -197,9 +203,9 @@ a daughterboard.
   exactly this. Fewer connector pins is a free consequence.
 
   **The label on the diagram is the warning.** Someone designing a
-  daughterboard reads the drawing before the documents, so it says
-  `486SX BUS — 3.3 V ONLY` — stating the class and the voltage where it
-  will actually be seen.
+  daughterboard reads the drawing before the documents, so it states
+  the class and the voltage where it
+  will actually be seen: `386SX BUS — 3.3 V ONLY`.
 - **HARD SPEC: the mezzanine interface is 3.3 V and is NOT 5 V
   tolerant.** This is a protection requirement, not a preference — a
   daughterboard driving 5 V into the connector damages the baseboard.

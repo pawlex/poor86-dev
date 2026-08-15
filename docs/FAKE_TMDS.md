@@ -7,6 +7,75 @@ The question it will eventually answer: *can the ECP5 drive an HDMI or
 DVI display directly, with no transmitter chip?* If yes, the FPGA video
 path exists. If no, a real CL-GD5428 is the only display option.
 
+## Test vehicles — what is on hand, and what each can answer
+
+**No ULX3S, and none is being bought.** Two boards already here cover the
+question between them — but not the same half, and one of them cannot
+help at all. Worth stating why, so it is not re-examined later.
+
+### Tang Nano 9K — answers the blocking question
+
+Gowin **GW1NR-9** with an HDMI connector. Sipeed's own examples do
+640×480@60, and community projects run 720p and 720×576@50.
+
+This is the right instrument for **display acceptance**, which is the
+question the floorplan actually waits on. Whether a monitor accepts
+720×400@70 or 640×480@60 is a property of *the monitor*, and it does not
+care which vendor's silicon generated the timing.
+
+**What it does not test: the fake-differential technique.** The Tang Nano
+drives HDMI through Gowin's **true LVDS output buffers** (`TLVDS_OBUF`)
+and a hard 10:1 serialiser (`OSER10`) — real differential drivers, not a
+resistor network. So it says nothing about signal integrity of emulated
+differential, and should not be cited as if it did.
+
+### MachXO2 — cannot reach DVI rates, and the margin is not close
+
+Two boards here: `LCMXO2-1200ZE-1TG144C` and `LCMXO2-4000HC-4TG144C`.
+Both are the **slowest speed grade** of their family. From the MachXO2
+Family Data Sheet (FPGA-DS-02056-4.3):
+
+| limit | value |
+|---|---|
+| **Table 3.25**, Maximum sysI/O Buffer Performance — **LVDS25E** | **150 MHz** |
+| `fDATA`, DDRX1 Output Data Speed | **300 / 250 / 208 Mbps** by grade |
+| `fDDRX1`, DDRX1 SCLK frequency | 150 / 125 / 104 MHz |
+
+**640×480 DVI needs 252 Mb/s per lane.** The `-4` part tops out at **208
+Mb/s**, and the ZE `-1` is slower still. Even the fastest MachXO2 grade
+reaches only 300 Mb/s — which would clear 640×480 by a slim margin and
+nothing else.
+
+**So the MachXO2 boards are not video test vehicles.** Not marginal,
+not worth attempting: the emulated-LVDS buffer alone is capped at 150 MHz
+before the fabric is even considered.
+
+### What nothing on hand can answer
+
+**Signal integrity of a resistor-network emulated differential output at
+TMDS rates.** The Tang Nano uses real LVDS drivers; the MachXO2 cannot
+reach the rate. Only an ECP5 driving a resistor network answers it.
+
+That is acceptable, because the technique is not the risk. It is
+documented in the ECP5 datasheet with a termination scheme (Figure 3.1),
+it ships working on the ULX3S, and there are multiple public
+implementations. **The residual risk is this board's own layout and
+termination**, which no borrowed hardware could have de-risked anyway.
+
+### A note on the ULX3S reports
+
+The ULX3S carries **`LFE5U-85F-6BG381C` — speed grade -6, the slowest.**
+That reframes the 720p reports rather than confirming them: 720p is 743
+Mb/s against a -6 guaranteed GDDRX2 ceiling of **624 Mb/s**, so those
+results run roughly **19% above datasheet spec**.
+
+Read correctly, that is evidence Lattice's numbers are conservative —
+they are guaranteed over temperature and voltage. **It is not evidence
+that 720p is safe to design on.** Design to the specified rate; treat the
+overshoot as margin someone else happened to find.
+
+---
+
 ## Prior art — start here
 
 **[ULX3S](https://hackaday.io/project/159108-ulx3s-powerful-ecp5-board-for-open-source-fpga)**
@@ -174,14 +243,24 @@ default.
 The gate is deliberately cheap: it needs a board and an afternoon, not a
 project. **Do not build any test infrastructure before this is known.**
 
-- [ ] Build and run `fake_differential.v` on a ULX3S unmodified. Record
-      the modes it achieves.
-- [ ] Push it: how far up the mode table can it be taken before it stops
-      working, and does it fail cleanly or intermittently?
-- [ ] Test against more than one display. Acceptance varies, and a mode
-      that works on one monitor is not a result.
-- [ ] **Decide go/no-go on the headroom, not on whether it works at
-      all.** Working at the minimum is a negative result here.
+**Revised: the FPGA half is settled on paper, so the gate is now a
+display-acceptance test on hardware already here.**
+
+- [ ] **Read the EDID of every display that matters**, before touching an
+      FPGA. Established Timings I names 720×400@70 and 640×480@60
+      explicitly. Costs nothing and may answer most of it.
+- [ ] **Drive the candidate modes from the Tang Nano 9K** — 720×400@70,
+      640×480@60, 800×600@60 — and record which are accepted, refused, or
+      accepted-but-wrong.
+- [ ] **Test more than one display.** Acceptance varies, and a mode that
+      works on one monitor is not a result.
+- [ ] **Cross-check against a PC modeline** where a display refuses a
+      mode, to separate "the display rejects this timing" from "the
+      FPGA's timing is out of tolerance."
+- [ ] **Record the answer as a placement input**, since it decides whether
+      HDMI can stay on PT: 640×480 accepted → PT is fine and costs
+      nothing; 720p required → a geared edge and a -8 part, argued against
+      memory and the CPU bus.
 
 ### 2. Only if the gate passes
 

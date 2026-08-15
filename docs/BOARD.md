@@ -352,6 +352,20 @@ down, roughly in order of what stops someone starting:
 - **Mechanical**: board outline, mounting, and height under mini-ITX
   clearance.
 
+**The first pass is the physical and electrical specification plus the
+pinout**, and the rest follows separately. That split is deliberate:
+connector, pinout and electrical limits are a **one-way door** — changing
+them later means a board spin for everyone who has built a card against
+them — while cycle extension, interrupt handling and decode ranges are
+protocol, and protocol lives in a bitstream that can be revised without
+anyone reworking hardware. Settle the irreversible layer first, and it
+stops holding up the revisable one.
+
+It is also the layer that unblocks other people soonest: with the
+connector, pinout, voltage limits and timing budget published, someone
+can lay out a card and know it will seat, power up and not damage the
+baseboard, even while the protocol above it is still moving.
+
 Two things worth settling before writing it, since they change the
 document rather than fill it in: whether the bus is general or
 video-specific (the checkbox above), and whether a **reference

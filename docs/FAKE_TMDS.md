@@ -134,12 +134,25 @@ out-of-band — read on any other machine, handed to the ESP32, and served
 as the blob. The machine never reads a monitor; it can still be *told*
 what a monitor said.
 
-**This one is not a stuffing option.** Unlike the transceiver and
-level-shifter footprints elsewhere in this design, DDC is not present as
-DNP pads — the pins simply are not routed. **Adding DDC later is a board
-spin**, and that is accepted deliberately: it buys back connector pins,
-the 5 V domain and the RTL, against a capability this machine has no use
-for.
+**Recoverable by bodge, not by respin.** The DDC pins get **0 Ω
+footprints at the connector, DNP**, with the far side landing on an
+isolated pad rather than a routed net. Nothing reaches the FPGA, so the
+pins, the 5 V domain and the RTL are all still saved — but the signals
+are *present at a pad* instead of stopping dead at the connector.
+
+If DDC is ever wanted: stuff the 0 Ω parts and run wire from those pads
+to spare PMOD I/O, of which there is a deliberate surplus. The I²C master
+becomes bit-banged on general PIO, which is cheap, and the whole
+capability comes back as **an afternoon of rework rather than a board
+spin.**
+
+Applies to `SCL`, `SDA`, `CEC` and `HPD`.
+
+> **The 3.3 V rule still holds on the bodge path.** Any pull-ups added
+> during such a rework go to **3.3 V, never 5 V** — the board is not 5 V
+> tolerant and that does not relax for a bodge. DDC is open-drain, so
+> 3.3 V pull-ups work with most sinks; the sink's own EEPROM does not
+> care what voltage the bus idles at.
 
 > **Not the same pins:** `+5V` (pin 18) and `HPD` (pin 19) are separate
 > from DDC and serve a different purpose — a sink draws that rail and
@@ -345,10 +358,13 @@ question the datasheet cannot answer.
 
 ### Open
 
-- [ ] **Decide whether `+5V` (pin 18) and `HPD` (pin 19) are populated**,
-      independently of the DDC decision above. Some sinks want the rail
-      present to treat a source as connected; HPD is the only remaining
-      way to know a display is attached at all, now that DDC is gone.
+- [ ] **Decide whether `+5V` (pin 18) is populated**, independently of
+      the DDC decision above. Some sinks want the rail present before they
+      treat a source as connected. It is a power pin, so the 0 Ω bodge
+      treatment does not cover it — decide it on its own merits.
+- [ ] **Confirm `HPD` (pin 19) is worth a 0 Ω pad**, given it is now the
+      only way to know a display is attached at all. Cheap to leave in;
+      the question is only whether anything would ever consume it.
 
 ---
 

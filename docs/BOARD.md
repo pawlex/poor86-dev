@@ -429,8 +429,16 @@ Everything below follows from those four.
   freeze time.
 - **Strapping and configuration options as resistors** rather than fixed
   logic.
-- **Spare FPGA I/O brought to headers**, for observing internal signals
-  on hardware.
+- **Every remaining PIO routed to PMOD headers.** Not merely "spare I/O
+  brought out" — *all* of it, on the principle that an unrouted ball is
+  worth nothing and a routed one costs a track. On the current budget
+  that is ~17 balls, so two 8-signal PMODs with one to spare.
+
+  It serves three purposes at once, which is why it is worth the area:
+  **bring-up observability** (internal signals brought out to a scope
+  without a respin), **expansion** (a standard connector others already
+  build for), and **survivability** (if something needs an extra signal
+  late, it exists).
 
 ### COULD — only if area and time allow
 

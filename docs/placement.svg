@@ -106,6 +106,13 @@
   <text class="ts" x="392" y="232" text-anchor="middle">to GPLL0</text>
   <path class="bus" d="M392 240 V300" stroke-dasharray="4 3"/>
 
+  <!-- PMOD -->
+  <rect class="part" x="584" y="462" width="102" height="54" rx="3"/>
+  <text class="tb" x="635" y="481" text-anchor="middle">PMOD</text>
+  <text class="ts" x="635" y="496" text-anchor="middle">all remaining</text>
+  <text class="ts" x="635" y="510" text-anchor="middle">PIO (~17)</text>
+  <path class="bus" d="M584 489 H566" stroke-dasharray="4 3"/>
+
   <!-- dedicated QSPI bus -->
   <rect class="part" x="176" y="452" width="188" height="60" rx="3"/>
   <text class="tb" x="270" y="473" text-anchor="middle">QSPI NOR + QSPI PSRAM</text>

@@ -328,21 +328,73 @@ of what it protects, as close to the connector as layout allows.
 Net BOM for the front end: **`PTN3365` + one low-capacitance ESD array +
 8 coupling capacitors**, and the pull-ups pending the check below.
 
-**Open — verify before layout.** NXP's documentation was not reachable
-during this write-up, so two things remain unconfirmed rather than
-assumed:
+##### Resolved from the datasheet — and one complication
 
-- [x] **Connector-side ESD — answered: a second part stays in the BOM.**
-      See below. The `PTN3365`'s 6 kV HBM / 1 kV CDM is a *handling*
-      rating and does not protect a user-accessible port.
-- [ ] **Whether the 49.9 Ω pull-ups are still required.** The part
-      specifies its own input handling for low-swing AC-coupled
-      differential, so they may be redundant — which would reduce the
-      front end to `FPGA → 100 nF → PTN3365 → connector`.
-- [ ] **`OE_N` behaviour on this specific part.** Family datasheets
-      describe inputs going high-impedance when `OE_N` is high. If it
-      exists here it can almost certainly be strapped, but confirm it does
-      not want driving before assuming zero FPGA pins.
+Datasheet in hand (`PTN3365`, NXP, 2015). Every open item closes, and two
+things appear that were not accounted for.
+
+- [x] **Connector-side ESD — a second part stays in the BOM.** The
+      datasheet labels both figures **"Component level"** in its own
+      footnotes, confirming from the primary source what was inferred
+      above.
+- [x] **The 49.9 Ω pull-ups come out.** The part has *"integrated 50 Ω
+      termination resistors for AC-coupled differential input signals"*
+      and the `IN_Dx` pins are **self-biasing**, average input voltage
+      specified at 0 V. External pull-ups to 3.3 V would fight that bias.
+      **Keep the 100 nF** — *"the input to this pin must be AC coupled
+      externally."*
+- [x] **`OE_N` (pin 17) costs no FPGA pin — strap it LOW.** `HIGH` puts
+      `IN_Dx` termination and `OUT_Dx` into high impedance; `LOW` gives
+      50 Ω termination and active outputs. Optionally *worth* driving
+      later, as a clean blanking and power-save control. `DDC_EN`
+      (pin 23) straps likewise.
+
+**⚠ The complication: this part expects a DisplayPort/PCIe source, not a
+CMOS output.**
+
+> *"PTN3365 features low-swing self-biasing differential inputs which are
+> compliant to the electrical specifications of **DisplayPort Standard
+> v1.2 and/or PCI Express Standard v1.1**"*
+
+Those standards put the input around **0.4–1.2 V peak-to-peak
+differential.** An ECP5 `LVCMOS33D` pair swings rail to rail — on the
+order of **3.3 V single-ended**, several times the intended input, into
+an internal 50 Ω termination that a CMOS driver cannot properly drive
+anyway.
+
+**So series attenuation is required between the FPGA and this part** — a
+resistor per line forming a divider against that internal 50 Ω, sized to
+land the swing inside the DisplayPort range.
+
+There is a pleasing irony in where that lands. Dividing 3.3 V CMOS down
+to a few hundred millivolts across 50 Ω puts the series element in the
+**low hundreds of ohms** — the same neighbourhood as the classic
+fake-TMDS series resistors. **The resistor network returns in a different
+role:** not shaping TMDS for a monitor, but conditioning a CMOS output
+into a DisplayPort-class receiver.
+
+- [ ] **Compute and simulate that network** — series R against the
+      internal 50 Ω with the 100 nF in path, at rate. Edge rate degrades
+      as series R rises, so it is a trade rather than a lookup.
+- [ ] **Confirm the `IN_Dx` absolute maximum.** The limiting-values table
+      specifies the CMOS pins but not the differential inputs.
+      **Over-driving must be ruled out, not assumed** — the one item here
+      that could damage parts rather than merely perform badly.
+
+**Also new to the BOM:** `REXT`, **10 kΩ 1% from pin 6 to GND** — the
+reference for output current steering. *"Operation without external
+reference resistor is possible but will result in reduced output voltage
+swing"*, so treat it as required.
+
+**Two points in the part's favour**, both worth having:
+
+- **Outputs are back-power safe** — a powered monitor cannot drive current
+  back into an unpowered board. A real hazard on a machine people leave
+  connected.
+- **Fully transparent: no re-timing, no state machines, nothing latched or
+  clocked, no I²C.** Whatever the FPGA emits is what leaves, level
+  shifted — so every timing question stays upstream, where the gearing
+  analysis above already put it.
 
 #### The `TPD12S521` collapses this to one part
 

@@ -587,20 +587,39 @@ So JTAG never touched the FPGA pin budget — it arrives over USB from a
 small microcontroller. That answers one of the "what gets dropped to fit"
 questions before it was asked.
 
-### Two discrepancies with the plan of record
+### Status of the existing schematic and layout: a study, not a decision
 
-Recorded rather than silently reconciled — the schematic may simply be
-ahead of, or behind, the written plan.
+**`PCB/` predates the methodical phase.** The schematic and the initial
+board revision were drawn first, and the decision to stop and work
+through the architecture came afterwards. They record exploration, not
+commitments.
 
-- **FPGA part.** The schematic instantiates **`LFE5U-25F-6BG256C`** — a
-  25F in BG256. The plan of record, the pin budget and every ball-count
-  argument assume **LFE5U-85F in CABGA381**. BG256 has far fewer I/O than
-  the 205 the budget spends, so if the 25F is current the placement work
-  needs redoing against it.
-- **Power entry.** An ATX-20 connector is fitted. `BOARD.md` records DC
-  barrel as preferred on BOM and size grounds, with power entry listed as
-  open. If ATX is settled, gate G8 is answered and the entry above should
-  say so.
+So where they differ from the plan of record, **the plan is current and
+the schematic is history** — these are not conflicts to reconcile:
+
+- The schematic instantiates **`LFE5U-25F-6BG256C`** — a 25F in BG256 —
+  where the plan assumes **LFE5U-85F in CABGA381**. Every ball count and
+  the whole pin budget are written against the 85F.
+- An **ATX-20** connector is fitted, where `BOARD.md` records DC barrel
+  as preferred on BOM and size grounds and lists power entry as still
+  open.
+
+**What the study produced is still valuable, and is treated as input:**
+
+- the **pin saver option** and its 16 MB consequence
+- the **VREG topology and feedback maths**, including JP6
+- **JTAG on a CH552T**, off the FPGA budget entirely
+- the **CL-GD54xx DRAM pin redefinitions** captured in
+  `video.kicad_sch` — `CAS` redefined as `WE`, `OE` as `RAS1`, `WE[3:0]`
+  as `CAS[3:0]`, with the databook pages cited — which is real work
+  someone would otherwise repeat
+- the FPGA **configuration mode straps**
+
+Those findings stand on their own. The part choices around them do not.
+
+- [ ] When layout resumes, decide explicitly what carries over from the
+      study and what is redrawn. The value is in the annotations and the
+      worked details, not in the placement.
 
 ## Reserved resources
 

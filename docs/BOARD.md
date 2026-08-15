@@ -440,6 +440,20 @@ Everything below follows from those four.
   build for), and **survivability** (if something needs an extra signal
   late, it exists).
 
+  **Choosing PMOD rather than a period connector is the point.** New
+  ideas are welcome; they are expected to arrive in a modern idiom. That
+  gives the board two expansion paths, each in its own era's terms:
+
+  | path | for | speaks |
+  |---|---|---|
+  | **mezzanine** | period parts | 386SX bus, 3.3 V, buffered |
+  | **PMOD** | anything new | a standard modern header |
+
+  Which is the organising principle applied to expansion rather than to
+  peripherals: **period where it has to be, modern where it can be.** A
+  period part needs a period bus and gets one. Anything designed today
+  has no reason to pretend, and shouldn't be made to.
+
 ### COULD — only if area and time allow
 
 - Both CPU footprints on one board.

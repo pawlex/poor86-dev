@@ -227,12 +227,12 @@ counted from `Data/pinmap_*.csv`, not estimated. See
 
 ## Sub-projects
 
-| repo | what it is |
-|---|---|
-| [vexrv-cpu-oss](https://github.com/pawlex/vexrv-cpu-oss) | the RISC-V soft core, the x86 interpreter payload, and the Verilator co-simulation the chipset is developed against |
-| [ao486-cpu-oss](https://github.com/pawlex/ao486-cpu-oss) | the ao486 486-class x86 soft core packaged for the open toolchain — Verilator regression suite, plus synthesis and place-and-route with no vendor tools. Places and routes on an ECP5-85F at 32.87 MHz |
-| [tiny386](https://github.com/pawlex/tiny386) | fork of the x86 interpreter, ported to bare-metal RV32 |
-| [ecp5-oss-skeleton](https://github.com/pawlex/ecp5-oss-skeleton) | ECP5 project template and the block-RAM findings behind it |
+| repo | what it is | why it exists |
+|---|---|---|
+| [vexrv-cpu-oss](https://github.com/pawlex/vexrv-cpu-oss) | the RISC-V soft core, the x86 interpreter payload, and the Verilator co-simulation | the chipset is developed and debugged against it, so most of the machine can be made to work before a board exists |
+| [ao486-cpu-oss](https://github.com/pawlex/ao486-cpu-oss) | the ao486 486-class x86 soft core packaged for the open toolchain — Verilator regression suite, plus synthesis and place-and-route with no vendor tools. Places and routes on an ECP5-85F at 32.87 MHz | **so the machine outlives the supply of period CPUs.** NOS Am5x86 is finite and not being made again; when it runs out, the board has to remain buildable, and a 486-class core inside the FPGA is how |
+| [tiny386](https://github.com/pawlex/tiny386) | fork of the x86 interpreter, ported to bare-metal RV32 | gives the soft core an x86 to run, so a board with no period CPU fitted at all still boots |
+| [ecp5-oss-skeleton](https://github.com/pawlex/ecp5-oss-skeleton) | ECP5 project template and the block-RAM findings behind it | keeps the entire flow on open tooling, with no vendor toolchain anywhere in it |
 
 Firmware comes from [SeaBIOS](https://www.seabios.org/) and SeaVGABIOS,
 unmodified where possible.

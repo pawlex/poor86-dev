@@ -7,18 +7,16 @@ replaced by something modern.
 It boots DOS. It has no hard disk, no battery, no expansion slots, no
 drive bays, and no shelf of discs. It fits in a case you can live with.
 
-Every clock, bus and cache boundary here is chosen for latency and phase
-coupling rather than raw bandwidth — at 33 MHz with a four-word burst
-window, that is what decides how a machine actually feels. It is
-specified and open end to end, with slack left in on purpose: room to
-grow, and room to tinker, if you are up for it.
+Decisions here are made on latency and phase coupling rather than raw
+bandwidth: at 33 MHz with a four-word burst window, bandwidth is rarely
+what binds. Slack is left in deliberately — spare capacity is usually
+where the next idea lands.
 
-These are the constraints, and this is the best machine we could design
-inside them. The framework is laid, and the reasoning is written down —
-wrong turns included — because source records *what* was built, while
-only a decision record explains *why*. That is where the spirit of this
-project lives, and it is why the work would outlast us: **continuable by
-someone else, not merely forkable.**
+Constraints are stated before solutions, and the reasoning behind each
+decision is written down, wrong turns included. Source records what was
+built; only a decision record explains why. That record is where the
+project actually lives, and it is what would let someone else continue
+the work rather than restart it.
 
 ---
 

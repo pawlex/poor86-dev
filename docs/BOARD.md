@@ -34,6 +34,7 @@ cheapest options are nearly free and are the ones most often skipped:
 | | cost | examples |
 |---|---|---|
 | **Route it** | a track | unused CPU control signals, spare FPGA I/O |
+| **Cuttable bridge + series footprint** | **board area only, zero BOM** | mezzanine isolation, anywhere a part might later need inserting in series |
 | **Footprint, unpopulated (DNP)** | board area only | second memory channel, GD5428, alternate power entry |
 | **Populate it anyway** | a few dollars, plus area | a part whose need is likely but unproven |
 | **Respin** | everything | — |
@@ -197,6 +198,23 @@ a daughterboard.
   sides. What they buy is isolation rather than translation: the
   connector stub and a daughterboard's loading are kept off the
   CPU-side nets, and a faulty mezzanine cannot drag the CPU bus with it.
+- **Provide them as cuttable bridges in series with unpopulated
+  footprints.** Since whether isolation is needed is open, the mezzanine
+  path carries a **series transceiver footprint bypassed by a cuttable
+  bridge**:
+  - **default** — bridge intact, signal passes straight through, no
+    parts fitted, nothing to assemble
+  - **if isolation proves necessary** — cut the bridges and populate the
+    transceivers
+  The cost is board area and nothing else: no BOM, no assembly step, and
+  no decision required before the boards are made. It is the cheapest
+  entry on the cost hierarchy above.
+
+  Two practical notes. **Cutting is per signal**, so a buffered bus of
+  ~56 lines means ~56 cuts — tedious, and worth laying the bridges out
+  in accessible rows rather than scattering them under parts. And a cut
+  is **reversible only by soldering**, so treat it as a one-way decision
+  per board.
 - Without them the stub is just the connector and its short trace,
   unloaded when nothing is fitted. Either way, keep the run to the
   connector short and fold it into the conservative-routing rule.

@@ -694,6 +694,33 @@ Those findings stand on their own. The part choices around them do not.
       study and what is redrawn. The value is in the annotations and the
       worked details, not in the placement.
 
+## Storage buses: configuration and bulk are separate
+
+**Two buses, deliberately not shared.**
+
+| bus | on | carries |
+|---|---|---|
+| **hard SPI config** | bank 8 config pins | the **configuration EEPROM** — the FPGA's bitstream |
+| **dedicated QSPI** | general I/O, ~7 pins | **QSPI SPI NOR** (BIOS images, reset-exit config, read-only system) + **QSPI PSRAM** sharing it on a second chip select |
+
+Splitting them buys three things:
+
+- **Bank 8 becomes genuinely single-purpose.** The reservation is easier
+  to hold when the bank does exactly one job, and configuration is never
+  competing with anything for it.
+- **The bulk NOR runs at full QSPI speed under user control**, rather
+  than being constrained by the configuration interface it would
+  otherwise share.
+- **Configuration cannot be disturbed by runtime storage traffic**, which
+  matters because a corrupted configuration path is the failure that
+  cannot be recovered in the field.
+
+The QSPI PSRAM still shares a bus by design — now the dedicated one, not
+the configuration one — so it still costs a single extra chip select. The
+contention note stands: NOR used as a read-only system store and PSRAM
+used as main memory are both continuous, and the two are compatible only
+if one is idle.
+
 ## Clocking: a single 50 MHz oscillator on GPLL0
 
 **One 50 MHz oscillator, into a GPLL0 input.** Everything else is
@@ -732,10 +759,12 @@ and leave the C pin free. Two only if a differential source is ever used.
 
 - **ECP5 bank 8 — configuration and DFx only.** 13 balls, all
   configuration functions, and the interface the FPGA boots through.
-  SPI NOR, the QSPI PSRAM sharing its bus, and DFx are permitted;
-  anything else needs a waiver recorded in
-  [PLAN_OF_RECORD.md](PLAN_OF_RECORD.md). Do not count these balls as
-  general I/O in any pin budget.
+  **The configuration EEPROM lives here, on the hard SPI config pins, and
+  nothing else does** except DFx. Anything further needs a waiver
+  recorded in [PLAN_OF_RECORD.md](PLAN_OF_RECORD.md). Do not count these
+  balls as general I/O in any pin budget.
+
+  The bulk **QSPI SPI NOR is *not* here** — it has its own bus, below.
 
 ## Irreversible at layout — decide these first
 

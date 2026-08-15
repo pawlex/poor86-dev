@@ -20,7 +20,8 @@ Counted from the datasheet-derived CSVs, not estimated.
 | SDRAM, wide group | 40 |
 | HyperRAM, narrow group | 12 |
 | HDMI, 4 differential pairs | 8 |
-| SPI NOR + QSPI PSRAM chip select | 7 |
+| config EEPROM (bank 8, hard SPI) | 6 |
+| dedicated QSPI bus — NOR + PSRAM, 2 chip selects | 7 |
 | SD card, 4-bit | 6 |
 | ESP32 link | 8 |
 | Mezzanine transceiver control | 4 |
@@ -74,7 +75,7 @@ consequential placement fact available today.
 |---|---|---:|---|
 | **PT + PR** | CPU bus | 97 of 127 | only adjacent pair large enough |
 | **PL** | SDRAM + HyperRAM | 52 of 65 | both memories on one edge, one face of the FPGA |
-| **PB** | **SPI NOR + QSPI PSRAM** | 7 of 13 | bank 8 *is* the configuration bank — see below |
+| **PB** | **configuration EEPROM only** | 6 of 13 | bank 8 *is* the configuration bank — see below |
 | leftovers | HDMI, ESP32, SD, transceiver control, clocks | ~34 of ~49 | distributed into PT/PR/PL slack |
 
 ### PB is the configuration bank — and is now formally reserved

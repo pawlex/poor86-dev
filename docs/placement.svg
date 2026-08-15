@@ -88,9 +88,9 @@
 
   <!-- config bank -->
   <rect class="cfg" x="392" y="524" width="178" height="62" rx="3"/>
-  <text class="tb" x="481" y="547" text-anchor="middle">SPI NOR + QSPI PSRAM</text>
+  <text class="tb" x="481" y="547" text-anchor="middle">config EEPROM</text>
   <text class="ts" x="481" y="565" text-anchor="middle">bank 8 — config &amp; DFx only</text>
-  <text class="ts" x="481" y="580" text-anchor="middle">7 of 13 balls</text>
+  <text class="ts" x="481" y="580" text-anchor="middle">hard SPI · 6 of 13 balls</text>
   <path class="bus" d="M481 470 V524"/>
 
   <!-- HDMI run -->
@@ -105,10 +105,17 @@
   <text class="ts" x="392" y="232" text-anchor="middle">to GPLL0</text>
   <path class="bus" d="M392 240 V300" stroke-dasharray="4 3"/>
 
+  <!-- dedicated QSPI bus -->
+  <rect class="part" x="176" y="452" width="188" height="60" rx="3"/>
+  <text class="tb" x="270" y="473" text-anchor="middle">QSPI NOR + QSPI PSRAM</text>
+  <text class="ts" x="270" y="489" text-anchor="middle">dedicated QSPI bus · 7 pins</text>
+  <text class="tt" x="270" y="504" text-anchor="middle">separate from config</text>
+  <path class="bus" d="M364 482 H396 V470"/>
+
   <!-- SD -->
-  <rect class="part" x="196" y="524" width="120" height="52" rx="3"/>
-  <text class="tb" x="256" y="546" text-anchor="middle">SD card</text>
-  <text class="ts" x="256" y="564" text-anchor="middle">6 pins</text>
+  <rect class="part" x="196" y="536" width="120" height="46" rx="3"/>
+  <text class="tb" x="256" y="556" text-anchor="middle">SD card</text>
+  <text class="ts" x="256" y="572" text-anchor="middle">6 pins</text>
 
   <!-- mezzanine -->
   <path class="bus" d="M696 448 V614"/>
@@ -131,13 +138,14 @@
   <text class="ts" x="24" y="510">SDRAM                 40</text>
   <text class="ts" x="24" y="528">HyperRAM              12</text>
   <text class="ts" x="24" y="546">HDMI                   8</text>
-  <text class="ts" x="24" y="564">NOR + PSRAM CS         7</text>
-  <text class="ts" x="24" y="582">SD                     6</text>
-  <text class="ts" x="24" y="600">ESP32                  8</text>
-  <text class="ts" x="24" y="618">xcvr control (to mezz)  4</text>
-  <text class="ts" x="24" y="636">clocks / misc          8</text>
-  <line x1="24" y1="646" x2="132" y2="646" stroke="#999"/>
-  <text class="tb" x="24" y="664">total            182</text>
-  <text class="ts" x="24" y="682">available        205</text>
-  <text class="tb" x="24" y="700">spare             23</text>
+  <text class="ts" x="24" y="564">config EEPROM (bk8)    6
+</text><text class="ts" x="24" y="578">QSPI NOR + PSRAM       7</text>
+  <text class="ts" x="24" y="592">SD                     6</text>
+  <text class="ts" x="24" y="606">ESP32                  8</text>
+  <text class="ts" x="24" y="620">xcvr control (to mezz)  4</text>
+  <text class="ts" x="24" y="634">clocks / misc          8</text>
+  <line x1="24" y1="644" x2="132" y2="644" stroke="#999"/>
+  <text class="tb" x="24" y="660">total            188</text>
+  <text class="ts" x="24" y="676">available        205</text>
+  <text class="tb" x="24" y="692">spare             17</text>
 </svg>

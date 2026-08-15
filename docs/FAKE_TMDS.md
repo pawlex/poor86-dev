@@ -215,6 +215,48 @@ bought.
 > Same reasoning as the DNP footprints and cuttable bridges elsewhere in
 > [BOARD.md](BOARD.md): file it under survivability.
 
+### Build sheet — the HDMI front end, consolidated
+
+Everything decided above, in one place, so the front end can be laid out
+without reading the narrative around it. **8 TMDS lines** = D0±, D1±,
+D2±, CK±.
+
+**Signal path, per TMDS line:**
+`FPGA pin → 49.9 Ω to +3V3 → 100 nF series → ESD clamp → connector`
+
+| qty | part | value | populate | why |
+|---:|---|---|:-:|---|
+| 8 | resistor, **0805 or 1206** | 49.9 Ω 1% | **yes** | pull-up to +3V3; source-side bias and ~50 Ω termination. **Oversized package deliberately** — the one value taken on another board's authority, so make it liftable |
+| 8 | capacitor | 100 nF | **yes** | series AC coupling; blocks DC so the swing rides the sink's own bias |
+| 2 | ESD clamp array, 4-channel | `RCLAMP0524P` or equivalent | **yes** | see selection note below |
+
+> **ESD part selection is not a free swap.** A TMDS-rated clamp must be
+> **ultra-low capacitance — well under ~1 pF per channel.** A general
+> purpose TVS array will load the line enough to degrade the eye at these
+> rates. Match the capacitance spec, not the package.
+
+**DDC / EDID path — nothing reaches the FPGA:**
+`connector → 0 Ω (DNP) → level shifter (DNP) → isolated pad → bodge wire → PMOD`
+
+| qty | part | value | populate | why |
+|---:|---|---|:-:|---|
+| 4 | resistor | 0 Ω | **DNP** | series pads on `SCL`, `SDA`, `CEC`, `HPD`; far side to an isolated pad, not a routed net |
+| 1 | I²C level shifter | `PCA9306` / `TXS0102` class | **DNP** | 5 V connector side ↔ 3.3 V FPGA side. One package beats discrete FETs during rework |
+| 2 | resistor | 1.5 kΩ to **+5 V** | **DNP** | connector-side DDC pull-ups; correct **only** with the shifter stuffed |
+| 4 | pad / test point | — | — | bodge target for spare PMOD I/O |
+
+**Connector, other pins:**
+
+| pin | signal | populate | note |
+|---:|---|:-:|---|
+| 18 | `+5V` | **yes** | board has the rail; connector-only, never reaches the FPGA. Some sinks want it before treating a source as active |
+| 19 | `HPD` | 0 Ω DNP + pad | open — only worth it if something consumes it |
+| 13/15/16 | `CEC`, `SCL`, `SDA` | **not routed** | 0 Ω pads only, per above |
+
+**EDID itself is data, not a wire** — served from a small ROM,
+supplyable upstream by the ESP32 over the same reset-exit vector that
+carries the CMOS time base, `etc/e820` and the NE2000 MAC.
+
 ### How the output is actually coupled — capacitors, not resistors
 
 **Correction.** Earlier notes here described the interface as a resistor

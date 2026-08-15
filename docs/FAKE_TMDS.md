@@ -257,6 +257,17 @@ D2±, CK±.
 supplyable upstream by the ESP32 over the same reset-exit vector that
 carries the CMOS time base, `etc/e820` and the NE2000 MAC.
 
+> **On keeping a path nobody expects to use.** In all likelihood none of
+> the DNP parts above will ever be stuffed. They stay anyway. The cost is
+> board area on a board that has it, and the alternative is deciding on
+> someone else's behalf what they are allowed to do with hardware they
+> own.
+>
+> Every other choice here can be revisited at a bench with an iron.
+> **Leaving the pads off is the only one that cannot** — and a footprint
+> costs a great deal less than being wrong about what somebody would
+> eventually want.
+
 ### How the output is actually coupled — capacitors, not resistors
 
 **Correction.** Earlier notes here described the interface as a resistor

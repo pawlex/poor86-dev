@@ -109,9 +109,11 @@ shared ESD clamp array — eight lines, so two four-channel parts.
 **Separate the wire from the data.** They are usually one thing and do
 not have to be.
 
-- **DDC — the I²C wire to the monitor — is out.** That removes an I²C
-  master in RTL, a 5 V level-shifting domain on an otherwise 3.3 V board,
-  and a runtime negotiation path with failure modes of its own.
+- **DDC is out entirely — no I²C master, and the pins are not brought
+  out to the connector.** `SCL`, `SDA` and `CEC` are left unconnected at
+  the HDMI connector. That removes the I²C master in RTL, the 5 V
+  level-shifting domain on an otherwise 3.3 V board, and the runtime
+  negotiation path.
 - **EDID — the data structure — stays in the design**, supplied from **a
   small ROM** rather than read off the display.
 
@@ -126,14 +128,24 @@ it is updatable without a bitstream rebuild — a user with an awkward
 display can be given a different blob rather than a different board.
 
 **Why keep the EDID format at all**, rather than a private table? Because
-it costs nothing and buys two things: existing tooling parses and
-validates it, and **if DDC is ever populated the consumer does not
-change** — the same parser reads the same structure, sourced from the
-wire instead of the ROM. The DNP footprints below make that a stuffing
-option rather than a board spin.
+it costs nothing and buys two things: existing tooling writes, parses and
+validates it, and a **real** display's EDID can still be obtained
+out-of-band — read on any other machine, handed to the ESP32, and served
+as the blob. The machine never reads a monitor; it can still be *told*
+what a monitor said.
 
-**Keep the DDC pads and pull-up footprints, DNP.** Same pattern as
-everywhere else here: board area, no BOM.
+**This one is not a stuffing option.** Unlike the transceiver and
+level-shifter footprints elsewhere in this design, DDC is not present as
+DNP pads — the pins simply are not routed. **Adding DDC later is a board
+spin**, and that is accepted deliberately: it buys back connector pins,
+the 5 V domain and the RTL, against a capability this machine has no use
+for.
+
+> **Not the same pins:** `+5V` (pin 18) and `HPD` (pin 19) are separate
+> from DDC and serve a different purpose — a sink draws that rail and
+> asserts hot-plug on it. **Dropping DDC is not a reason to drop those**,
+> and some sinks expect the +5 V rail present before they treat a source
+> as active. Left as an explicit open below rather than decided here.
 
 **Two things this does not fix:**
 
@@ -328,6 +340,15 @@ competes with the two widest buses on the board.
 
 That decision does not need making yet, because it depends on the one
 question the datasheet cannot answer.
+
+---
+
+### Open
+
+- [ ] **Decide whether `+5V` (pin 18) and `HPD` (pin 19) are populated**,
+      independently of the DDC decision above. Some sinks want the rail
+      present to treat a source as connected; HPD is the only remaining
+      way to know a display is attached at all, now that DDC is gone.
 
 ---
 

@@ -184,6 +184,22 @@ a daughterboard.
 
 **Costs and cautions:**
 
+- **HARD SPEC: the mezzanine is a 486SX-class bus — 16-bit data, 24-bit
+  address — not a 32-bit 486 bus.** The naming is deliberate diligence
+  rather than shorthand. It promises the **intersection of both CPU
+  variants**, so a daughterboard designed against it works whichever CPU
+  is fitted; a mezzanine written against a 32-bit bus would break the
+  moment an SX-class part was populated.
+
+  It also lines up with decisions already made: the pin-saver option puts
+  both variants at a 16 MB address space anyway, and the CL-GD5428 has a
+  16-bit host interface, so the first intended daughterboard wants
+  exactly this. Fewer connector pins is a free consequence.
+
+  **The label on the diagram is the warning.** Someone designing a
+  daughterboard reads the drawing before the documents, so it says
+  `486SX BUS — 3.3 V ONLY` — stating the class and the voltage where it
+  will actually be seen.
 - **HARD SPEC: the mezzanine interface is 3.3 V and is NOT 5 V
   tolerant.** This is a protection requirement, not a preference — a
   daughterboard driving 5 V into the connector damages the baseboard.
@@ -224,8 +240,9 @@ a daughterboard.
   not exist, and the transceiver is fighting a copper short every time it
   drives. Note it on the silkscreen next to the bridges, not only here.
 
-  Roughly **nine packages** cover the bus at 8 bits each: 4 for the 32
-  data lines, 3 for `A2-A23` under the pin-saver option, 2 for control.
+  Roughly **seven packages** cover the bus at 8 bits each: 2 for the 16
+  data lines, 3 for `A2-A23`, 2 for control — the SX-class width above,
+  not a 32-bit bus.
 
   **One part number across all three groups is deliberate.** Address and
   control are unidirectional and would strictly want an `xx244` buffer,
@@ -233,7 +250,7 @@ a daughterboard.
   electrically and keeps the BOM and the assembly to a single line item.
 
   Two practical notes. **Cutting is per signal**, so a fully buffered bus
-  means on the order of seventy cuts — tedious, and worth laying the
+  means on the order of fifty cuts — tedious, and worth laying the
   bridges out in accessible rows rather than scattering them under
   parts. And a cut is **reversible only by soldering**, so treat it as a
   one-way decision per board.

@@ -38,10 +38,19 @@ for a 386SX-class bus. The Am5x86 essential set is 30 address + 32 data
 (`IGNNE`, `FERR`, `UP`, `STPCLK`, `SRESET`, `SMI`, `SMIACT`, `CLKMUL`) —
 totals 206 against 205 available. It misses by one pin.
 
-So a choice is forced, and it is cheap: parity is unused by most
-chipsets, JTAG belongs on a header rather than the FPGA, and several of
-the deferrable signals can be strapped rather than driven. Any one of
-those recovers the margin.
+So a choice is forced, and it is cheap — and the schematic has already
+made two of them:
+
+- **JTAG is on a CH552T**, not the FPGA (`external_perif.kicad_sch`), so
+  it was never in the budget.
+- **A "pin saver option" is annotated on the FPGA and Am5x86 sheets**:
+  dropping `A24-A31` reduces the address space to 16 MB and the CPU bus
+  to **89 pins**, taking the total to **182 of 205 — 23 spare.** 16 MB is
+  already the ceiling on the SX-class path, so this makes the two CPU
+  variants agree rather than diverge.
+
+Parity remains the other easy candidate; most chipsets do not implement
+it.
 
 ---
 

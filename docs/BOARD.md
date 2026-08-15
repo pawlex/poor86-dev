@@ -529,8 +529,20 @@ From `PCB/AsicPowerGnd.kicad_sch` — this is what exists, not a proposal.
 | rails | **+3V3, +2V5, +1V1** from +5 V |
 | adjust | **JP6 solder jumper — "Closed = 3.3 V, Open = 3.5 V"** |
 
-**JP6 is the adjustable part, and it is aimed squarely at the Am5x86
-margin.** That part is nominally ~3.45 V, so a 3.5 V setting matches the
+The schematic annotations give the feedback maths for a 0.6 V reference:
+
+```
+(15k/18k  + 1) * 0.6 V = 1.10 V     core
+(15k/4.7k + 1) * 0.6 V = 2.51 V     VCCAUX
+(15k/3.3k + 1) * 0.6 V = 3.33 V     JP6 closed
+(16k/3.3k + 1) * 0.6 V = 3.51 V     JP6 open
+```
+
+So JP6 swaps the upper divider leg between 15k and 16k. The mechanism is
+a solder jumper on the feedback network, not a trim pot — set at build,
+changeable with an iron.
+
+**JP6 is aimed squarely at the Am5x86 margin.** That part is nominally ~3.45 V, so a 3.5 V setting matches the
 CPU rather than asking it to run 150 mV low. This is a better answer than
 the level-shifter footprints recorded elsewhere: it removes the mismatch
 instead of translating across it.
@@ -544,6 +556,36 @@ instead of translating across it.
       with the "all VCCIO is 3.3 V" decision.
 - [ ] With that resolved, decide whether the level-shifter footprints are
       still wanted, or whether JP6 supersedes them.
+
+### The schematic already carries a pin-saver option
+
+Annotated on both the FPGA and Am5x86 sheets:
+
+> *"pin saver option. Reduces address space to 16 MB"*
+
+Dropping `A24-A31` takes the CPU bus from **97 pins to 89**, and the
+total budget from 190 to **182 of 205 — 23 spare** rather than 15.
+
+Two things make this cheaper than it sounds:
+
+- **16 MB is already the machine's ceiling on the SX-class path**, since
+  a 24-bit address bus is all those parts have. Taking the option makes
+  the two CPU variants agree on address space instead of diverging.
+- 16 MB is generous for DOS. The plan of record puts guest RAM at
+  single-digit megabytes.
+
+- [ ] Decide whether to take it. It is the cheapest 8 pins available and
+      the only cost is address space the software will not use.
+
+### JTAG comes from a CH552, not the FPGA
+
+`external_perif.kicad_sch` maps JTAG onto a **CH552T**: `TCK` on P1.7,
+`TDI` on P1.5, `TDO` on P1.6 (all multiplexed onto its hardware SPI) and
+`TMS` bit-banged on P1.4.
+
+So JTAG never touched the FPGA pin budget — it arrives over USB from a
+small microcontroller. That answers one of the "what gets dropped to fit"
+questions before it was asked.
 
 ### Two discrepancies with the plan of record
 

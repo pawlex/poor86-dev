@@ -23,11 +23,17 @@ question the floorplan actually waits on. Whether a monitor accepts
 720×400@70 or 640×480@60 is a property of *the monitor*, and it does not
 care which vendor's silicon generated the timing.
 
-**What it does not test: the fake-differential technique.** The Tang Nano
-drives HDMI through Gowin's **true LVDS output buffers** (`TLVDS_OBUF`)
-and a hard 10:1 serialiser (`OSER10`) — real differential drivers, not a
-resistor network. So it says nothing about signal integrity of emulated
-differential, and should not be cited as if it did.
+**And it does test the emulated-differential technique** — read the
+schematic and the source rather than assuming.
+
+Sipeed's own `svo_hdmi.v` instantiates **`ELVDS_OBUF`** — Gowin's
+***E*mulated* LVDS, not `TLVDS_OBUF` (true LVDS) — driven by a hard 10:1
+serialiser, `OSER10`. The HDMI pins sit in **Bank 1 at 3.3 V**, shared
+with the RGB LCD pins.
+
+So this is the same class of technique planned here: complementary CMOS
+outputs emulating a differential standard into a TMDS sink. It is a
+closer analogue than a board with real LVDS drivers would have been.
 
 ### MachXO2 — cannot reach DVI rates, and the margin is not close
 
@@ -52,15 +58,52 @@ before the fabric is even considered.
 
 ### What nothing on hand can answer
 
-**Signal integrity of an AC-coupled emulated differential output at TMDS
-rates.** The Tang Nano uses real LVDS drivers; the MachXO2 cannot reach
-the rate. Only an ECP5 driving the real coupling network answers it.
+**Only this board's own layout and termination.** That is a narrower gap
+than it first appeared: the Tang Nano does exercise emulated differential
+through an AC-coupled front end, so the *technique* is demonstrable on
+hardware already here. What remains is trace impedance, coupling-cap
+placement and connector transition on **this** PCB — which no borrowed
+board could ever have answered.
 
 That is acceptable, because the technique is not the risk. It is
 documented in the ECP5 datasheet with a termination scheme (Figure 3.1),
 it ships working on the ULX3S, and there are multiple public
 implementations. **The residual risk is this board's own layout and
 termination**, which no borrowed hardware could have de-risked anyway.
+
+### Two reference front ends, compared
+
+Both boards emulate differential output, and **both AC-couple.** The Tang
+Nano front end is fully verified here from its schematic (sheet
+`FPGA_HDMI`, rev 3672); the ULX3S values are from published sources
+rather than a schematic read.
+
+| | **Tang Nano 9K** | **ULX3S** |
+|---|---|---|
+| driver | `ELVDS_OBUF` (emulated) | `LVCMOS33D` (emulated) |
+| serialiser | `OSER10`, hard 10:1 | fabric / `ODDRX1F` |
+| **coupling** | **100 nF series, all 8 lines** | **220 nF series** (100 nF on a later fork) |
+| bias / termination | **49.9 Ω pull-up to +3V3 per line** | not verified here |
+| ESD | **`RCLAMP0524P` ×2** (4 channels each) | not verified here |
+| DDC | SCL/SDA pulled up 1.5 kΩ to +5 V; CEC 27 kΩ | 3.3 V↔5 V I²C level shifter |
+
+**The Tang Nano signal chain, in order:** FPGA pin → 49.9 Ω to +3V3 →
+100 nF series cap → ESD clamp → HDMI connector.
+
+That pull-up is worth understanding rather than copying blindly. It puts
+**a ~50 Ω source-side termination referenced to 3.3 V** on the driver
+side of the coupling cap — roughly mirroring what the sink does with its
+own 50 Ω to AVCC — while the capacitor keeps the two DC domains apart.
+
+**Where the two designs converge is the useful part:** two independent
+teams, two FPGA families, both emulating differential into a TMDS sink,
+and both chose **series capacitors in the 100–220 nF band.** That is the
+75–200 nF industry guidance, arrived at twice.
+
+**For the BOM here** that means, per line: one series capacitor
+(100 nF is the value both converge on), a 49.9 Ω pull-up to 3.3 V, and a
+shared ESD clamp array — eight lines, so two four-channel parts. Plus DDC
+pull-ups, which are not optional if EDID is ever to be read.
 
 ### How the output is actually coupled — capacitors, not resistors
 

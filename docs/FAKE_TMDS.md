@@ -52,15 +52,46 @@ before the fabric is even considered.
 
 ### What nothing on hand can answer
 
-**Signal integrity of a resistor-network emulated differential output at
-TMDS rates.** The Tang Nano uses real LVDS drivers; the MachXO2 cannot
-reach the rate. Only an ECP5 driving a resistor network answers it.
+**Signal integrity of an AC-coupled emulated differential output at TMDS
+rates.** The Tang Nano uses real LVDS drivers; the MachXO2 cannot reach
+the rate. Only an ECP5 driving the real coupling network answers it.
 
 That is acceptable, because the technique is not the risk. It is
 documented in the ECP5 datasheet with a termination scheme (Figure 3.1),
 it ships working on the ULX3S, and there are multiple public
 implementations. **The residual risk is this board's own layout and
 termination**, which no borrowed hardware could have de-risked anyway.
+
+### How the output is actually coupled — capacitors, not resistors
+
+**Correction.** Earlier notes here described the interface as a resistor
+network. **That is wrong**, and it is worth recording why, because the
+mistake is an easy one to repeat.
+
+**The ULX3S GPDI lines are series AC-coupled — 220 nF capacitors, 100 nF
+on a later fork.** No resistor network. And that is the correct approach
+for driving a DVI/HDMI *sink*, for a reason specific to how the sink is
+built:
+
+- **A TMDS sink terminates each line with 50 Ω to AVCC (3.3 V)**, and
+  that termination is what establishes the DC bias.
+- **Driving push-pull LVCMOS33 into that directly fights the bias.**
+- **Series capacitors block the DC**, so the LVCMOS swing rides on the
+  bias the sink has already set.
+
+Industry guidance for TMDS coupling is **75–200 nF**, which is exactly
+the range the ULX3S sits in.
+
+**Where the resistor idea came from — and why it does not apply.**
+Lattice's Figure 3.1 (§3.16, LVDS25E) *is* a resistor network, and it is
+the figure this document already cites. But it emulates **LVDS**, which
+is a different target: a ~1.2 V common mode into a 100 Ω differential
+termination at the receiver. TMDS into an HDMI sink is a different load
+with a different bias, and the resistor scheme does not carry across.
+
+**The two are not interchangeable, and the datasheet figure is not the
+one to build from here.** For BOM purposes this is a series capacitor per
+line, and the value is a real design input rather than a detail.
 
 ### A note on the ULX3S reports
 
@@ -270,8 +301,7 @@ opening until the ceiling above is known.
 ## Questions for the study, when it happens
 
 - What serial rate can the ECP5 actually sustain, for true LVDS pairs
-  versus a resistor-network pseudo-differential, at the target speed
-  grade?
+  versus an AC-coupled pseudo-differential, at the target speed grade?
 - **What is the lowest mode a modern display will reliably accept?**
   Low pixel clocks are easy for the FPGA and often refused by modern
   monitors and TVs; 720p is accepted nearly everywhere and is the

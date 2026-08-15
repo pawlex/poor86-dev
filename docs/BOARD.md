@@ -518,6 +518,48 @@ fabrication.
 | BOM | reduced-BOM is a stated design goal, not a preference |
 | Expansion slots | **none**, and the form factor could not hold them |
 
+## Power: as drawn in the schematic
+
+From `PCB/AsicPowerGnd.kicad_sch` — this is what exists, not a proposal.
+
+| | |
+|---|---|
+| entry | **ATX-20** (J1) |
+| regulators | **3x TLV62569DBV** synchronous buck (U2, U4, U6) |
+| rails | **+3V3, +2V5, +1V1** from +5 V |
+| adjust | **JP6 solder jumper — "Closed = 3.3 V, Open = 3.5 V"** |
+
+**JP6 is the adjustable part, and it is aimed squarely at the Am5x86
+margin.** That part is nominally ~3.45 V, so a 3.5 V setting matches the
+CPU rather than asking it to run 150 mV low. This is a better answer than
+the level-shifter footprints recorded elsewhere: it removes the mismatch
+instead of translating across it.
+
+- [ ] **Confirm what the 3.5 V setting feeds.** ECP5 VCCIO for LVCMOS33
+      has a *recommended* range around 3.135-3.465 V, so **3.5 V is above
+      the recommended VCCIO** — fine for the CPU, out of spec if the same
+      rail also feeds FPGA banks. Either the CPU gets its own rail, or
+      the jumper is understood as CPU-only. This needs checking against
+      the ECP5 datasheet before it is relied on, because it interacts
+      with the "all VCCIO is 3.3 V" decision.
+- [ ] With that resolved, decide whether the level-shifter footprints are
+      still wanted, or whether JP6 supersedes them.
+
+### Two discrepancies with the plan of record
+
+Recorded rather than silently reconciled — the schematic may simply be
+ahead of, or behind, the written plan.
+
+- **FPGA part.** The schematic instantiates **`LFE5U-25F-6BG256C`** — a
+  25F in BG256. The plan of record, the pin budget and every ball-count
+  argument assume **LFE5U-85F in CABGA381**. BG256 has far fewer I/O than
+  the 205 the budget spends, so if the 25F is current the placement work
+  needs redoing against it.
+- **Power entry.** An ATX-20 connector is fitted. `BOARD.md` records DC
+  barrel as preferred on BOM and size grounds, with power entry listed as
+  open. If ATX is settled, gate G8 is answered and the entry above should
+  say so.
+
 ## Reserved resources
 
 - **ECP5 bank 8 — configuration and DFx only.** 13 balls, all

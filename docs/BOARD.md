@@ -749,6 +749,21 @@ and leave the C pin free. Two only if a differential source is ever used.
       the PLL nearest the memory on PL, which is where the timing-critical
       logic will be. PL also has the slack: 52 of 65 balls allocated. The
       right-hand corners sit under the CPU bus, which is the busier edge.
+**SDRAM runs at CPUCLK × 2.** With a 33 MHz CPU bus that is ~66 MHz, and
+both fall out of the 50 MHz reference on clean ratios:
+
+```
+CPU bus    50 MHz x 2/3 = 33.33 MHz
+SDRAM      50 MHz x 4/3 = 66.67 MHz   = CPUCLK x 2 exactly
+```
+
+The point is not the bandwidth — the memory is already over-specified for
+this machine — it is the **fixed integer phase relationship**. At exactly
+2x, the memory controller gets two SDRAM cycles per CPU cycle with no
+clock-domain crossing and deterministic timing between the two, which
+removes synchroniser latency from precisely the path the whole
+latency argument is about.
+
 - [ ] **Check the pixel clock is synthesisable from 50 MHz.** 33 MHz for
       the CPU bus is a straightforward ratio, but exact VGA pixel clocks
       are not — 25.175 MHz from 50 MHz needs a fractional ratio the PLL

@@ -76,8 +76,9 @@
 
   <!-- memory -->
   <rect class="mem" x="186" y="300" width="150" height="54" rx="3"/>
-  <text class="tb" x="261" y="323" text-anchor="middle">SDR SDRAM</text>
-  <text class="ts" x="261" y="341" text-anchor="middle">wide · 40 pins</text>
+  <text class="tb" x="261" y="320" text-anchor="middle">SDR SDRAM</text>
+  <text class="ts" x="261" y="336" text-anchor="middle">wide · 40 pins</text>
+  <text class="tt" x="261" y="350" text-anchor="middle">CPUCLK × 2</text>
   <rect class="mem" x="186" y="372" width="150" height="54" rx="3"/>
   <text class="tb" x="261" y="395" text-anchor="middle">HyperRAM</text>
   <text class="ts" x="261" y="413" text-anchor="middle">narrow · 12 pins</text>

@@ -17,7 +17,7 @@ Counted from the datasheet-derived CSVs, not estimated.
 | block | pins |
 |---|---:|
 | CPU bus — Am5x86, essential set | **97** |
-| SDRAM, wide group | 40 |
+| SDRAM, wide group — **CPUCLK × 2** (~66 MHz) | 40 |
 | HyperRAM, narrow group | 12 |
 | HDMI, 4 differential pairs | 8 |
 | config EEPROM (bank 8, hard SPI) | 6 |

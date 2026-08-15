@@ -283,14 +283,58 @@ actually wants.
   now and placed at the factory, which at JLC assembly prices costs
   nothing to commit to.
 
-**Open — verify before layout.** NXP's documentation was not reachable
-during this write-up, so three things are recorded as unconfirmed rather
-than assumed:
+##### Component-level ESD is not system-level ESD
 
-- [ ] **Connector-side ESD rating.** If the `PTN3365` does not provide
-      IEC 61000-4-2 level 4 at the connector, a dedicated low-capacitance
-      ESD array is still wanted downstream of it. **This is the one item
-      that could keep a second part in the BOM.**
+**`6 kV HBM / 1 kV CDM` does not qualify the connector.** Those are
+JEDEC component ratings, and per TI's own guidance they are
+
+> *"useful in verifying the component's ability to survive manufacturing,
+> assembly, and shipping but does not represent what a component
+> experiences in an end-user scenario"* — SLLA305A §4.2
+
+HBM specifically *"simulates a human body discharging onto a grounded
+device **in a controlled factory environment**."* **An HDMI port is the
+opposite of a controlled factory environment** — it is the one connector
+on this board a person handles, repeatedly, often while touching the
+chassis.
+
+The applicable standard is **IEC 61000-4-2**:
+
+| level | contact (±kV) | air (±kV) |
+|:-:|:-:|:-:|
+| 1 | 2 | 2 |
+| 2 | 4 | 4 |
+| 3 | 6 | 8 |
+| **4** | **8** | **15** |
+
+> **The trap is that the numbers look comparable and are not.** "6 kV HBM"
+> sits next to "level 3 = 6 kV contact" and invites the conclusion that
+> the part is already there. It is not: HBM discharges 100 pF through
+> 1.5 kΩ, while IEC 61000-4-2 discharges 150 pF through **330 Ω**, giving
+> a far faster rise and a much higher peak current. **The same voltage
+> number is a substantially harsher event.** Never read one as the other.
+
+**So the front end keeps a dedicated ESD array, placed between the
+`PTN3365` and the connector** — protection belongs on the connector side
+of what it protects, as close to the connector as layout allows.
+
+- **Target IEC 61000-4-2 level 4** — ±8 kV contact, ±15 kV air.
+- **Still under ~1 pF per channel**, per the selection rule above.
+- **A pure ESD array, not another companion chip.** A `TPD12S521` would
+  also satisfy the ESD requirement, but it duplicates the DDC and HPD
+  buffering the `PTN3365` already does, and putting two active buffers in
+  series on those lines is worse than either alone.
+
+Net BOM for the front end: **`PTN3365` + one low-capacitance ESD array +
+8 coupling capacitors**, and the pull-ups pending the check below.
+
+**Open — verify before layout.** NXP's documentation was not reachable
+during this write-up, so two things remain unconfirmed rather than
+assumed:
+
+- [x] **Connector-side ESD — answered: a second part stays in the BOM.**
+      See below. The `PTN3365`'s 6 kV HBM / 1 kV CDM is a *handling*
+      rating and does not protect a user-accessible port.
 - [ ] **Whether the 49.9 Ω pull-ups are still required.** The part
       specifies its own input handling for low-swing AC-coupled
       differential, so they may be redundant — which would reduce the

@@ -322,6 +322,43 @@ it.
       peripheral bus** rather than a video-specific connector. Costs
       nothing extra now and forecloses less later.
 
+#### The mezzanine is not yet formally specified — and needs to be
+
+Everything above describes the mezzanine's *intent*. None of it is a
+specification, and **nobody can design a daughterboard against intent.**
+This is the gap that most limits other people rather than this board:
+"386SX-class bus, 3.3 V" does not tell a designer what to draw.
+
+Writing it is not blocked on anything — the CPU pinmaps are in `Data/`
+and the electrical position is already decided. What a spec has to pin
+down, roughly in order of what stops someone starting:
+
+- **Connector part, pinout and keying.** Which physical part, and the
+  signal-to-pin assignment. Mechanical keying so it cannot seat wrong.
+- **The signal list**, with directions and which are optional. Which of
+  the 386SX bus appears, and what a card may leave unconnected.
+- **The transceiver-control lines** — what the four lines mean and who
+  drives them, including the state when nothing is fitted.
+- **Electrical limits**: 3.3 V, not 5 V tolerant, plus drive strength and
+  the maximum load a card may present per pin.
+- **Timing budget at ~33 MHz through a connector** — setup and hold *at
+  the connector*, not at the FPGA, with the propagation allowance stated
+  so a card designer can spend it.
+- **How a slow card extends a cycle**, and what the ceiling on that is.
+- **Interrupts back to the FPGA**, and whether they are shared.
+- **Address and I/O ranges a card may claim**, and the FPGA's matching
+  obligation not to claim them.
+- **Power**: which rails, and the current budget per rail.
+- **Mechanical**: board outline, mounting, and height under mini-ITX
+  clearance.
+
+Two things worth settling before writing it, since they change the
+document rather than fill it in: whether the bus is general or
+video-specific (the checkbox above), and whether a **reference
+daughterboard** ships alongside — a KiCad template plus the
+co-simulation harness is a far better specification than prose, and most
+of both already exist.
+
 **What it does not solve:** whether *FPGA* video needs a dedicated memory
 channel still depends on G2. The mezzanine removes the GD5428 from the
 gate; it does not remove the gate.

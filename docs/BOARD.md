@@ -286,7 +286,7 @@ takes a position on anyone else's voltage.
 **So: a 3.3 V machine with a 3.3 V expansion bus**, and any legacy
 voltage handled where the legacy part lives. Any period peripheral expecting a 486 or ISA-style bus can live
 there — video, sound, whatever comes later. That quietly restores
-expandability to a board with no expansion slots, at the cost of one
+expandability to a board with no legacy expansion slots, at the cost of one
 connector and a handful of transceivers. It is also the same bus the
 soft core drives when no hard CPU is fitted, so mezzanine peripherals
 work on both paths without special handling.
@@ -454,6 +454,15 @@ Everything below follows from those four.
   period part needs a period bus and gets one. Anything designed today
   has no reason to pretend, and shouldn't be made to.
 
+  **The absence is of *legacy* slots specifically, and that is a
+  conclusion rather than a constraint.** Building an expansion ecosystem
+  around period cards is a dead end: the supply only shrinks, every card
+  needs the bus reproduced faithfully enough to satisfy hardware nobody
+  can fix, and the effort scales with a catalogue that is closed. The
+  mezzanine supports the specific legacy silicon that actually earns its
+  place — and nothing more — while anything new arrives on a header that
+  is still manufactured.
+
 ### COULD — only if area and time allow
 
 - Both CPU footprints on one board.
@@ -611,7 +620,7 @@ fabrication.
 | Sockets | **none** — every part soldered, including the CPU |
 | CPU supply | **3.3 V required**, so the CPU bus connects to the FPGA with no level shifters |
 | BOM | reduced-BOM is a stated design goal, not a preference |
-| Expansion slots | **none**, and the form factor could not hold them |
+| Legacy expansion slots | **none** — see below; specific legacy parts are supported on a mezzanine instead |
 
 ## Power: as drawn in the schematic
 
@@ -847,7 +856,7 @@ cheap now and impossible later.
 | Config / storage | SPI NOR (bitstream + BIOS images + config + read-only system); candidate size 64 MiB, of which 8 MiB reserved for dual-boot bitstreams |
 | Bulk storage | SD card |
 | Video | HDMI direct from the FPGA (see [FAKE_TMDS.md](FAKE_TMDS.md)), and/or a **CL-GD5428** on the local bus |
-| Deliberately absent | RJ45, drive connectors, coin cell, expansion slots, optical drive — each removed by a decision recorded in the plan |
+| Deliberately absent | RJ45, drive connectors, coin cell, legacy expansion slots, optical drive — each removed by a decision recorded in the plan |
 
 ## Open
 

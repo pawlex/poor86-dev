@@ -4,8 +4,8 @@ A 386/486-class PC motherboard, in mini-ITX, built around a real x86 CPU
 and an FPGA chipset — with every part of the machine that nobody loves
 replaced by something modern.
 
-It boots DOS. It has no hard disk, no battery, no expansion slots, no
-drive bays, and no shelf of discs. It fits in a case you can live with.
+It boots DOS. It has no hard disk, no battery, no legacy expansion
+slots, no drive bays, and no shelf of discs. It fits in a case you can live with.
 
 Decisions here are made on latency and phase coupling rather than raw
 bandwidth: at 33 MHz with a four-word burst window, bandwidth is rarely
@@ -188,8 +188,10 @@ Two corollaries that have saved a great deal of work:
 ### Non-goals
 
 - Museum-grade period accuracy behind the register interface.
-- Expansion slots. There are none, and the form factor could not hold
-  them anyway.
+- **Legacy expansion slots.** They do not fit the form factor, and
+  building around scarce period cards is a dead end. Specific legacy
+  silicon is supported directly, on a mezzanine; new work arrives on a
+  modern header.
 - Windows. DOS is the target; anything further is a bonus.
 - Being the fastest anything. A period machine that works beats a fast
   one that does not exist.

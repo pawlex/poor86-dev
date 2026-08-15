@@ -104,33 +104,47 @@ and both chose **series capacitors in the 100–220 nF band.** That is the
 (100 nF is the value both converge on), a 49.9 Ω pull-up to 3.3 V, and a
 shared ESD clamp array — eight lines, so two four-channel parts.
 
-### DDC and EDID are out of scope — decided
+### EDID stays; DDC does not — the data comes from a ROM
 
-**The machine will not read EDID.** It emits a small fixed set of VESA
-modes and the display accepts them or does not. That is the whole reason
-VESA timings exist, and a DOS machine has nothing to negotiate: the guest
-picks its mode, and nothing downstream is going to choose a better one
-from a capability list.
+**Separate the wire from the data.** They are usually one thing and do
+not have to be.
 
-What that removes is not just parts — it is an I²C master in RTL, a 5 V
-level-shifting domain on an otherwise 3.3 V board, and a runtime
-mode-negotiation path with failure modes of its own.
+- **DDC — the I²C wire to the monitor — is out.** That removes an I²C
+  master in RTL, a 5 V level-shifting domain on an otherwise 3.3 V board,
+  and a runtime negotiation path with failure modes of its own.
+- **EDID — the data structure — stays in the design**, supplied from **a
+  small ROM** rather than read off the display.
+
+So the mode logic still consults a real EDID blob and is not hardcoded
+against a mode list baked into RTL. It simply gets those bytes locally.
+
+**And the ROM can be supplied upstream by the ESP32.** This is the same
+mechanism already carrying the CMOS time base, `etc/e820` and the NE2000
+MAC address: the chipset reset-exit vector reads configuration from the
+controller. **EDID becomes one more item in that payload**, which means
+it is updatable without a bitstream rebuild — a user with an awkward
+display can be given a different blob rather than a different board.
+
+**Why keep the EDID format at all**, rather than a private table? Because
+it costs nothing and buys two things: existing tooling parses and
+validates it, and **if DDC is ever populated the consumer does not
+change** — the same parser reads the same structure, sourced from the
+wire instead of the ROM. The DNP footprints below make that a stuffing
+option rather than a board spin.
 
 **Keep the DDC pads and pull-up footprints, DNP.** Same pattern as
-everywhere else here: the footprints cost board area and no BOM, and
-without them adding EDID later is a board spin.
+everywhere else here: board area, no BOM.
 
-**Two consequences worth stating plainly:**
+**Two things this does not fix:**
 
-- **A sink does not require the source to read it.** DVI and HDMI
-  displays sync without DDC; EDID exists for the source's benefit. So
-  nothing breaks by omitting it on a direct monitor connection.
-- **But it removes the ability to detect refusal, so the output mode must
-  be one that always works.** Without EDID there is no runtime fallback —
-  a refused mode is simply a blank screen. That argues for **a fixed,
-  safely-accepted output mode with the guest's mode scaled into it**,
-  rather than switching the output to follow the guest. It strengthens
-  the scaler case rather than weakening it.
+- **A canned EDID is a claim, not knowledge.** It says what the machine
+  is willing to emit, not what the attached display accepts. Wrong blob,
+  wrong answer — the honesty is in the sourcing, not the format.
+- **There is still no detection of refusal**, so a refused mode is a blank
+  screen with no runtime fallback. The output mode must be one that always
+  works, which argues for **a fixed, safely-accepted output mode with the
+  guest's mode scaled into it** rather than switching output to follow the
+  guest. It strengthens the scaler case rather than weakening it.
 
 > **Prototype build note — use a large footprint for the 49.9 Ω
 > pull-ups.** On prototype boards these eight resistors should be an

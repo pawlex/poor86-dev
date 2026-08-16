@@ -76,12 +76,11 @@ defined level, an output may simply be left open.
 | `UP` | 1 | upgrade-present; no upgrade socket exists |
 | `CLKMUL` | 1 | selects the multiplier — a build-time property of the CPU, not a chipset signal |
 
-> **Correction: `PCD` and `PWT` cannot be strapped — they are outputs.**
-> The datasheet is explicit: *"the CPU ignores the PCD bit and drives the
-> PCD **output** Low"*, and the same for `PWT`. They reflect page-table
-> attributes outward. **Leave them open** unless the FPGA L2 is to honour
-> page-level cacheability, which is tied to the policy open in
-> [PLAN_OF_RECORD.md](PLAN_OF_RECORD.md).
+> **`PCD` and `PWT` cannot be strapped — they are outputs.** The
+> datasheet is explicit: *"the CPU ignores the PCD bit and drives the PCD
+> **output** Low"*, and the same for `PWT`. They reflect page-table
+> attributes outward, so the only choices are **route** or **leave open**
+> — and they are **routed**, per the table below.
 
 **Kept, against the earlier suggestion to cut them:**
 
@@ -90,6 +89,7 @@ defined level, an output may simply be left open.
 | `BS8` `BS16` | 2 | retained by decision — dynamic bus sizing stays available even though the FPGA could width-convert internally |
 | `BREQ` `BOFF` | 2 | retained; keeps genuine multi-master arbitration open rather than assuming a single master forever |
 | `PLOCK` | 1 | output, retained |
+| **`PCD` `PWT`** | 2 | **retained for L2 correctness.** They carry the page-table cacheability attributes outward, and an L2 that ignores them will cache pages the OS marked uncacheable — memory-mapped device windows, and a shared framebuffer if video ends up in main memory. That is a **correctness** failure, not a performance one, and it is invisible until something reads stale data. Feeds the policy open in [PLAN_OF_RECORD.md](PLAN_OF_RECORD.md) |
 | **`FERR` `IGNNE`** | 2 | **required for DOS.** The legacy x87 error path is `FERR#` → IRQ13 → BIOS handler → port `0xF0` → `IGNNE#`, which is the PC-compatible mechanism whenever `CR0.NE=0` — the DOS default. Cutting these breaks x87 exception handling on a machine built to run period software |
 
 #### Evidence that `SMI` is safe to cut
@@ -115,6 +115,11 @@ There is no path by which SeaBIOS reaches SMM here, so the condition
 | straps (`UP`, `CLKMUL`) | −2 |
 | **routed to the FPGA** | **98** |
 | with the `A24-A31` pin-saver | **90** |
+
+Composition check: 30 address + 32 data + 36 control = 98, the 36 being
+the 43 control signals less `PCHK`, `SMI`, `SMIACT`, `STPCLK`, `SRESET`
+(cut) and `UP`, `CLKMUL` (strapped). **`PCD` and `PWT` are inside that
+36.**
 
 ---
 

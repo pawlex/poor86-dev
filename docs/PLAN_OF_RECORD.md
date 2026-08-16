@@ -627,6 +627,80 @@ bursts with no interrupt logic and no partial-burst abort. At 640×480,
 scanout occupies ~31% of the device, leaving room for roughly two write
 bursts between each scanout burst.
 
+##### Open path — the write-absorbing buffer
+
+**Exploratory, not decided.** Recorded so the shape is on paper while the
+part survey below runs, since the survey may move the constants.
+
+**Why something is needed.** The PSRAM is half-duplex, so a CPU write
+arriving mid-burst waits for the burst to finish — **~4 µs at 128 bytes,
+about 135 CPU clocks at 33 MHz, on every write.** That is not survivable
+for software that draws directly to video memory, which is all of it.
+
+**Sketch: a write-combining buffer whose line size is the burst size.**
+
+```
+4 lines × <burst> bytes, each with { base address, dirty mask }
+  CPU write  → hits an open line, or allocates one
+  line full  → flush as a single burst write
+  no line    → evict LRU
+```
+
+Matching line to burst is the point: `REP STOSD`, the common DOS
+full-screen fill, then coalesces into whole-burst writes rather than
+dozens of separate command and address sequences.
+
+**Cost is negligible** — one `DP16KD` covers data and tags, **1 block of
+208**, so it does not meaningfully compete with the L2.
+
+**Two coherency cases, wanting different answers:**
+
+- **Scanout need not snoop it.** A pixel one frame late is invisible, and
+  is what period hardware did anyway. Do not build that path.
+- **CPU reads must see buffered writes** — period software does
+  read-modify-write on video memory for XOR sprites and masked blits.
+  Simplest correct rule: **a CPU read of the framebuffer region flushes
+  the buffer first.** Reads there are far rarer than writes.
+
+**What it does not fix**, and should not be expected to: sustained
+full-rate writing still throttles. Scanout takes ~31% of the device at
+640×480, leaving ~43 MB/s for writes against a 486's ~66 MB/s of
+back-to-back `STOSD`. A full-screen clear therefore runs ~35% slower than
+the CPU could manage alone — **bounded and predictable, versus 135-clock
+stalls on every write without it.**
+
+##### Open — survey QSPI PSRAMs for a lowest common denominator
+
+**Do not design against one vendor's part.** The controller should be
+portable across manufacturers, so the constants must be the worst case
+across a candidate set rather than the best case of a favourite.
+
+- [ ] **Survey the field** — AP Memory `APS6404L`, Espressif
+      `ESP-PSRAM64`, ISSI serial PSRAM, and the Chinese second sources —
+      and record, per part: **page size, `tCEM` by temperature grade, max
+      QPI clock, wrap behaviour, dummy-cycle count, command set, and
+      supply voltage.**
+- [ ] **Take the minimum of each**, not the typical.
+- [ ] **Parameterise the controller** — burst length, dummy cycles, page
+      size and the QPI-entry sequence belong in parameters or a small
+      init table, **not hardcoded in the state machine.** A different part
+      should be a constant change, not a redesign. Vendor initialisation
+      sequences differ more than anything else.
+
+**Preliminary — the LCD looks close to free.** Taking the worst values
+already seen (1 K page, `tCEM` 3 µs at 105 °C):
+
+| | value | result at 66 MHz |
+|---|---|---|
+| safe burst under 3 µs `tCEM` | **64 B** | 142 clocks, 2.15 µs |
+| effective throughput | | **59.5 MB/s** |
+| against the 128 B best case | | 62.6 MB/s — **a 5% difference** |
+
+**So designing for the lowest common denominator costs about 5% and still
+meets the ~60 MB/s target.** The survey is therefore expected to move a
+constant rather than the architecture — but it should be run before the
+constant is fixed, not after.
+
 ##### The separate chip selects are the useful part
 
 The two PSRAMs have **independent selects**, not a shared one, and that

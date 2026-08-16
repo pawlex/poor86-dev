@@ -697,8 +697,19 @@ not a rework.**
 **G10 — HDMI front end: direct, or via a `PTN3365`?**
 ([FAKE_TMDS.md](FAKE_TMDS.md) — full analysis and part numbers there.)
 
-**Blocks PCB.** The two paths differ in placement, routing and BOM, so it
-cannot be deferred past layout.
+> **PINNED — decide at layout, not before.** The analysis is finished:
+> both paths are fully specified down to part numbers, values and
+> populate/DNP status, and **no further research is required.** What
+> remains is not a question about HDMI — it is a question about *what is
+> left over*, and that is not knowable until the CPU bus and the memory
+> groups have taken their share.
+>
+> This is a deliberate park with the inputs gathered, not a stall. **The
+> decision becomes mechanical once G3 and G5 land.**
+
+**Blocks PCB**, and is blocked *by* the allocations above it. The two
+paths differ in placement, routing and BOM, so it cannot slip past
+layout — but it should not be forced ahead of layout either.
 
 *The summary:* a `PTN3365` converts the FPGA's emulated differential into
 **compliant DVI/HDMI output**, which matters more here than usual —
@@ -744,17 +755,29 @@ knowledge:* both are low-cost hobby boards where a $2 part weighs more
 than it does on a board carrying an Am5x86 and an ECP5-85F. Their
 constraint was tighter than ours, so read it as corroboration, not proof.
 
-*Decided by — in order:*
+*Decided by — in order, at layout time:*
 
 1. **Measurement.** The Tang Nano 9K runs the direct path on hardware
    already here. If it drives the target displays at the target modes,
    **build direct** — the risk is retired and the elegance is kept.
-2. **Room and time**, only if the measurement is ambiguous. A *resource*
-   judgement, not a philosophical one: does the layout have area near the
-   rear I/O, and schedule for the extra controlled-impedance routing and
-   the attenuator simulation? **This is the tiebreaker precisely because
-   the fallback is proven** — declining the part under schedule pressure
-   is choosing the demonstrated option, not cutting a corner.
+2. **Remaining board area and FPGA I/O**, which is why this waits for G3
+   and G5. Worth separating the two, because they bear on different
+   questions:
+   - **FPGA I/O pressure barely affects the *front-end choice*.** Both
+     paths cost the same 8 balls — four pairs — and the `PTN3365`'s
+     `OE_N` and `DDC_EN` strap rather than needing pins. What I/O
+     pressure actually decides is whether HDMI survives at all, and on
+     **which edge**, which is the gearing question already recorded in
+     [PLACEMENT.md](../docs/PLACEMENT.md).
+   - **Board area is what decides this gate.** A QFN32, eight
+     attenuators, a `REXT` and controlled-impedance routing in and out,
+     all near the rear I/O — against a 170 mm square that already carries
+     a CPU at an FPGA corner, two memory groups and a mezzanine along one
+     edge.
+3. **Schedule**, as the final tiebreaker. **It is a legitimate one
+   precisely because the fallback is proven** — declining the part under
+   time pressure is choosing the demonstrated option, not cutting a
+   corner.
 
 *Standing recommendation if unresolved:* **build direct.** It is the
 proven path, it is what both reference designs do, and its failure mode
@@ -762,7 +785,8 @@ is a degraded signal rather than a damaged part. The `PTN3365` is the
 upgrade to reach for **once the direct path has been measured and found
 wanting** — not the default to spend prototype schedule on first.
 
-*Depends on:* G2.
+*Depends on:* G2 (whether FPGA video exists at all), then **G3 and G5** —
+this gate consumes their leftovers rather than competing with them.
 
 ### Why these come first
 

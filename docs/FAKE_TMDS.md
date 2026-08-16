@@ -784,7 +784,13 @@ edge, so the ceiling is explorable on the prototype rather than fixed at
 500 Mb/s by placement. Nothing further is needed before the boards
 arrive.
 
-**Levers available when the time comes**, cheapest first:
+> **All three are nice-to-haves, not commitments.** None is on the
+> critical path, none is required to meet the 1024×768 spec, and none
+> should acquire a schedule. They are recorded so the options are known
+> when someone has a board in hand and time to play — **eventually**, not
+> next.
+
+**Levers, cheapest first:**
 
 | lever | effect | cost |
 |---|---|---|

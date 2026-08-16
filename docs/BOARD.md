@@ -966,7 +966,7 @@ can, because the remapping happens on the card.
 | supply risk | a future CPU is a **new card**, not a new machine — the ao486 survivability argument becomes physical |
 | bring-up | baseboard first on the soft core, CPU cards added incrementally |
 
-#### It also unlocks PGA — and with it, the CPUs that actually exist
+#### It also unlocks PGA — a consequence, not a design goal
 
 **"No sockets" is a *baseboard* constraint, not a project one.** It exists
 because a 168-pin PGA socket is roughly 45 mm square and tall, which is
@@ -995,6 +995,13 @@ IBM variants — translate on the card**, exactly as the peripheral
 mezzanine already requires of a 5 V daughterboard. **Same principle, same
 sentence, applied one level in.** The baseboard continues to take no
 position on anyone else's voltage.
+
+> **None of this is a design goal.** The machine targets one soldered
+> 3.3 V CPU and is specified against it. PGA support is something the
+> mezzanine *makes possible* rather than something the mezzanine is
+> *for* — recorded because a capability nobody notices is a capability
+> nobody uses, and because it costs exactly nothing to have. **It should
+> not acquire a footprint, a schedule, or a place in the requirements.**
 
 #### The residual constraint — clock-capable pins
 

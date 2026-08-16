@@ -703,6 +703,49 @@ question the datasheet cannot answer.
 
 ---
 
+## The video envelope — fixed
+
+**`LFE5U-85F-7BG381I` is the only ECP5-85F stocked by JLCPCB**, so the
+speed grade is settled by supply rather than chosen: **`-7`.**
+
+**The design ceiling is 1024×768 @60, 8 bpp**, and two independent limits
+land on it:
+
+| limit | ceiling |
+|---|---|
+| **serialiser**, `-7` GDDRX2 at 700 Mb/s | 1024×768 needs 650 Mb/s — **7% margin**; 720p needs 743 — **out of reach** |
+| **video memory**, ganged PSRAM pair at ~60 MB/s | 1024×768×8 streams at 47.2 MB/s — **79% used** |
+
+**That the two agree is worth noting.** Neither subsystem is grossly over-
+or under-provisioned against the other, which suggests the sizing is
+balanced rather than accidentally lopsided.
+
+**The practical envelope:**
+
+| mode | bpp | streamed | verdict |
+|---|:-:|---:|---|
+| 640×480 @60 | 8 | 18.4 MB/s | comfortable — 41 MB/s left for writes |
+| 800×600 @60 | 8 | 28.8 | comfortable — any FPGA edge |
+| 640×480 @60 | 16 | 36.9 | comfortable |
+| **1024×768 @60** | **8** | **47.2** | **the ceiling — geared edge, 13 MB/s for writes** |
+| 800×600 @60 | 16 | 57.6 | memory-limited, no write headroom |
+| 1024×768 @60 | 16 | 94.4 | **exceeds memory** |
+
+> **At the top mode, writes are the binding constraint, not scanout.**
+> 13 MB/s against a 486's ~66 MB/s of back-to-back `STOSD` means a
+> full-screen clear at 1024×768 takes ~62 ms, roughly four frames. Tolerable
+> for a mode period software barely uses, and it is why **640×480 remains
+> the mode the machine should feel fastest in.**
+
+**Framebuffer fits comfortably:** 1024×768×8 is **768 KiB**, so the 2 MiB
+allocation holds it **double-buffered** with room to spare.
+
+**720p is not reachable and no part choice fixes it.** The `PTN3365`'s
+3 Gbit/s does not help — the FPGA must still serialise 743 Mb/s and
+cannot at `-7`. If a display demands 720p specifically, **scale into
+1024×768 instead**; monitors generally accept it more readily than TVs
+do.
+
 ## The question that is left
 
 **The FPGA is no longer the constraint — the display is.**

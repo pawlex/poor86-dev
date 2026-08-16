@@ -70,8 +70,8 @@ with performance:
 | part | package | who can fit it |
 |---|---|---|
 | ECP5 | CABGA381 | factory — mandatory regardless |
-| HyperRAM `IS66WVH8M8ALL` | **BGA25** | **factory only** |
-| Parallel PSRAM `IS66WVE4M16` | **TFBGA48** | **factory only** |
+| ~~HyperRAM `IS66WVH8M8ALL`~~ | ~~BGA25~~ | **DROPPED** — see below |
+| ~~Parallel PSRAM `IS66WVE4M16`~~ | ~~TFBGA48~~ | **DROPPED** — wide group is SDRAM |
 | SDR SDRAM | commonly TSOP-54 | **bench** |
 | QSPI PSRAM (e.g. APS6404) | SOP-8 | **bench** |
 | CPU, CL-GD5428 | PGA / PQFP | bench |
@@ -84,10 +84,14 @@ Consequences:
 
 - **Prefer bench-solderable parts wherever a hedge is actually wanted.**
   A hedge you cannot populate is not a hedge.
-- **HyperRAM must be populated on the prototype run to be testable at
-  all.** Either pay its BOM on every board, or split the run into
-  variants and pay assembly setup twice. If neither is worth it, drop it
-  now rather than carry a footprint that can never be exercised.
+- **This was resolved by dropping both BGA memories.** HyperRAM would
+  have had to be populated on every prototype to be testable at all —
+  pay its BOM on all five, or split the run and pay assembly setup twice.
+  Neither was worth it.
+- **Consequence: the ECP5 is now the only BGA on the board**, and it was
+  mandatory regardless. **There is no longer a per-BGA population
+  decision to make**, which collapses G6 and removes its order-time
+  deadline from the critical path.
 - This strengthens **SDR SDRAM** considerably: known-good controller
   already written, lower latency than HyperRAM, and **the only wide
   option that can be changed after the boards arrive.**
@@ -155,9 +159,9 @@ force an unplanned respin.
 
 | candidate | verdict | why |
 |---|---|---|
-| Parallel SRAM + SDRAM sharing the wide group | **include** | tests the latency hypothesis; pins already committed |
-| QSPI PSRAM, gangable | **include** | tests Concept C's premise; ~18 pins |
-| HyperRAM | **probably drop** | BGA, so it occupies a shared group's only slot; and SDRAM plus QSPI already span the latency-versus-pins argument, so it teaches little the others do not |
+| ~~Parallel SRAM + SDRAM sharing the wide group~~ | **dropped** | the wide group is SDRAM, decided |
+| **2× QSPI PSRAM, ganged ×8** | **include — and now load-bearing** | it is the *video* memory, not an experiment; 11 pins with the NOR |
+| ~~HyperRAM~~ | **DROPPED** | **no workload fits it.** The CPU is latency-bound and HyperRAM is high-latency; video is served by the QSPI pair. A part with no job is not a hedge |
 | Level shifter footprints | **include** | a wrong 3.3 V margin is otherwise unrecoverable |
 | CL-GD5428 | **mezzanine connector** | see below — removes it from the gate entirely |
 | Both CPU footprints | **respin instead** | costs scarce area, and a second variant is a local change |
@@ -565,7 +569,8 @@ Everything below follows from those four.
 ### Decided: two memories, both populated — and they are an experiment
 
 **Two memories are needed regardless**, so the question was never whether
-but which two. The answer: **SDR SDRAM on the wide group and HyperRAM on
+but which two. **Superseded — see "Memory, resolved" below.** The
+original answer read: **SDR SDRAM on the wide group and HyperRAM on
 the narrow group, both populated, on separate pins.**
 
 They are not primary and backup in the ordinary sense. **They are the two

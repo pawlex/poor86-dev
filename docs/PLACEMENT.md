@@ -18,18 +18,24 @@ Counted from the datasheet-derived CSVs, not estimated.
 |---|---:|
 | CPU bus — Am5x86, decided set (G1) | **99** |
 | SDRAM, wide group — **CPUCLK × 2** (~66 MHz) | 40 |
-| HyperRAM, narrow group | 12 |
+| ~~HyperRAM, narrow group~~ | ~~12~~ **dropped** |
 | HDMI, 4 differential pairs | 8 |
 | config EEPROM (bank 8, hard SPI) | 6 |
-| dedicated QSPI bus — NOR + PSRAM, 2 chip selects | 7 |
+| QSPI bus — NOR + **2× PSRAM ganged ×8**, `D[7:0]`, 2 selects | **11** |
 | SD card, 4-bit | 6 |
 | ESP32 link | 8 |
 | Mezzanine transceiver control | 4 |
 | Clocks (50 MHz osc on GPLL0), reset, config, misc | 8 |
-| **total** | **198** |
+| **total** | **190** |
 | available, CABGA381 PIO | 205 |
-| **spare** | **7** |
+| **spare** | **15** |
 
+> **Memory pivot applied.** HyperRAM is dropped (−12) and the QSPI bus
+> widens to two ganged PSRAMs for video (+4), a net **−8**. The board
+> lands at **190 of 205 with 15 spare *at full address width*** — so the
+> `A24-A31` pin-saver is **no longer forced**, and remains available as
+> slack rather than a requirement.
+>
 > **Corrected.** This table previously read 190 with a 97-pin CPU bus.
 > **Both figures were wrong:** the CPU set is 99 (see G1 below), and the
 > old line items summed to 196 rather than the 190 stated — a six-pin
@@ -310,7 +316,7 @@ consequential placement fact available today.
 | FPGA edge | allocated | pins | why |
 |---|---|---:|---|
 | **PT + PR** | CPU bus | 97 of 127 | only adjacent pair large enough |
-| **PL** | SDRAM + HyperRAM | 52 of 65 | both memories on one edge, one face of the FPGA |
+| **PL** | SDRAM | 40 of 65 | main memory on one face, opposite the CPU |
 | **PB** | **configuration EEPROM only** | 6 of 13 | bank 8 *is* the configuration bank — see below |
 | leftovers | HDMI, ESP32, SD, transceiver control, clocks | ~34 of ~49 | distributed into PT/PR/PL slack |
 
@@ -396,7 +402,7 @@ and **PR** facing the CPU.
         |                          +----+----+            |
         |    SDRAM  ---------------|   (PT)  |            |
         |                          |         |    Am5x86  |
-        |    HyperRAM -------------| (PL)ECP5|  +-------+ |
+        |                          | (PL)ECP5|  +-------+ |
    170  |                          |    (PR) |--| SQFP  | |
    mm   |         memory: 52 pins  |         |  |  208  | |
         |         on PL            |   (PB)  |  +-------+ |
@@ -419,8 +425,9 @@ and **PR** facing the CPU.
 - **CPU at the FPGA's PT/PR corner.** Forced — no single edge holds 97
   pins. The CPU package sits diagonally off that corner so both edges
   face it.
-- **Memory on PL**, the opposite face, keeping the two widest buses on
-  opposite sides of the FPGA so they do not cross.
+- **SDRAM on PL**, the opposite face, keeping the two widest buses on
+  opposite sides of the FPGA so they do not cross. **The narrow memory
+  group is gone** — video memory is the QSPI pair, near bank 8.
 - **SPI NOR and QSPI PSRAM on PB**, because bank 8 is the configuration
   bank and the FPGA boots through it. Not a placement choice — a
   constraint.

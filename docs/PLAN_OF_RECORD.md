@@ -542,8 +542,7 @@ pin-assignment decision.
 
 #### Proposed resolution: video never touches the SDRAM
 
-**The objection to sharing is not bandwidth.** SDRAM and HyperRAM both
-have ample bandwidth for CPU and video together. **The objection is what
+**The objection to sharing is not bandwidth.** SDRAM has ample bandwidth for CPU and video together. **The objection is what
 sharing does to the memory controller** — and to the ordering this
 document already commits to.
 
@@ -634,7 +633,12 @@ decouples this decision from G2's outcome.
 - **QSPI PSRAM** — video only. Sequential scanout, plus CPU writes through
   a combining buffer.
 - **BRAM** — L2 for the CPU, line buffer for video.
-- **HyperRAM** — the backup and experiment path, unchanged.
+- **HyperRAM** — **dropped.** No workload fits it: the CPU is
+  latency-bound and HyperRAM is high-latency and narrow, while video is
+  served by the QSPI pair. A part with no job is not a hedge, and its
+  BGA25 would have had to be populated on every prototype to be testable
+  at all. Removing it frees 12 pins and leaves the ECP5 as the board's
+  only BGA.
 
 - [ ] **Design the write-combining buffer.** This is the real work, not
       the bandwidth. QSPI PSRAM is half-duplex, so an uncombined CPU write

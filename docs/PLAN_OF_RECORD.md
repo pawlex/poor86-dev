@@ -567,6 +567,55 @@ document already commits to.
 | **BRAM** | 468 KB total | 640×480×8 = **300 KB, 64% of it** | competes directly with the L2 cache |
 | **QSPI PSRAM** | 8 MB | ~38 MB/s → **640×480×8 at ~66% used** | half-duplex; CPU writes need combining |
 
+##### Decided: two QSPI PSRAMs, ganged ×8
+
+**One ×4 device is a little shy; two are comfortable.** They share `CLK`
+and chip select — being ganged, they behave as one device — with separate
+data nibbles. The FPGA drives both nibbles identically during command and
+address, then reads **8 bits per clock** and assembles bytes from the two
+halves. The NOR stays on the same bus using `D[3:0]` and its own select.
+
+| | pins |
+|---|---:|
+| `CLK`, shared by NOR and both PSRAMs | 1 |
+| `D[7:0]`, NOR uses the low nibble only | 8 |
+| `CS` × 2 — NOR, PSRAM pair | 2 |
+| **total** | **11**, against 7 today — **+4** |
+
+**~60 MB/s streamed.** Design against the *average* rate, not the peak:
+active video is only ~73% of frame time, and the line buffer absorbs the
+blanking gaps.
+
+| mode, 8 bpp | peak | **streamed average** | at 60 MB/s |
+|---|---:|---:|---|
+| 640×480 @60 | 25.2 | **18.4** | 31% |
+| 800×600 @60 | 40.0 | **28.8** | 48% |
+| 1024×768 @60 | 65.0 | **47.2** | 79% |
+| 800×600 @60, 16 bpp | 80.0 | **57.6** | 96% — the ceiling |
+
+**Two consequences beyond the bandwidth.**
+
+- **It largely dissolves the write-combining problem**, which was the real
+  objection to a single device. At ~31% utilisation for 640×480 there is
+  two-thirds of the device free for CPU framebuffer writes, turning a hard
+  real-time buffering problem into an ordinary one.
+- **It moves FPGA video from "DOS modes only" to genuine SVGA**, which
+  changes what the CL-GD5428 mezzanine is for — from *the* video answer to
+  a period-authenticity option.
+
+**Capacity is irrelevant and free:** 16 MB against the **2 MiB** the
+framebuffer actually wants, which is itself period-correct — GD5428-era
+cards shipped 512 KB to 2 MB.
+
+- [ ] **Budget consequence: 198 → 202, leaving 3 spare.** That is
+      uncomfortably tight, so this **effectively decides the `A24-A31`
+      pin-saver** (194, 11 spare) — which this document already argues for
+      on other grounds, since 16 MB is the SX-class ceiling and makes the
+      CPU variants agree rather than diverge.
+- [ ] **Length-match the two devices' data lines to each other.** Shared
+      clock, SDR at 84 MHz — not the strict matching of a DDR bus, but
+      they are not unrelated nets either.
+
 **Preferred: QSPI PSRAM as the video memory, with a BRAM line buffer.**
 8 MB is far more than any DOS mode needs — a period GD5428 shipped with
 512 KB — and it leaves the BRAM for the L2 cache, which is what hides

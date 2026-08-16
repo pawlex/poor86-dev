@@ -697,9 +697,62 @@ not a rework.**
 **G10 — HDMI front end: direct, or via a `PTN3365`?**
 ([FAKE_TMDS.md](FAKE_TMDS.md) — full analysis and part numbers there.)
 
-> **PINNED — and the intent is to carry *both* on the validation
-> vehicle, resources permitting**, so the choice is made on measured
-> performance rather than argued in advance.
+> **RESOLVED — video moves to a mezzanine. Both front ends become
+> cards.** The baseboard carries **one** set of 4 differential pairs to a
+> connector; the front end lives on a card, and the two candidates are
+> two cards rather than two baseboard paths.
+>
+> **Connector: vertical PCI Express ×1, mechanical only.** Decided for
+> the prototype.
+
+##### Why the mezzanine resolves this rather than deferring it
+
+| | balls | budget total | fits at full address width? |
+|---|---:|---:|---|
+| both front ends on the baseboard | 16 | 206 | **no — over by one** |
+| **video on a card, two cards** | **8** | **198** | **yes, 7 spare** |
+
+- **It removes the pin-saver dependency.** The dual-path experiment no
+  longer forces 16 MB.
+- **The comparison gets better, not worse** — same FPGA pins, same
+  bitstream, same escape routing. Only the card changes.
+- **It unwinds the QFN commitment.** A fine-pitch part cannot be DNP, so
+  putting the `PTN3365` on the baseboard meant committing at fab. **On a
+  card that is moot — you simply do not build that card.** The risk of
+  the "correct" path stops being a board spin and becomes a spare PCB.
+- **ESD moves to the card**, beside its connector, which is where
+  protection belongs.
+
+##### Why vertical PCIe ×1 rather than M.2
+
+| | **vertical PCIe ×1** | M.2 / NGFF |
+|---|---|---|
+| card thickness | **standard 1.6 mm** | 0.8 mm — **carries a real price premium at JLC** |
+| rear panel | **native** — the standard arrangement already presents a card-mounted connector at the back | flat; reaching the panel is awkward |
+| pins | 36 — ample for 8 signals, 2 ID straps and ~26 power/ground | 67 |
+| height | upright; accepted for a prototype | ~3 mm |
+
+**Card cost decides it.** 36 pins is comfortable for four pairs at
+roughly one return per signal, and the upright card presenting HDMI at
+the rear panel is the arrangement mini-ITX already expects.
+
+Height is the concession, and it is **a prototype-only one.** A
+production board may fold the winning front end back onto the baseboard
+and delete the connector entirely.
+
+> **This is not an expansion slot, and does not contradict the
+> no-legacy-slots position.** It is a PCIe connector used as a private
+> mezzanine interface with a private pinout — **nothing about it is PCIe
+> electrically.** A reader seeing the slot in a photograph will assume
+> otherwise, so it should be labelled on the silkscreen.
+
+- [ ] **Two card-ID strap pins**, so the bitstream can tell which front
+      end is fitted — full drive for direct, attenuated levels for the
+      `PTN3365`. Without them, swapping cards means reflashing.
+- [ ] **Note the common-mode caveat.** The connector now sits in *both*
+      paths, which keeps the A/B comparison fair but means a poor
+      *absolute* result cannot be cleanly attributed — card or connector.
+      Neither reference design has that transition.
 >
 > The analysis is finished: both paths are fully specified down to part
 > numbers, values and populate status, and **no further research is
@@ -707,7 +760,7 @@ not a rework.**
 > is not knowable until the CPU bus and memory groups have taken their
 > share. A deliberate park with the inputs gathered, not a stall.
 
-##### If both are carried, give each its own FPGA pins
+##### Superseded: if both were carried on the baseboard
 
 **Do not share one set of pairs between the two paths with 0 Ω
 selection.** It is the obvious way to save pins and it **corrupts the

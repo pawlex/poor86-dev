@@ -973,11 +973,22 @@ because a 168-pin PGA socket is roughly 45 mm square and tall, which is
 unaffordable on a 170 mm board already carrying an FPGA, memory, an ESP32
 and two mezzanine connectors. **On a dedicated card it is affordable.**
 
-**That matters most for supply.** The Am5x86 datasheet lists *"168-pin PGA
-package or 208-pin SQFP package"* — the same silicon, and **PGA is the
-package the retail market sold.** SQFP-208 went into embedded and laptop
-designs. So the surviving stock of 486-class parts is overwhelmingly PGA,
-and a soldered-SQFP-only board is fishing in the smaller pond.
+**It widens *variety*, not supply — and the distinction matters.** The
+Am5x86 datasheet lists *"168-pin PGA package or 208-pin SQFP package"* for
+the same silicon, so both exist. But the two pools differ in kind:
+
+| | **SQFP-208** | PGA-168 |
+|---|---|---|
+| why it survives | **manufactured late into the 1990s** for embedded — industrial, networking, POS — long after retail PCs moved to Pentium | sold at retail during the 486 era |
+| what is available | **NOS: unused, on tape or tray, known provenance** | mostly **used pulls** — unknown history, bent pins, unknown thermal life |
+
+**So SQFP-208 is the better pool for a new build, and the existing choice
+stands.** Unused parts beat thirty-year-old pulls, which is exactly why
+the README calls the Am5x86 *"abundant as NOS."*
+
+**What PGA adds is the parts that never came in SQFP at all** — 486DX,
+DX2, and the Cyrix and IBM variants. That is a *variety* argument for
+comparison and curiosity, not a supply argument for production.
 
 **What a socketed CPU card adds:**
 

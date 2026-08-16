@@ -53,6 +53,69 @@ made two of them:
 Parity remains the other easy candidate; most chipsets do not implement
 it.
 
+### Decided: the signal set to carry (G1)
+
+Verified against `Data/am5x86_Microprocessor_Family_Datasheet.pdf` and
+`Data/pinmap_am5x86_sqfp208.csv`. **Direction matters** — an input needs a
+defined level, an output may simply be left open.
+
+**Cut — not routed to the FPGA (13 signals):**
+
+| signal | n | disposition | why |
+|---|:-:|---|---|
+| `TCK` `TMS` `TDI` `TDO` | 4 | **tie `TMS`/`TDI` high, `TCK` low; `TDO` open** | unusable without BSDL. **Not floated** — there is no `TRST#` here, so the TAP is held reset by `TMS` high with `TCK` static. A floating TAP can enter a scan state and **drive the bus** |
+| `DP0-3` | 4 | leave open | parity unimplemented, as in most period chipsets |
+| `PCHK` | 1 | **leave open — it is an output** | nothing listens; the CPU does not trap on parity |
+| `SMI` `SMIACT` | 2 | **`SMI` needs no strap — internal pull-up**; `SMIACT` is an output | see the SeaBIOS evidence below |
+| `STPCLK` `SRESET` | 2 | tie inactive | power management and SMM-era soft reset; neither is used |
+
+**Straps on the board — inputs, so they need a defined level:**
+
+| signal | n | why |
+|---|:-:|---|
+| `UP` | 1 | upgrade-present; no upgrade socket exists |
+| `CLKMUL` | 1 | selects the multiplier — a build-time property of the CPU, not a chipset signal |
+
+> **Correction: `PCD` and `PWT` cannot be strapped — they are outputs.**
+> The datasheet is explicit: *"the CPU ignores the PCD bit and drives the
+> PCD **output** Low"*, and the same for `PWT`. They reflect page-table
+> attributes outward. **Leave them open** unless the FPGA L2 is to honour
+> page-level cacheability, which is tied to the policy open in
+> [PLAN_OF_RECORD.md](PLAN_OF_RECORD.md).
+
+**Kept, against the earlier suggestion to cut them:**
+
+| signal | n | why kept |
+|---|:-:|---|
+| `BS8` `BS16` | 2 | retained by decision — dynamic bus sizing stays available even though the FPGA could width-convert internally |
+| `BREQ` `BOFF` | 2 | retained; keeps genuine multi-master arbitration open rather than assuming a single master forever |
+| `PLOCK` | 1 | output, retained |
+| **`FERR` `IGNNE`** | 2 | **required for DOS.** The legacy x87 error path is `FERR#` → IRQ13 → BIOS handler → port `0xF0` → `IGNNE#`, which is the PC-compatible mechanism whenever `CR0.NE=0` — the DOS default. Cutting these breaks x87 exception handling on a machine built to run period software |
+
+#### Evidence that `SMI` is safe to cut
+
+**SeaBIOS cannot use SMM on this platform.** From the source at
+`rel-1.17.0`: `smm_setup()` reaches only two implementations,
+`piix4_apmc_smm_setup(int isabdf, int i440_bdf)` and
+`ich9_lpc_apmc_smm_setup(int isabdf, int mch_bdf)`. Both take **PCI**
+bus/device/function arguments and drive the chipset through
+`pci_config_readl`/`pci_config_writeb`, against PIIX4/i440FX or ICH9/Q35
+specifically.
+
+**This machine has no PCI** — established independently with `-M isapc`.
+There is no path by which SeaBIOS reaches SMM here, so the condition
+*"cut unless SeaBIOS does or can use it"* resolves to **cut**.
+
+#### Where it lands
+
+| set | signals |
+|---|---:|
+| full Am5x86 | 113 |
+| cuts above | −13 |
+| straps (`UP`, `CLKMUL`) | −2 |
+| **routed to the FPGA** | **98** |
+| with the `A24-A31` pin-saver | **90** |
+
 ---
 
 ## FPGA edge allocation

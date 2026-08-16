@@ -821,6 +821,95 @@ bring-up**, and is then decided by measurement on this board rather than
 by inference from other people's. That is the outcome worth spending
 slack on.
 
+### Proposal — put the CPU on a mezzanine too
+
+**Not decided.** Recorded because it resolves several open problems at
+once and should be settled *before* G3, since it changes the pin budget's
+shape.
+
+**The idea:** the CPU does not sit on the baseboard. It lives on a card,
+and the baseboard carries a connector.
+
+#### It converts an anticipation problem into a capacity problem
+
+This is the strongest argument, and it is not really about swapping CPUs.
+
+Two items currently stand in this document and in
+[PLAN_OF_RECORD.md](PLAN_OF_RECORD.md): *"route every CPU signal to the
+FPGA, including ones the first design does not use"* and *"route the
+superset across supported CPU variants."* Both exist because **a soldered
+CPU forces every variant's needs to be anticipated before fabrication**,
+and a signal not routed is a board spin.
+
+With a CPU card, the baseboard routes **N generic connector pins** to the
+FPGA and stops. **Each card maps its own CPU onto that assignment.**
+
+- *"Which signals must I anticipate?"* — an anticipation problem, and
+  unverifiable, since the answer depends on parts not yet chosen.
+- *"How many pins are enough?"* — **a capacity problem, and checkable
+  today.**
+
+And it covers what a soldered superset structurally cannot: **CPUs not
+yet enumerated.** A soldered board can share pins between the variants it
+was designed around; it cannot serve one nobody had thought of. A card
+can, because the remapping happens on the card.
+
+#### What it resolves
+
+| open item | effect |
+|---|---|
+| **G9** — one CPU footprint or two | **dissolved** — the baseboard has none |
+| "route the superset" | **dissolved** — becomes a pin count |
+| **G1** — CPU pinout superset | **reduced** to "what is the largest signal count worth carrying" |
+| board area | SQFP-208 and its escape routing leave a crowded 170 mm square |
+| thermal / mechanical | hottest part and any heatsink move off-board |
+| supply risk | a future CPU is a **new card**, not a new machine — the ao486 survivability argument becomes physical |
+| bring-up | baseboard first on the soft core, CPU cards added incrementally |
+
+#### The residual constraint — clock-capable pins
+
+**One thing a card respin cannot fix: which connector pins land on
+clock-capable FPGA balls.** A card is free to map anything anywhere,
+*except* that a CPU clock must arrive somewhere the FPGA can treat as a
+clock.
+
+- [ ] **Reserve clock-capable balls at the connector**, on any pin a
+      future card might plausibly drive a clock into. This is the one
+      place where anticipation is still required, and it is cheap.
+
+#### What it does not solve
+
+- **FPGA I/O is unchanged.** Those signals still reach the FPGA; they
+  arrive via a connector instead of a package. The 205-ball budget binds
+  exactly as before, and how many CPU signals to carry is still a
+  decision — the full Am5x86 set is 113, the essential set 97, the
+  pin-saver set 89.
+- **It adds a second board-to-board connector** to a board that already
+  has one at its edge, with the case-height question that implies.
+
+#### Precedent and connector
+
+**VL-Bus is the existence proof** — the 486 local bus on a card edge at
+33–50 MHz, as a shipping standard. `Data/VL_Bus_2.0_199311.pdf` is the
+reference to design against rather than deriving the timing budget from
+scratch.
+
+**A PCIe ×16 mechanical connector is the candidate** — the connector and
+card edge only, nothing PCIe about it electrically:
+
+- **164 contacts**, so 113 signals still leaves ~51 for power and ground
+- **accepts standard 1.6 mm PCB**, unlike DDR3 sockets which want 1.27 mm
+- cheap and universally available
+- **the card side is bare PCB** — no connector to buy or solder, which is
+  the property that makes spinning a CPU card cheap and fast
+
+- [ ] **Check the 486 bus timing budget at 33 MHz** against the added path
+      and connector, using VLB's rules as the reference. Desk work, with
+      the spec already in `Data/`.
+- [ ] **Decide the signal count** the connector carries, which is G1
+      restated as a capacity question.
+- [ ] **Case height with two cards** on mini-ITX.
+
 ### Why these come first
 
 Every one is hours-to-days of work. Between them they determine the

@@ -656,12 +656,43 @@ incompatibility and every pin *renaming*.
 *Decides:* the size and shape of the CPU pin group.
 *Blocks:* G3.
 
-**G2 — HDMI feasibility, on a ULX3S** ([FAKE_TMDS.md](FAKE_TMDS.md)).
-Find the ceiling, judged on headroom rather than on whether it works.
-*Decides:* whether FPGA video exists; whether the CL-GD5428 needs a
-footprint; whether video needs its own memory channel.
-*Blocks:* G3, G4. **This single result moves items between MUST and
-COULD.**
+**G2 — display mode acceptance** ([FAKE_TMDS.md](FAKE_TMDS.md)).
+**Downgraded — it no longer blocks anything.** As originally written it
+decided three things, and all three have since been decided by other
+means:
+
+| originally decided by G2 | actual status |
+|---|---|
+| whether FPGA video exists | **answered on paper** — 283 Mb/s needed against 500 Mb/s available on *any* edge |
+| whether the CL-GD5428 needs a footprint | **moot** — both video paths are mezzanine cards (G10) |
+| whether video needs its own memory channel | **answered** — private QSPI PSRAM pair |
+
+It also claimed to block G3 and G4. It blocks neither: **video is 8 balls
+whatever the answer**, and the memory groups are settled.
+
+*What remains is one question:* **will real displays accept the modes
+this machine generates, over DVI-style signalling with no InfoFrames?**
+
+*Decides:* **the FPGA speed grade, and only that.** 640×480 or 720×400
+accepted → **-6 or -7 on any edge**, the cheap path. Forced to 720p →
+**-8 and a geared edge.** Note that scaling does not change memory
+traffic, so even a forced 720p output leaves the framebuffer at 640×480
+rates — the memory subsystem is unaffected either way.
+
+*Do the free version first:* **read the EDID of the target displays from
+a PC** — Established Timings I names 720×400@70 and 640×480@60 explicitly
+— and **force those modelines from a GPU.** Minutes, no hardware.
+
+*The Tang Nano adds one thing only:* a GPU sends full HDMI with
+InfoFrames, while this machine will send DVI-style signalling from an
+FPGA. **That is the residual risk, and it is small** — DVI-to-HDMI
+adapters do exactly this — so treat the Tang Nano run as confirmation
+rather than as the gate.
+
+*Order-time note:* the speed grade is a **purchasing** decision with lead
+time. With G6 collapsed, **this is now the only gate with an ordering
+dimension**, so it should be answered before the FPGA is bought rather
+than before layout starts.
 
 **G3 — Pin budget**, against 205 usable I/O on CABGA381.
 CPU (~76 from G1) + memory groups + HDMI + SPI NOR + SD + ESP32 +

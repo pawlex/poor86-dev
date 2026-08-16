@@ -966,6 +966,36 @@ can, because the remapping happens on the card.
 | supply risk | a future CPU is a **new card**, not a new machine — the ao486 survivability argument becomes physical |
 | bring-up | baseboard first on the soft core, CPU cards added incrementally |
 
+#### It also unlocks PGA — and with it, the CPUs that actually exist
+
+**"No sockets" is a *baseboard* constraint, not a project one.** It exists
+because a 168-pin PGA socket is roughly 45 mm square and tall, which is
+unaffordable on a 170 mm board already carrying an FPGA, memory, an ESP32
+and two mezzanine connectors. **On a dedicated card it is affordable.**
+
+**That matters most for supply.** The Am5x86 datasheet lists *"168-pin PGA
+package or 208-pin SQFP package"* — the same silicon, and **PGA is the
+package the retail market sold.** SQFP-208 went into embedded and laptop
+designs. So the surviving stock of 486-class parts is overwhelmingly PGA,
+and a soldered-SQFP-only board is fishing in the smaller pond.
+
+**What a socketed CPU card adds:**
+
+- **Access to the parts that exist** — 486DX, DX2, DX4, Am5x86, Cyrix and
+  IBM variants, in the package they were sold in.
+- **Swapping without desoldering**, which turns "which CPU behaves how"
+  from an experiment costing a board into one costing a minute. Directly
+  useful for the G1 superset work.
+- **Thermal and mechanical freedom** — a heatsink, and if wanted a fan,
+  on a card rather than over a crowded baseboard.
+
+**The 3.3 V rule needs no exception.** Am5x86 and 486DX4 PGA parts are
+3.3 V and connect directly. **5 V parts — 486DX, DX2, and most Cyrix and
+IBM variants — translate on the card**, exactly as the peripheral
+mezzanine already requires of a 5 V daughterboard. **Same principle, same
+sentence, applied one level in.** The baseboard continues to take no
+position on anyone else's voltage.
+
 #### The residual constraint — clock-capable pins
 
 **One thing a card respin cannot fix: which connector pins land on

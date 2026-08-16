@@ -442,9 +442,15 @@ at the target modes, the cheap path is earned with evidence** and the
 `PTN3365` can be dropped in a later spin with the reasoning on record.
 If it is marginal, the trade has paid for itself.
 
-The recommendation is unchanged and deliberately conservative: **populate
-it on the first prototype regardless.** The first board's job is to work,
-so that when something is broken it is known not to be video.
+**Corrected: the conservative choice is the direct path, not this one.**
+An earlier reading here treated fitting the part as the safe option. It is
+not. The direct path's risk is **already retired by two shipping
+designs** and is measurable on a Tang Nano before layout; the `PTN3365`
+path's risk is **novel and unretired** — an attenuator into a
+DisplayPort-class receiver, with an `IN_Dx` maximum that is not confirmed
+and a QFN that cannot be depopulated if it disappoints. **Gating a
+prototype on that is a gamble dressed as caution.** See G10 in
+[BOARD.md](BOARD.md).
 
 #### The `TPD12S521` collapses this to one part
 

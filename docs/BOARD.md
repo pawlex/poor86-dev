@@ -718,23 +718,49 @@ FPGA driving a monitor through eight capacitors and nothing else.
 *Decides:* the HDMI front end, its board area, and whether a fine-pitch
 part joins the fab-placement list.
 
+*The risk runs the other way from how it first appears.* An earlier draft
+here recommended fitting the part "to be safe". **That was backwards.**
+
+| | **direct** | **via `PTN3365`** |
+|---|---|---|
+| precedent | **two shipping designs** — ULX3S, Tang Nano 9K | **none known** at this interface |
+| retired before layout? | **yes** — measurable on a Tang Nano now | **no** — only building it answers it |
+| novel engineering | none | attenuator network into a DP-class receiver |
+| worst case | marginal signal, degraded | **`IN_Dx` overdrive — unconfirmed maximum, could damage parts** |
+| escape hatch | — | **none: QFN, fab-placed, cannot be depopulated** |
+
+**The "correct" path is the one carrying unretired risk.** The direct path
+is proven; the `PTN3365` path asks a receiver specified for
+DisplayPort/PCIe to accept a conditioned CMOS output, which no reference
+design here has demonstrated. **Gating a prototype on that is a gamble,
+not a safety measure.**
+
+**And two independent teams already chose direct.** The ULX3S and Tang
+Nano 9K both had level shifters and redrivers available and neither used
+one. This document already treats their agreement on coupling-capacitor
+values as worth more than either alone — **the same reasoning applies to
+the architecture choice.** *Caveat, since it is inference rather than
+knowledge:* both are low-cost hobby boards where a $2 part weighs more
+than it does on a board carrying an Am5x86 and an ECP5-85F. Their
+constraint was tighter than ours, so read it as corroboration, not proof.
+
 *Decided by — in order:*
 
 1. **Measurement.** The Tang Nano 9K runs the direct path on hardware
    already here. If it drives the target displays at the target modes,
-   the cheap path is **earned with evidence** rather than hoped for.
-2. **Room and time.** If the measurement is ambiguous, this is the
-   tiebreaker, and it is a *resource* judgement rather than a
-   philosophical one: **does the layout have the area near the rear I/O,
-   and the schedule for the extra controlled-impedance routing and the
-   attenuator simulation?** If yes, fit it. If the board is tight or the
-   spin is due, the direct path is proven on two reference designs and
-   is not a gamble.
+   **build direct** — the risk is retired and the elegance is kept.
+2. **Room and time**, only if the measurement is ambiguous. A *resource*
+   judgement, not a philosophical one: does the layout have area near the
+   rear I/O, and schedule for the extra controlled-impedance routing and
+   the attenuator simulation? **This is the tiebreaker precisely because
+   the fallback is proven** — declining the part under schedule pressure
+   is choosing the demonstrated option, not cutting a corner.
 
-*Standing recommendation if unresolved:* **populate it on the first
-prototype.** The first board's job is to work, so that when something is
-broken it is known not to be video. Removing it later is a documented,
-evidence-backed decision; adding it later is a spin.
+*Standing recommendation if unresolved:* **build direct.** It is the
+proven path, it is what both reference designs do, and its failure mode
+is a degraded signal rather than a damaged part. The `PTN3365` is the
+upgrade to reach for **once the direct path has been measured and found
+wanting** — not the default to spend prototype schedule on first.
 
 *Depends on:* G2.
 

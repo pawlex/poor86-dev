@@ -16,7 +16,7 @@ Counted from the datasheet-derived CSVs, not estimated.
 
 | block | pins |
 |---|---:|
-| CPU bus — Am5x86, essential set | **97** |
+| CPU bus — Am5x86, decided set (G1) | **99** |
 | SDRAM, wide group — **CPUCLK × 2** (~66 MHz) | 40 |
 | HyperRAM, narrow group | 12 |
 | HDMI, 4 differential pairs | 8 |
@@ -26,9 +26,29 @@ Counted from the datasheet-derived CSVs, not estimated.
 | ESP32 link | 8 |
 | Mezzanine transceiver control | 4 |
 | Clocks (50 MHz osc on GPLL0), reset, config, misc | 8 |
-| **total** | **190** |
+| **total** | **198** |
 | available, CABGA381 PIO | 205 |
-| **spare** | **15** |
+| **spare** | **7** |
+
+> **Corrected.** This table previously read 190 with a 97-pin CPU bus.
+> **Both figures were wrong:** the CPU set is 99 (see G1 below), and the
+> old line items summed to 196 rather than the 190 stated — a six-pin
+> arithmetic error that had been carried since the table was written.
+> **The board is tighter than recorded: 7 spare, not 15.**
+
+**With the `A24-A31` pin-saver** (CPU bus 91): **total 190, spare 15.**
+
+**G10 — carrying both HDMI front ends** costs 8 more balls, since the two
+paths need separate pairs to keep the comparison clean:
+
+| | total | spare |
+|---|---:|---:|
+| full address width + both paths | **206** | **−1 — does not fit** |
+| pin-saver + both paths | 198 | 7 |
+
+**So the validation vehicle's dual-HDMI experiment requires the
+pin-saver.** That answers G10's "resources permitting" test on the I/O
+side with a number rather than a judgement: it fits, but only at 16 MB.
 
 **The CPU bus is 97 pins, not the ~76 assumed earlier** — that figure was
 for a 386SX-class bus. The Am5x86 essential set is 30 address + 32 data
@@ -46,7 +66,7 @@ made two of them:
   it was never in the budget.
 - **A "pin saver option" is annotated on the FPGA and Am5x86 sheets**:
   dropping `A24-A31` reduces the address space to 16 MB and the CPU bus
-  to **89 pins**, taking the total to **182 of 205 — 23 spare.** 16 MB is
+  to **91 pins**, taking the total to **190 of 205 — 15 spare.** 16 MB is
   already the ceiling on the SX-class path, so this makes the two CPU
   variants agree rather than diverge.
 

@@ -746,13 +746,24 @@ and delete the connector entirely.
 > electrically.** A reader seeing the slot in a photograph will assume
 > otherwise, so it should be labelled on the silkscreen.
 
-- [ ] **Two card-ID strap pins**, so the bitstream can tell which front
-      end is fitted — full drive for direct, attenuated levels for the
-      `PTN3365`. Without them, swapping cards means reflashing.
-- [ ] **Note the common-mode caveat.** The connector now sits in *both*
-      paths, which keeps the A/B comparison fair but means a poor
-      *absolute* result cannot be cleanly attributed — card or connector.
-      Neither reference design has that transition.
+**No card-ID straps.** They were proposed so the bitstream could detect
+which front end is fitted and set drive accordingly. **Not worth it at
+this quantity:** the run is **five prototype boards**, operated by the
+person who plugged the card in, during a phase when bitstreams are being
+rebuilt constantly anyway. A build-time choice costs nothing; automatic
+detection would be solving a problem nobody has.
+
+**The connector does not reach production.** It exists on the five
+prototypes to settle the comparison, and **the winning front end goes
+onto the production baseboard directly** — connector deleted.
+
+That also disposes of the common-mode caveat rather than merely noting
+it. The connector sits in both paths, so the A/B comparison is fair; and
+because production removes it, **any absolute degradation it contributes
+is temporary and does not propagate** into the shipping design. The
+number that matters — how the winning front end performs without a
+connector in the path — is measured on the production board, where the
+question is finally the right one.
 >
 > The analysis is finished: both paths are fully specified down to part
 > numbers, values and populate status, and **no further research is
@@ -976,6 +987,7 @@ fabrication.
 
 | | |
 |---|---|
+| **Build quantity** | **five prototype boards** — calibrates rework, assembly and part-cost decisions throughout |
 | Form factor | **mini-ITX, 170 × 170 mm** |
 | Rear I/O | standard shield window, 159 × 44.5 mm |
 | Sockets | **none** — every part soldered, including the CPU |

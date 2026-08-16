@@ -124,9 +124,9 @@ timing specs:
 
 | tier | signals | basis |
 |---|---|---|
-| **1 — asynchronous** | `A20M` `FLUSH` `FERR` `IGNNE` `SRESET` `NMI` | `t20`/`t21`, or an output with no handshake role |
+| **1 — asynchronous** | `A20M` `FLUSH` `FERR` `IGNNE` `SRESET` `NMI` **`BREQ` `BOFF`** | `t20`/`t21`, an output with no handshake role, or an exception path |
 | 2 — low rate, synchronous | `INTR` `HOLD` `HLDA` `LOCK` `PLOCK` `RESET` | alive, but not per-cycle |
-| 3 — command / every cycle | `CLK`, `A2-A31`, `D0-D31`, `ADS` `RDY` `BRDY` `BLAST` `BE0-3` `M/IO` `D/C` `W/R` `CACHE` `KEN` `PCD` `PWT` `BREQ` `AHOLD` `EADS` `INV` **`BS8` `BS16` `WB/WT` `BOFF` `HITM`** | full care |
+| 3 — command / every cycle | `CLK`, `A2-A31`, `D0-D31`, `ADS` `RDY` `BRDY` `BLAST` `BE0-3` `M/IO` `D/C` `W/R` `CACHE` `KEN` `PCD` `PWT` `AHOLD` `EADS` `INV` **`BS8` `BS16` `WB/WT` `HITM`** | full care |
 
 > **Correction — `BS8`, `BS16`, `WB/WT`, `BOFF` and `HITM` are *not*
 > candidates.** An earlier version of this section listed them as static
@@ -141,7 +141,20 @@ timing specs:
 >   window's timing whether or not they ever change state.
 > - **`WB/WT`** is sampled *"on the same clock edge in which it finds
 >   either RDY or the first BRDY"* — the same termination window.
-> - **`BOFF` and `HITM`** sit in the bus-float and coherency handshakes.
+> - **`HITM`** sits in the coherency handshake.
+>
+> **`BREQ` and `BOFF` are candidates, despite the neighbours they were
+> first grouped with**, and for two different reasons:
+>
+> - **`BREQ` is an output.** The CPU imposes no setup or hold on it — the
+>   receiver chooses how to sample. The FPGA can simply register it, and
+>   `HOLD`/`HLDA` arbitration takes multiple clocks regardless, so a
+>   cycle of extra latency costs nothing.
+> - **`BOFF` is an exception mechanism, not a termination signal.** That
+>   is the line between it and `BS8`/`BS16`: those participate in *every*
+>   cycle's termination decision, so their inactive level is meaningful
+>   data sampled every clock. `BOFF` only ever aborts, and in a
+>   single-master design it never asserts at all.
 >
 > **A signal held at one level but sampled in a tight window still needs
 > that window's routing quality.** Static is not the same as slow.
@@ -171,12 +184,23 @@ clean return path nor injects noise into the plane.**
       up adjacent to the top-layer CPU bus, carving it is a worse trade
       than it looks.
 
-> **The remaining six are unconditional.** Unlike the signals removed
-> above, none of them becomes synchronous under a different design
-> choice — they are asynchronous by specification, so no later decision
-> about bus width, mastering or coherency can promote them into the
-> command domain. That is what makes the shortened list safer to build
-> against than the longer one it replaces.
+> **Six of the eight are unconditional** — asynchronous by
+> specification, so no later decision about bus width, mastering or
+> coherency can promote them into the command domain.
+>
+> **`BREQ` and `BOFF` carry one condition each.** If real multi-master
+> arbitration is ever added, `BOFF`'s assertion latency starts to matter
+> and `BREQ` may be wanted promptly; both would then want re-examining.
+> Neither becomes a *termination* signal, so this is a latency question
+> rather than a correctness one.
+
+> **Condition on all eight: they must be actively driven, not
+> resistor-pulled.** A line held static by a low-impedance driver is very
+> hard to glitch; a weakly-pulled line in a plane channel is not. Since
+> the risk of relaxed routing here is coupling rather than delay — these
+> signals mostly do not move — **drive strength is what makes the
+> placement safe**, and an input left to an internal pull-up is the one
+> case that should stay off layer 2.
 
 #### Where it lands
 

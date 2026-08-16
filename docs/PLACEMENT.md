@@ -67,7 +67,7 @@ defined level, an output may simply be left open.
 | `DP0-3` | 4 | leave open | parity unimplemented, as in most period chipsets |
 | `PCHK` | 1 | **leave open — it is an output** | nothing listens; the CPU does not trap on parity |
 | `SMI` `SMIACT` | 2 | **`SMI` needs no strap — internal pull-up**; `SMIACT` is an output | see the SeaBIOS evidence below |
-| `STPCLK` `SRESET` | 2 | tie inactive | power management and SMM-era soft reset; neither is used |
+| `STPCLK` | 1 | tie inactive | stop-clock power management, not used |
 
 **Straps on the board — inputs, so they need a defined level:**
 
@@ -89,6 +89,7 @@ defined level, an output may simply be left open.
 | `BS8` `BS16` | 2 | retained by decision — dynamic bus sizing stays available even though the FPGA could width-convert internally |
 | `BREQ` `BOFF` | 2 | retained; keeps genuine multi-master arbitration open rather than assuming a single master forever |
 | `PLOCK` | 1 | output, retained |
+| **`SRESET`** | 1 | **retained — the earlier cut was wrong.** It was filed with the SMM signals, but SMBASE is only one of five things it spares: *"unlike RESET, does not cause it to sample `UP` or `WB/WT`, or affect the FPU, cache, CD and NW bits in CR0, and SMBASE."* **`RESET` re-samples the configuration straps; `SRESET` does not** — so it is the chipset's lighter CPU-only reset, and it is the mechanism by which a warm reboot need not disturb cache mode or FPU state. Input with an **internal pull-down**, so it is inactive if left open — cheap either way, and cheaper to have |
 | **`PCD` `PWT`** | 2 | **retained for L2 correctness.** They carry the page-table cacheability attributes outward, and an L2 that ignores them will cache pages the OS marked uncacheable — memory-mapped device windows, and a shared framebuffer if video ends up in main memory. That is a **correctness** failure, not a performance one, and it is invisible until something reads stale data. Feeds the policy open in [PLAN_OF_RECORD.md](PLAN_OF_RECORD.md) |
 | **`FERR` `IGNNE`** | 2 | **required for DOS.** The legacy x87 error path is `FERR#` → IRQ13 → BIOS handler → port `0xF0` → `IGNNE#`, which is the PC-compatible mechanism whenever `CR0.NE=0` — the DOS default. Cutting these breaks x87 exception handling on a machine built to run period software |
 
@@ -111,15 +112,24 @@ There is no path by which SeaBIOS reaches SMM here, so the condition
 | set | signals |
 |---|---:|
 | full Am5x86 | 113 |
-| cuts above | −13 |
+| cuts above | −12 |
 | straps (`UP`, `CLKMUL`) | −2 |
-| **routed to the FPGA** | **98** |
-| with the `A24-A31` pin-saver | **90** |
+| **routed to the FPGA** | **99** |
+| with the `A24-A31` pin-saver | **91** |
 
-Composition check: 30 address + 32 data + 36 control = 98, the 36 being
-the 43 control signals less `PCHK`, `SMI`, `SMIACT`, `STPCLK`, `SRESET`
-(cut) and `UP`, `CLKMUL` (strapped). **`PCD` and `PWT` are inside that
-36.**
+Composition check: 30 address + 32 data + 37 control = 99, the 37 being
+the 43 control signals less `PCHK`, `SMI`, `SMIACT`, `STPCLK` (cut) and
+`UP`, `CLKMUL` (strapped). **`PCD`, `PWT` and `SRESET` are inside that
+37.**
+
+> **Why `RESET` alone is not sufficient.** A full `RESET` re-samples
+> `UP` and `WB/WT`, which means it re-latches the cache mode. That
+> interacts directly with the coherency policy open in
+> [PLAN_OF_RECORD.md](PLAN_OF_RECORD.md): if `WB/WT` is ever driven by
+> the chipset rather than statically strapped, **`RESET` becomes the
+> instrument that changes cache mode and `SRESET` the one that does
+> not.** Losing that distinction would have cost a capability for one
+> pin.
 
 ---
 

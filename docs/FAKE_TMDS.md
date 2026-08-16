@@ -705,8 +705,21 @@ question the datasheet cannot answer.
 
 ## The video envelope — fixed
 
-**`LFE5U-85F-7BG381I` is the only ECP5-85F stocked by JLCPCB**, so the
-speed grade is settled by supply rather than chosen: **`-7`.**
+> **Requirement: FPGA speed grade ≥ -7.** Stated as a minimum rather than
+> as whatever is in stock, because **`-6` does not meet it** — its
+> GDDRX2 ceiling is 624 Mb/s against the 650 Mb/s that 1024×768 needs, so
+> a grade down silently caps the machine at 800×600.
+>
+> | grade | GDDRX2 | ceiling |
+> |---|---:|---|
+> | `-6` | 624 Mb/s | **800×600 — does not meet spec** |
+> | **`-7`** | **700** | **1024×768 — meets spec** |
+> | `-8` | 800 | 1024×768 **plus 720p** |
+>
+> `LFE5U-85F-**7**BG381I` is what JLCPCB stocks, and it satisfies the
+> requirement. A `-8` would raise the ceiling to include 720p and is
+> acceptable wherever it can be had, but **nothing in the design depends
+> on it.**
 
 **The design ceiling is 1024×768 @60, 8 bpp**, and two independent limits
 land on it:

@@ -589,6 +589,44 @@ common clock is retained: all three run at the same rate and ignore it
 while deselected, so the separation costs data lines and selects rather
 than a second clock domain.
 
+##### Clock it at 66 MHz — CPUCLK × 2, the SDRAM domain
+
+**Ganged ×8 delivers one full byte per data clock.** At **66 MHz that is
+~62 MB/s effective**, which meets the scanout requirement with margin —
+and 66 MHz is not chosen for the arithmetic. **It is CPUCLK × 2, the
+clock the SDRAM already runs on.**
+
+- **One memory clock domain** for both memories, rather than an 84 MHz
+  oddball beside a 66 MHz one.
+- **Fixed phase relationship to the CPU**, which is the property the
+  memory section already insists on rather than treating clocks as
+  independent.
+- **Well below the part's 144 MHz ceiling**, so the interface is run
+  conservatively — good for signal integrity, and at 66 Mb/s per pin it
+  is trivially inside 1× gearing on **any** bank.
+
+**Burst length is set by `tCEM`, not by the 1 K page.** Choose a
+power-of-two that divides 1024 *and* fits inside `tCEM`, and the wrap
+boundary is never reached — the wrap behaviour becomes unreachable by
+construction rather than something to work around.
+
+| burst | clocks + 14 overhead | duration | verdict | effective |
+|---:|---:|---:|---|---:|
+| 256 B | 526 | 7.97 µs | at the 8 µs limit — no margin | 64.2 MB/s |
+| **128 B** | 270 | 4.09 µs | **safe at 85 °C — chosen** | **62.6 MB/s** |
+| 64 B | 142 | 2.15 µs | safe at 105 °C as well | 59.5 MB/s |
+
+**The result is robust: 59–64 MB/s across the whole practical range**, so
+the ~60 MB/s planning figure holds whichever burst size and temperature
+grade are finally used. **Take 64 B if the 105 °C grade is fitted** — it
+costs 5% and removes a thermal dependency.
+
+**Burst boundaries double as preemption points.** `CS` rises every 128
+bytes regardless, so pending CPU writes are slotted between scanout
+bursts with no interrupt logic and no partial-burst abort. At 640×480,
+scanout occupies ~31% of the device, leaving room for roughly two write
+bursts between each scanout burst.
+
 ##### The separate chip selects are the useful part
 
 The two PSRAMs have **independent selects**, not a shared one, and that

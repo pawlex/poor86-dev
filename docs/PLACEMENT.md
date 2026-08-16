@@ -21,20 +21,29 @@ Counted from the datasheet-derived CSVs, not estimated.
 | ~~HyperRAM, narrow group~~ | ~~12~~ **dropped** |
 | HDMI, 4 differential pairs | 8 |
 | config EEPROM (bank 8, hard SPI) | 6 |
-| QSPI bus — NOR + **2× PSRAM ganged ×8**, `D[7:0]`, 2 selects | **11** |
+| **QSPI video memory** — 2× PSRAM, own data buses + own selects | **10** |
+| **QSPI NOR** — own data bus + select | **5** |
+| **common QSPI clock**, shared by all three devices | **1** |
 | SD card, 4-bit | 6 |
 | ESP32 link | 8 |
 | Mezzanine transceiver control | 4 |
 | Clocks (50 MHz osc on GPLL0), reset, config, misc | 8 |
-| **total** | **190** |
+| **total** | **195** |
 | available, CABGA381 PIO | 205 |
-| **spare** | **15** |
+| **spare** | **10** |
 
-> **Memory pivot applied.** HyperRAM is dropped (−12) and the QSPI bus
-> widens to two ganged PSRAMs for video (+4), a net **−8**. The board
-> lands at **190 of 205 with 15 spare *at full address width*** — so the
-> `A24-A31` pin-saver is **no longer forced**, and remains available as
-> slack rather than a requirement.
+> **Memory pivot applied.** HyperRAM is dropped (−12); the video PSRAMs
+> move to their own buses, separate from the NOR (+9 against the old
+> shared 7). Net **−3**. The board lands at **195 of 205 with 10 spare
+> *at full address width*** — so the `A24-A31` pin-saver is **no longer
+> forced**, and remains available slack rather than a requirement.
+>
+> **Why the NOR is no longer on the same wires.** Video scanout is
+> continuous and real-time. Sharing data lines with the NOR means a flash
+> read can stall a scanout burst, which is a visible artifact rather than
+> a latency figure. **One common clock is kept** — all three devices run
+> at the same rate and ignore it while their select is inactive — so the
+> separation costs data lines and selects, not a second clock domain.
 >
 > **Corrected.** This table previously read 190 with a 97-pin CPU bus.
 > **Both figures were wrong:** the CPU set is 99 (see G1 below), and the

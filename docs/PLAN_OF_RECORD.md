@@ -576,10 +576,39 @@ halves. The NOR stays on the same bus using `D[3:0]` and its own select.
 
 | | pins |
 |---|---:|
-| `CLK`, shared by NOR and both PSRAMs | 1 |
-| `D[7:0]`, NOR uses the low nibble only | 8 |
-| `CS` × 2 — NOR, PSRAM pair | 2 |
-| **total** | **11**, against 7 today — **+4** |
+| **common `CLK`**, shared by all three devices | 1 |
+| PSRAM A — `D[3:0]` + `CS_A` | 5 |
+| PSRAM B — `D[7:4]` + `CS_B` | 5 |
+| NOR — own `D[3:0]` + `CS_N` | 5 |
+| **total** | **16** |
+
+**The NOR gets its own data lines.** Video scanout is continuous and
+real-time, so sharing wires with the flash means a NOR read can stall a
+scanout burst — **a visible artifact, not a latency statistic.** The
+common clock is retained: all three run at the same rate and ignore it
+while deselected, so the separation costs data lines and selects rather
+than a second clock domain.
+
+##### The separate chip selects are the useful part
+
+The two PSRAMs have **independent selects**, not a shared one, and that
+single extra pin buys a choice the RTL can make at runtime:
+
+- **Assert both together — ganged ×8.** 8 bits per clock, **~60 MB/s
+  streamed**, which is the scanout figure everything above is designed
+  around.
+- **Assert them separately — two independent ×4 devices.** ~30 MB/s each,
+  but **scanout and CPU writes can then proceed concurrently** on
+  different devices.
+
+That second mode **eliminates the half-duplex contention outright** rather
+than buffering around it: video streams buffer A from one device while
+the CPU draws buffer B on the other, and they swap at vblank. Double
+buffering falls out of the wiring instead of costing bandwidth.
+
+30 MB/s streamed still covers 640×480×8 (18.4 average) comfortably. So the
+choice is **bandwidth or concurrency, decided in the bitstream** — and
+both remain available on the same board.
 
 **~60 MB/s streamed.** Design against the *average* rate, not the peak:
 active video is only ~73% of frame time, and the line buffer absorbs the

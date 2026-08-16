@@ -115,9 +115,9 @@
 
   <!-- dedicated QSPI bus -->
   <rect class="part" x="176" y="452" width="188" height="60" rx="3"/>
-  <text class="tb" x="270" y="473" text-anchor="middle">QSPI NOR + 2x PSRAM</text>
-  <text class="ts" x="270" y="489" text-anchor="middle">video memory, ganged x8 · 11 pins</text>
-  <text class="tt" x="270" y="504" text-anchor="middle">~60 MB/s streamed</text>
+  <text class="tb" x="270" y="473" text-anchor="middle">QSPI: NOR + 2x PSRAM</text>
+  <text class="ts" x="270" y="489" text-anchor="middle">separate buses, common clk · 16 pins</text>
+  <text class="tt" x="270" y="504" text-anchor="middle">~60 MB/s ganged, or 2x30 concurrent</text>
   <path class="bus" d="M364 482 H396 V470"/>
 
   <!-- SD -->
@@ -147,13 +147,13 @@
   
   <text class="ts" x="24" y="546">HDMI                   8</text>
   <text class="ts" x="24" y="564">config EEPROM (bk8)    6
-</text><text class="ts" x="24" y="578">QSPI NOR + 2x PSRAM   11</text>
+</text><text class="ts" x="24" y="578">QSPI: NOR + 2x PSRAM   11</text>
   <text class="ts" x="24" y="592">SD                     6</text>
   <text class="ts" x="24" y="606">ESP32                  8</text>
   <text class="ts" x="24" y="620">xcvr control (to mezz)  4</text>
   <text class="ts" x="24" y="634">clocks / misc          8</text>
   <line x1="24" y1="644" x2="132" y2="644" stroke="#999"/>
-  <text class="tb" x="24" y="660">total            190</text>
+  <text class="tb" x="24" y="660">total            195</text>
   <text class="ts" x="24" y="676">available        205</text>
-  <text class="tb" x="24" y="692">spare             15</text>
+  <text class="tb" x="24" y="692">spare             10</text>
 </svg>

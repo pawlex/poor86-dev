@@ -122,6 +122,23 @@ the 43 control signals less `PCHK`, `SMI`, `SMIACT`, `STPCLK` (cut) and
 `UP`, `CLKMUL` (strapped). **`PCD`, `PWT` and `SRESET` are inside that
 37.**
 
+> **Invariant worth holding: no routed signal is reset-only.** All 99
+> have runtime function. The only pins the Am5x86 samples at reset and
+> then ignores are **`CLKMUL` and `UP`, and both are straps** — so no FPGA
+> ball is spent on a value read once.
+>
+> Two things follow. Any future addition that is *only* read at reset
+> belongs on a strap, not a ball. And the FPGA never drives anything
+> solely for reset: the reset-time obligations (`WB/WT` level, `A20M`
+> high, `FLUSH` high) all sit on pins it owns for runtime reasons, so
+> gating CPU `RESET` on `DONE` is a matter of correct defaults rather than
+> a separate configuration group.
+>
+> **`WB/WT` is not reset-only**, despite selecting the cache mode there:
+> *"all subsequent cache line fills sample WB/WT"* with `RDY` or the first
+> `BRDY`, setting **per-line** write policy. It is a live coherency signal,
+> and its weak internal pull-down defaults to write-through if undriven.
+
 > **Why `RESET` alone is not sufficient.** A full `RESET` re-samples
 > `UP` and `WB/WT`, which means it re-latches the cache mode. That
 > interacts directly with the coherency policy open in

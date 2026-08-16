@@ -1382,6 +1382,32 @@ return, tier 3 takes the good ones.
 
 ## Open
 
+- [ ] **Does the 85F earn its price?** — *deferred, not dismissed.*
+      Healthy SQFP-208 NOS weakens the argument that carried the largest
+      density: **ao486 exists so the machine outlives the CPU supply**,
+      and if that supply is unused embedded stock rather than pulls, the
+      hedge is less load-bearing than assumed. Without ao486, a smaller
+      ECP5 may suffice.
+
+      **Three checks come first, and the first may settle it:**
+
+      1. **I/O count, which is independent of ao486.** The design needs
+         **195 pins**. If the smaller densities offer fewer I/O in an
+         available package, **the density is pinned by pin count and the
+         question never reaches the logic**. Check the I/O table per
+         density in CABGA381 before anything else.
+      2. **BRAM for the L2.** 85F carries 3744 Kbit against 1944 on the
+         45F. Now that the framebuffer has moved to PSRAM the L2 has the
+         BRAM to itself, so this is a cache-sizing question rather than a
+         hard limit.
+      3. **Speed grade ≥ -7 availability** at the smaller density, on the
+         same supplier. The video envelope depends on it.
+
+      **Dropping ao486 does not cost the no-CPU bring-up path** — that is
+      tiny386 on the RISC-V core, which is small. What it costs is the
+      *performant* fallback, and an argument measured in decades rather
+      than years: **NOS is finite even while abundant.**
+
 - [ ] **Power entry.** DC barrel with on-board regulation is cheaper and
       smaller than ATX and consistent with the BOM goal. Not decided.
 - [ ] **CPU footprints: one variant per board, or both present?** Both

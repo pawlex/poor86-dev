@@ -540,6 +540,66 @@ The second is the stronger answer, because it holds even if the video
 decision changes later. It reduces a coupled architectural question to a
 pin-assignment decision.
 
+#### Proposed resolution: video never touches the SDRAM
+
+**The objection to sharing is not bandwidth.** SDRAM and HyperRAM both
+have ample bandwidth for CPU and video together. **The objection is what
+sharing does to the memory controller** — and to the ordering this
+document already commits to.
+
+- **It breaks the stated design order.** *"Establish the latency budget
+  from the CPU side first; it is the fixed constraint."* **A latency
+  budget cannot be fixed if a scanout engine may interrupt it.** Sharing
+  turns the fixed constraint into a variable one.
+- **The two access patterns are pathological for each other.** Scanout is
+  long and sequential; CPU access is short and random. In a page-based
+  memory **each closes the other's open row**, so the cost appears as
+  latency variance rather than as a bandwidth shortfall that could be
+  budgeted.
+- **It makes the arbiter a real-time problem.** Video has hard deadlines
+  and the CPU does not, so video must win — which means CPU latency is
+  set by video activity, and contention bugs only appear under load.
+
+**Both private-memory options are already on the board:**
+
+| | capacity | scanout ceiling | cost |
+|---|---|---|---|
+| **BRAM** | 468 KB total | 640×480×8 = **300 KB, 64% of it** | competes directly with the L2 cache |
+| **QSPI PSRAM** | 8 MB | ~38 MB/s → **640×480×8 at ~66% used** | half-duplex; CPU writes need combining |
+
+**Preferred: QSPI PSRAM as the video memory, with a BRAM line buffer.**
+8 MB is far more than any DOS mode needs — a period GD5428 shipped with
+512 KB — and it leaves the BRAM for the L2 cache, which is what hides
+SDRAM latency from the CPU. **Spending 64% of BRAM on a framebuffer would
+damage the CPU path to solve a video problem.**
+
+**Scaling does not change this.** The framebuffer is read at *guest*
+resolution and upscaled on the fly into the TMDS path, so memory traffic
+is set by the guest's mode, not the output mode. **Even if the display
+gate forces 720p output, memory traffic stays at 640×480 rates** — which
+decouples this decision from G2's outcome.
+
+**The resulting architecture is single-master everywhere:**
+
+- **SDRAM** — CPU only. Latency-optimised. One master, simple controller.
+- **QSPI PSRAM** — video only. Sequential scanout, plus CPU writes through
+  a combining buffer.
+- **BRAM** — L2 for the CPU, line buffer for video.
+- **HyperRAM** — the backup and experiment path, unchanged.
+
+- [ ] **Design the write-combining buffer.** This is the real work, not
+      the bandwidth. QSPI PSRAM is half-duplex, so an uncombined CPU write
+      waits for an in-flight burst — ~6 µs at 84 MHz, roughly 200 wait
+      states at 33 MHz. Period software writes directly to video memory,
+      so this determines whether it feels like a 486 or like treacle.
+- [ ] **Confirm the 84 MHz linear-burst limit** on the specific part. x4
+      linear burst crossing page boundaries is limited to 84 MHz; the
+      133 MHz figure is for page-bounded or x1 access. **The lower number
+      is the one scanout hits.**
+- [ ] **Accept the ceiling: 640×480×8 bpp.** 800×600 needs 40 MB/s and
+      does not fit. If FPGA video must exceed 640×480, this resolution
+      fails and shared memory returns — with all of the above.
+
 - [ ] Decide whether video gets a dedicated channel. **This is a
       pin-assignment decision and must be made before layout freezes**,
       alongside the other items in that class.

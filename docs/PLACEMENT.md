@@ -124,9 +124,9 @@ timing specs:
 
 | tier | signals | basis |
 |---|---|---|
-| **1 — asynchronous** | `A20M` `FLUSH` `FERR` `IGNNE` `SRESET` `NMI` **`BREQ` `BOFF`** | `t20`/`t21`, an output with no handshake role, or an exception path |
-| 2 — low rate, synchronous | `INTR` `HOLD` `HLDA` `LOCK` `PLOCK` `RESET` | alive, but not per-cycle |
-| 3 — command / every cycle | `CLK`, `A2-A31`, `D0-D31`, `ADS` `RDY` `BRDY` `BLAST` `BE0-3` `M/IO` `D/C` `W/R` `CACHE` `KEN` `PCD` `PWT` `AHOLD` `EADS` `INV` **`BS8` `BS16` `WB/WT` `HITM`** | full care |
+| **1 — asynchronous** | `A20M` `FLUSH` `FERR` `IGNNE` `SRESET` `NMI` `BREQ` `BOFF` **`RESET` `EADS`** | `t20`/`t21`, an output with no handshake role, an exception path, or a once-only event |
+| 2 — low rate, synchronous | `INTR` `HOLD` `HLDA` `LOCK` `PLOCK` | alive, but not per-cycle |
+| 3 — command / every cycle | `CLK`, `A2-A31`, `D0-D31`, `ADS` `RDY` `BRDY` `BLAST` `BE0-3` `M/IO` `D/C` `W/R` `CACHE` `KEN` `PCD` `PWT` `AHOLD` `INV` `BS8` `BS16` `WB/WT` `HITM` | full care |
 
 > **Correction — `BS8`, `BS16`, `WB/WT`, `BOFF` and `HITM` are *not*
 > candidates.** An earlier version of this section listed them as static
@@ -184,17 +184,43 @@ clean return path nor injects noise into the plane.**
       up adjacent to the top-layer CPU bus, carving it is a worse trade
       than it looks.
 
-> **Six of the eight are unconditional** — asynchronous by
+> **Six of the ten are unconditional** — asynchronous by
 > specification, so no later decision about bus width, mastering or
 > coherency can promote them into the command domain.
 >
-> **`BREQ` and `BOFF` carry one condition each.** If real multi-master
-> arbitration is ever added, `BOFF`'s assertion latency starts to matter
-> and `BREQ` may be wanted promptly; both would then want re-examining.
-> Neither becomes a *termination* signal, so this is a latency question
-> rather than a correctness one.
+> **`BREQ`, `BOFF` and `EADS` carry conditions.** If real multi-master
+> arbitration is added, `BOFF`'s assertion latency starts to matter and
+> `BREQ` may be wanted promptly. If active snooping is adopted under the
+> coherency policy still open in
+> [PLAN_OF_RECORD.md](PLAN_OF_RECORD.md), **`EADS` becomes a live
+> per-snoop signal** and its pairing with `INV` stops being optional.
+> None of the three becomes a *termination* signal, so these are latency
+> and skew questions rather than correctness ones.
 
-> **Condition on all eight: they must be actively driven, not
+> **`RESET` qualifies on an enormous timing budget.** It moves once, and
+> although its falling edge is the reference for latching `WB/WT`,
+> `A20M`, `FLUSH` and the straps, those relationships are measured in
+> **clock periods** — the part cannot execute until 1 ms after power and
+> clock are stable. Layer-2 routing contributes a few hundred picoseconds
+> against a 30 ns clock, which is noise.
+>
+> - [ ] **Put a test point on `RESET`.** Burying the one signal you most
+>       want to scope during bring-up is a practical cost, not an
+>       electrical one, and a via and a pad fix it.
+>
+> **`EADS` qualifies, but is the weakest of the ten — and it must not
+> travel alone.** It is a snoop-protocol signal: *"INV is sampled in the
+> same clock period that EADS is asserted,"* and it may assert every
+> other clock while a hold is active. **What matters is not its absolute
+> delay but its skew against `INV` and the address bus.**
+>
+> - [ ] **If `EADS` goes on layer 2, `INV` goes with it.** Their
+>       relationship is same-clock, so routing them together preserves it
+>       while splitting them across layers is what would break it. `INV`
+>       is otherwise a tier 3 signal and belongs there **unless it is
+>       paired here.**
+>
+> **Condition on all ten: they must be actively driven, not
 > resistor-pulled.** A line held static by a low-impedance driver is very
 > hard to glitch; a weakly-pulled line in a plane channel is not. Since
 > the risk of relaxed routing here is coupling rather than delay — these

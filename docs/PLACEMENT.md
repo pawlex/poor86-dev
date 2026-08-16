@@ -113,17 +113,43 @@ There is no path by which SeaBIOS reaches SMM here, so the condition
 datasheet. It exists to say *where layout effort goes*, not to reclassify
 any signal's requirements.
 
-| tier | signals | activity |
+**The criterion is when a signal is sampled, not how often it moves** —
+and the databook supplies it directly, by splitting inputs between two
+timing specs:
+
+| spec | meaning | routing class |
 |---|---|---|
-| **1 — effectively static** | `BS8` `BS16` `BOFF` `A20M` `WB/WT` `FLUSH` `FERR` `IGNNE` `SRESET` `NMI` `HITM` | held at one level after boot |
-| 2 — low rate | `INTR` `HOLD` `HLDA` `LOCK` `PLOCK` `RESET` | interrupts, DMA, locked cycles |
-| 3 — every cycle | `CLK`, `A2-A31`, `D0-D31`, `ADS` `RDY` `BRDY` `BLAST` `BE0-3` `M/IO` `D/C` `W/R` `CACHE` `KEN` `PCD` `PWT` `BREQ` `AHOLD` `EADS` `INV` | full care |
+| **`t14`/`t15`** | synchronous; sampled every clock, in the command and termination window | **command bus clock domain — full care** |
+| **`t20`/`t21`** | asynchronous; setup and hold needed only for *recognition* in some specific clock | relaxed |
+
+| tier | signals | basis |
+|---|---|---|
+| **1 — asynchronous** | `A20M` `FLUSH` `FERR` `IGNNE` `SRESET` `NMI` | `t20`/`t21`, or an output with no handshake role |
+| 2 — low rate, synchronous | `INTR` `HOLD` `HLDA` `LOCK` `PLOCK` `RESET` | alive, but not per-cycle |
+| 3 — command / every cycle | `CLK`, `A2-A31`, `D0-D31`, `ADS` `RDY` `BRDY` `BLAST` `BE0-3` `M/IO` `D/C` `W/R` `CACHE` `KEN` `PCD` `PWT` `BREQ` `AHOLD` `EADS` `INV` **`BS8` `BS16` `WB/WT` `BOFF` `HITM`** | full care |
+
+> **Correction — `BS8`, `BS16`, `WB/WT`, `BOFF` and `HITM` are *not*
+> candidates.** An earlier version of this section listed them as static
+> and therefore relaxed. That reasoning was wrong: it sorted by
+> transition frequency when the timing class is set by the sampling
+> window.
+>
+> - **`BS8`/`BS16` are driven by the peripheral to say whether a second,
+>   third or fourth bus cycle must occur.** The databook: *"sampled every
+>   clock… every clock before RDY,"* to `t14`/`t15`. **They belong to the
+>   command bus clock domain**, alongside `RDY` and `BRDY`, and carry that
+>   window's timing whether or not they ever change state.
+> - **`WB/WT`** is sampled *"on the same clock edge in which it finds
+>   either RDY or the first BRDY"* — the same termination window.
+> - **`BOFF` and `HITM`** sit in the bus-float and coherency handshakes.
+>
+> **A signal held at one level but sampled in a tight window still needs
+> that window's routing quality.** Static is not the same as slow.
 
 **Tier 1 is the candidate set for routing on internal layer 2, the VCC
-plane.** They qualify for the reason that makes them tier 1: a signal
-that does not switch **neither demands a clean return path nor injects
-noise into the plane.** These are the only CPU signals for which that is
-true.
+plane** — six signals, all asynchronous. They qualify because an
+asynchronous input recognised over a relaxed window **neither demands a
+clean return path nor injects noise into the plane.**
 
 > **The cost is not paid by these signals — it is paid by the plane and
 > by whatever crosses it.** Routing in a plane layer carves slots, and:
@@ -145,14 +171,12 @@ true.
       up adjacent to the top-layer CPU bus, carving it is a worse trade
       than it looks.
 
-> **Tier 1 membership is conditional, and three members are conditional
-> by design.** `BS8`/`BS16` are static *because* the FPGA width-converts
-> internally; `BOFF` and `HITM` are quiet *because* bus mastering is
-> assumed light. **Those signals were retained specifically to keep those
-> options open** — so if dynamic bus sizing or real multi-master
-> arbitration is ever used, they promote to tier 3 and **must not be on
-> layer 2**, which is a board spin. Treat their layer-2 candidacy as the
-> weakest in the set.
+> **The remaining six are unconditional.** Unlike the signals removed
+> above, none of them becomes synchronous under a different design
+> choice — they are asynchronous by specification, so no later decision
+> about bus width, mastering or coherency can promote them into the
+> command domain. That is what makes the shortened list safer to build
+> against than the longer one it replaces.
 
 #### Where it lands
 

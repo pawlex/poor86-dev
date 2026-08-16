@@ -627,10 +627,23 @@ bursts with no interrupt logic and no partial-burst abort. At 640×480,
 scanout occupies ~31% of the device, leaving room for roughly two write
 bursts between each scanout burst.
 
-##### Open path — the write-absorbing buffer
+##### Decided: a write-combining buffer. Open: its width
 
-**Exploratory, not decided.** Recorded so the shape is on paper while the
-part survey below runs, since the survey may move the constants.
+**The buffer is wanted** — writes must be absorbed while scanout is
+active, and the arithmetic below shows there is no tolerable alternative.
+**What waits on the part survey is one number: the line width.**
+
+> **Design rule: line size ≡ burst length.** They cannot be chosen
+> independently.
+>
+> - **Line larger than burst** — a full line needs several bursts,
+>   introducing partial flushes and the bookkeeping that goes with them.
+> - **Line smaller than burst** — a burst cannot be filled from one line,
+>   so several must be gathered, wasting burst capacity on every flush.
+>
+> **So the survey does not merely inform this buffer, it dimensions it.**
+> That is why the constant is worth getting right before the RTL is
+> written rather than after.
 
 **Why something is needed.** The PSRAM is half-duplex, so a CPU write
 arriving mid-burst waits for the burst to finish — **~4 µs at 128 bytes,
@@ -652,6 +665,19 @@ dozens of separate command and address sequences.
 
 **Cost is negligible** — one `DP16KD` covers data and tags, **1 block of
 208**, so it does not meaningfully compete with the L2.
+
+**Depth is invariant under the survey; only width moves.** A 486 at
+33 MHz sustains a 32-bit write every 2 clocks — ~60 ns, ~66 MB/s — so the
+writes arriving during one scanout burst are:
+
+| burst | duration | writes arriving | bytes | lines needed |
+|---:|---:|---:|---:|---:|
+| 64 B | 2.15 µs | ~36 | 142 | **2.2** |
+| 128 B | 4.09 µs | ~68 | 270 | **2.1** |
+
+**Both land at ~2.2 lines**, because accumulation and burst duration
+scale together. **Four lines is comfortable either way**, so the depth
+decision does not depend on the survey outcome — only the width does.
 
 **Two coherency cases, wanting different answers:**
 

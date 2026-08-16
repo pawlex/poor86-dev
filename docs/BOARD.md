@@ -1183,6 +1183,54 @@ cheap now and impossible later.
 | Video | HDMI direct from the FPGA (see [FAKE_TMDS.md](FAKE_TMDS.md)), and/or a **CL-GD5428** on the local bus |
 | Deliberately absent | RJ45, drive connectors, coin cell, legacy expansion slots, optical drive — each removed by a decision recorded in the plan |
 
+## CPU bus routing tiers — and what may share the VCC plane
+
+Full derivation in [PLACEMENT.md](PLACEMENT.md); the summary is here
+because it constrains the stackup.
+
+**The classifier is the databook's own timing split**, not an estimate of
+how busy a signal looks:
+
+| spec | meaning | class |
+|---|---|---|
+| **`t14`/`t15`** | synchronous — sampled every clock, in the command and termination window | **full care** |
+| **`t20`/`t21`** | asynchronous — setup and hold needed only for *recognition* in some clock | relaxed |
+
+**Ten of the 99 CPU signals are candidates for routing on internal layer
+2, the VCC plane.**
+
+| | signals | note |
+|---|---|---|
+| **Unconditional** | `A20M` `FLUSH` `IGNNE` `SRESET` `NMI` `FERR` | asynchronous by specification; **no later decision can promote them** |
+| **Conditional** | `BREQ` `BOFF` | promote if real multi-master arbitration is adopted |
+| | `EADS` | promotes if active snooping is adopted — and **`INV` must share its layer**, being a same-clock relationship |
+| | `RESET` | qualifies on a millisecond-scale budget; **needs a test point**, since burying the signal most wanted during bring-up is a practical cost |
+
+**Explicitly not candidates:** `BS8` `BS16` `WB/WT` `HITM` `KEN` `RDY`
+`BRDY` `AHOLD` `INV`. `BS8`/`BS16` are driven by the peripheral to
+indicate whether a second, third or fourth bus cycle must occur — they
+are **command bus clock domain**, sampled every clock before `RDY`, and
+their inactive level is meaningful data. **Static is not the same as
+slow.**
+
+**Three conditions on the technique itself:**
+
+- **All ten must be actively driven, not resistor-pulled.** The risk of
+  relaxed routing here is coupling rather than delay, and a low-impedance
+  driver makes a static line hard to glitch. `IGNNE` (internal pull-up)
+  and `SRESET` (internal pull-down) fail this if left to their internal
+  resistors.
+- **No tier 3 signal may cross a plane channel.** Slots in a reference
+  plane break the return path of whatever crosses them on adjacent
+  layers — the cost lands on the *fast* bus, not on the slow signals that
+  caused it.
+- **Channels stay short and follow the plane periphery.** Slots raise
+  plane impedance, and the Am5x86 at 3.45 V is not a small load.
+
+**If the CPU moves to a mezzanine, the same tiering applies to connector
+pin assignment** — tier 1 takes the positions with the poorest ground
+return, tier 3 takes the good ones.
+
 ## Open
 
 - [ ] **Power entry.** DC barrel with on-board regulation is cheaper and
@@ -1195,7 +1243,11 @@ cheap now and impossible later.
       likely; what else earns the space.
 - [ ] **Whether video gets a dedicated memory channel** — pins are the
       commitment, the part can come later.
-- [ ] Layer count, stackup, and impedance targets for the CPU bus.
+- [ ] **Layer count, stackup, and impedance targets for the CPU bus.**
+      **Now carries a dependency** — see the routing tiers below, which
+      assume some of the CPU bus can be relieved onto the VCC plane. If
+      layer 2 ends up adjacent to a top-layer CPU bus, that assumption
+      fails and the pin escape gets harder.
 - [ ] ESP32 ↔ FPGA interface width and whether the ESP32 is FPGA
       configuration master (which would change the SPI flash wiring).
 

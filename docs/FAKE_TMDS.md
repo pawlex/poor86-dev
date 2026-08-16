@@ -759,6 +759,39 @@ cannot at `-7`. If a display demands 720p specifically, **scale into
 1024×768 instead**; monitors generally accept it more readily than TVs
 do.
 
+### Deferred to silicon — resolution beyond the envelope
+
+**Max resolution is not a prototype goal.** The spec is 1024×768 @60 at
+8 bpp, guaranteed, and the prototype's job is to reach it — not to chase
+the ceiling.
+
+**The measurement order matters, and it runs the opposite way to the
+design order.**
+
+1. **Measure what the TMDS path actually tops out at** on real hardware.
+   Lattice's grades are conservative, so the true ceiling likely sits
+   above the 700 Mb/s guaranteed at `-7` — but by how much is a property
+   of *this* board, not of a datasheet.
+2. **Then size any compression to the gap that remains**, if one remains.
+
+**Doing it the other way round would size a codec against a guess.** The
+bandwidth shortfall is only knowable once the resolution ceiling is
+measured, so building compression first risks solving a problem that
+turns out not to exist — or solving the wrong size of it.
+
+**The enabling decision has already been taken:** HDMI sits on a geared
+edge, so the ceiling is explorable on the prototype rather than fixed at
+500 Mb/s by placement. Nothing further is needed before the boards
+arrive.
+
+**Levers available when the time comes**, cheapest first:
+
+| lever | effect | cost |
+|---|---|---|
+| **4 bpp** | halves traffic — 1024×768 to 23.6 MB/s | free, and period-correct (EGA/VGA planar) |
+| **compression** on the write-combine flush | raises the *average*, not the guaranteed floor | fixed allocation + 1 bit/line; see [PLAN_OF_RECORD.md](PLAN_OF_RECORD.md) |
+| **third QSPI PSRAM** | raises the *guaranteed* floor to ~90 MB/s | 5 pins of the 10 spare |
+
 ## The question that is left
 
 **The FPGA is no longer the constraint — the display is.**

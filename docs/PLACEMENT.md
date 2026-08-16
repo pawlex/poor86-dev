@@ -485,12 +485,29 @@ and **PR** facing the CPU.
 - [ ] **Which of PT+PR or PT+PL carries the CPU.** Both fit. The choice
       is decided by where the CPU can physically sit given the rear I/O
       and the mezzanine, not by ball count.
-- [ ] **Which edge carries HDMI** — now a capability question, not a
-      geometry one. PT caps video at 800×600 (1x gearing); PL/PR reach
-      1024×768 or 720p depending on speed grade, but both already carry a
-      wide bus. Blocked on the display-acceptance test in
-      [FAKE_TMDS.md](FAKE_TMDS.md): if 640×480 is accepted, PT is fine and
-      costs nothing.
+- [x] **HDMI goes on a geared edge — PL or PR. Decided.**
+
+      **The asymmetry decides it.** PT offers only 1× gearing, a hard
+      **500 Mb/s** ceiling — 800×600 and no further, **permanently, as a
+      board property.** PL and PR offer GDDRX2 at **700 Mb/s guaranteed**
+      at `-7`, which carries 1024×768.
+
+      **It costs nothing now.** Dropping DDR memory freed the geared
+      edges; SDRAM occupies PL but no longer *needs* it, so 8 balls for
+      video are available there.
+
+      **And it preserves an option worth having.** Lattice's grades are
+      demonstrably conservative — the ULX3S runs 720p at ~19% over its
+      `-6` GDDRX2 spec. **Nothing in this design depends on exceeding
+      700 Mb/s**, and it should not; but on a geared edge the ceiling can
+      be *explored on real hardware*, where on PT it cannot be explored at
+      all. **Wrong choice here is a respin; right choice is free.**
+
+- [ ] **Preserve 4 adjacent A/B pair sites on the chosen edge.** PL has 16
+      pair sites and SDRAM takes 40 of its 65 balls, so the memory
+      allocation must be made **without fragmenting four contiguous
+      pairs.** This is the one way the decision above can be lost by
+      accident during pin assignment.
 - [ ] **Speed grade of the LFE5U-85F**, which is recorded nowhere and now
       has a video consequence: -6 tops out at 800×600, -7 at 1024×768, -8
       at 720p.

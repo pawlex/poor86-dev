@@ -107,6 +107,53 @@ specifically.
 There is no path by which SeaBIOS reaches SMM here, so the condition
 *"cut unless SeaBIOS does or can use it"* resolves to **cut**.
 
+#### Routing effort tiers — and layer 2 candidates
+
+**Speculative**, from expected system behaviour rather than the
+datasheet. It exists to say *where layout effort goes*, not to reclassify
+any signal's requirements.
+
+| tier | signals | activity |
+|---|---|---|
+| **1 — effectively static** | `BS8` `BS16` `BOFF` `A20M` `WB/WT` `FLUSH` `FERR` `IGNNE` `SRESET` `NMI` `HITM` | held at one level after boot |
+| 2 — low rate | `INTR` `HOLD` `HLDA` `LOCK` `PLOCK` `RESET` | interrupts, DMA, locked cycles |
+| 3 — every cycle | `CLK`, `A2-A31`, `D0-D31`, `ADS` `RDY` `BRDY` `BLAST` `BE0-3` `M/IO` `D/C` `W/R` `CACHE` `KEN` `PCD` `PWT` `BREQ` `AHOLD` `EADS` `INV` | full care |
+
+**Tier 1 is the candidate set for routing on internal layer 2, the VCC
+plane.** They qualify for the reason that makes them tier 1: a signal
+that does not switch **neither demands a clean return path nor injects
+noise into the plane.** These are the only CPU signals for which that is
+true.
+
+> **The cost is not paid by these signals — it is paid by the plane and
+> by whatever crosses it.** Routing in a plane layer carves slots, and:
+>
+> - **Any tier 3 signal on an adjacent layer crossing a slot loses its
+>   return path**, which is the classic split-plane failure. **No
+>   every-cycle signal may cross one of these channels.**
+> - **Slots raise plane impedance** for current delivery. The Am5x86 at
+>   3.45 V is not a small load, so channels should follow the plane
+>   periphery or regions already free of copper, and stay short.
+>
+> Guidance, not permission: **loosely routed, not carelessly routed.**
+> Tier 1 still has real setup and hold *when* it moves, `RESET`'s
+> deassertion edge is the most timing-critical event on the board despite
+> happening once, and `FLUSH` carries the tri-state-test hazard.
+
+- [ ] **Gate this on the stackup decision** — layer count and impedance
+      targets are still open in [BOARD.md](BOARD.md), and if layer 2 ends
+      up adjacent to the top-layer CPU bus, carving it is a worse trade
+      than it looks.
+
+> **Tier 1 membership is conditional, and three members are conditional
+> by design.** `BS8`/`BS16` are static *because* the FPGA width-converts
+> internally; `BOFF` and `HITM` are quiet *because* bus mastering is
+> assumed light. **Those signals were retained specifically to keep those
+> options open** — so if dynamic bus sizing or real multi-master
+> arbitration is ever used, they promote to tier 3 and **must not be on
+> layer 2**, which is a board spin. Treat their layer-2 candidacy as the
+> weakest in the set.
+
 #### Where it lands
 
 | set | signals |

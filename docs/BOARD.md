@@ -697,15 +697,42 @@ not a rework.**
 **G10 — HDMI front end: direct, or via a `PTN3365`?**
 ([FAKE_TMDS.md](FAKE_TMDS.md) — full analysis and part numbers there.)
 
-> **PINNED — decide at layout, not before.** The analysis is finished:
-> both paths are fully specified down to part numbers, values and
-> populate/DNP status, and **no further research is required.** What
-> remains is not a question about HDMI — it is a question about *what is
-> left over*, and that is not knowable until the CPU bus and the memory
-> groups have taken their share.
+> **PINNED — and the intent is to carry *both* on the validation
+> vehicle, resources permitting**, so the choice is made on measured
+> performance rather than argued in advance.
 >
-> This is a deliberate park with the inputs gathered, not a stall. **The
-> decision becomes mechanical once G3 and G5 land.**
+> The analysis is finished: both paths are fully specified down to part
+> numbers, values and populate status, and **no further research is
+> required.** What remains is a question about *what is left over*, which
+> is not knowable until the CPU bus and memory groups have taken their
+> share. A deliberate park with the inputs gathered, not a stall.
+
+##### If both are carried, give each its own FPGA pins
+
+**Do not share one set of pairs between the two paths with 0 Ω
+selection.** It is the obvious way to save pins and it **corrupts the
+comparison the board exists to make**: whichever path is unpopulated
+leaves a stub hanging off the shared net, and a disappointing result then
+cannot be attributed — path, or stub? The board would answer a question
+nobody asked.
+
+| approach | FPGA balls | verdict |
+|---|---:|---|
+| shared pairs, 0 Ω select | **8** | **rejected** — stubs compromise the measurement |
+| **separate pairs per path** | **16** | clean comparison, both live |
+
+**The cost is 8 additional balls**, against a budget with **15 spare (23
+with the pin-saver option)**. It fits — but it consumes half the slack,
+and slack is what the rest of this document keeps deliberately in
+reserve. Plus a second HDMI connector in the 159 × 44.5 mm rear window,
+and the area for both front ends.
+
+**That is the real "resources permitting" test**, and it is a stronger
+constraint than fitting either path alone.
+
+*If both do not fit:* fall back to the ordering below — the direct path is
+proven and is the default; the `PTN3365` is the upgrade to reach for once
+direct has been measured and found wanting.
 
 **Blocks PCB**, and is blocked *by* the allocations above it. The two
 paths differ in placement, routing and BOM, so it cannot slip past
@@ -755,7 +782,7 @@ knowledge:* both are low-cost hobby boards where a $2 part weighs more
 than it does on a board carrying an Am5x86 and an ECP5-85F. Their
 constraint was tighter than ours, so read it as corroboration, not proof.
 
-*Decided by — in order, at layout time:*
+*If only one is built, decided by — in order, at layout time:*
 
 1. **Measurement.** The Tang Nano 9K runs the direct path on hardware
    already here. If it drives the target displays at the target modes,
@@ -787,6 +814,12 @@ wanting** — not the default to spend prototype schedule on first.
 
 *Depends on:* G2 (whether FPGA video exists at all), then **G3 and G5** —
 this gate consumes their leftovers rather than competing with them.
+
+*Note the deferral this buys:* if both paths ship on the validation
+vehicle, **the production choice moves from layout time to after
+bring-up**, and is then decided by measurement on this board rather than
+by inference from other people's. That is the outcome worth spending
+slack on.
 
 ### Why these come first
 

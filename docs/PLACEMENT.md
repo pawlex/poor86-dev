@@ -38,6 +38,33 @@ Counted from the datasheet-derived CSVs, not estimated.
 > *at full address width*** — so the `A24-A31` pin-saver is **no longer
 > forced**, and remains available slack rather than a requirement.
 >
+> **The larger prize: there is no DDR interface anywhere on the board.**
+> Memory and storage cost 56 pins against the 59 they cost before the
+> pivot — essentially unchanged — but **every remaining interface is
+> single data rate.** SDR SDRAM by name, QSPI PSRAM at 84 MHz SDR, and
+> HyperRAM, the only DDR part, is gone. What that removes:
+>
+> - **Read calibration and delay-tap tuning.** DDR memories need the
+>   capture point found at bring-up; an entire class of problems does not
+>   arise.
+> - **Strobe capture** — no `RWDS` or `DQS` to align against.
+> - **Tight intra-lane length matching**, which DDR requires against its
+>   strobe.
+> - **Half-period setup windows.** At 84 MHz SDR the window is ~12 ns
+>   rather than ~6 ns.
+> - **The gearing requirement — and this one changes placement.** Every
+>   remaining memory interface fits inside **1× gearing at well under
+>   500 Mb/s per pin**, which is available on *every* bank, including the
+>   ungeared top and bottom. **Memory is no longer confined to the geared
+>   left and right edges.**
+>
+> **That relieves the HDMI conflict recorded above.** The problem was that
+> video above 800×600 needs a geared edge, while PL and PR were spoken for
+> by memory and the CPU bus. Memory no longer *needs* PL — it merely
+> occupies it — so the geared edges can be reallocated by geometry rather
+> than by capability. **The one hard constraint left on video placement is
+> bank 8, which is reserved.**
+
 > **Why the NOR is no longer on the same wires.** Video scanout is
 > continuous and real-time. Sharing data lines with the NOR means a flash
 > read can stall a scanout burst, which is a visible artifact rather than

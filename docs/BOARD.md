@@ -1014,6 +1014,33 @@ position on anyone else's voltage.
 > nobody uses, and because it costs exactly nothing to have. **It should
 > not acquire a footprint, a schedule, or a place in the requirements.**
 
+#### A card need not carry a CPU at all
+
+**The connector defines a bus, not a CPU.** Nothing at the baseboard end
+can tell whether those signals come from an Am5x86, a 386SX, or **an FPGA
+running ao486** — so a soft-core card is as legitimate as a silicon one.
+
+**That resolves the 85F sizing tension rather than restating it.** The
+open below asks whether the baseboard needs the largest density, given
+that its main justification was holding ao486. If ao486 can live *on a
+card*, the answer is **both**: a smaller, cheaper baseboard FPGA, and
+ao486 available to anyone who builds the card.
+
+- **The card's FPGA is chosen independently** — larger, faster, another
+  vendor entirely. Its constraints stop being the baseboard's problem.
+- **The bus bridge is not extra work.** ao486 speaks Avalon rather than a
+  486 bus, so an adapter is needed **wherever it lives**. Putting it on a
+  card relocates that work rather than adding it.
+- **Development runs in parallel**, against a connector spec, without
+  touching the baseboard.
+
+Costs are all card-side and none of them are baseboard problems: a second
+toolchain and configuration flow, its own regulation, and a card that
+costs more than one carrying a socket.
+
+**A possibility, not a plan** — recorded because it changes the shape of
+the density question below, not because anything should be built.
+
 #### The residual constraint — clock-capable pins
 
 **One thing a card respin cannot fix: which connector pins land on

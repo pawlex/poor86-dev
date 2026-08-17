@@ -1212,6 +1212,35 @@ banked or linear framebuffer writes and would be fine.
       fails. A tile-dirty bitmap is cheap — 64×64 tiles gives 192 bits —
       and typical GUI updates sit far inside the budget.
 
+      **Refined — two copies, synchronised at two different rates.**
+
+      | | |
+      |---|---|
+      | **master copy** | **SDRAM, cacheable.** All drawing and all transforms happen here |
+      | **scanout copy** | **PSRAM.** Written only by DMA, read only by scanout |
+      | **full sync** | **once per mode switch** — 768 KB, ~12 ms, during a transition where nothing is being watched |
+      | **incremental** | **dirty tiles via DMA during blanking**, steady state |
+
+      **That split is what makes the arithmetic work.** The ~440 KB/frame
+      budget only ever has to carry *dirty tiles*, never a whole frame —
+      the whole-frame copy happens at mode switch where latency is
+      invisible. A full-screen repaint spills to two frames, and even that
+      beats the CPU writing 768 KB into PSRAM directly.
+
+      **The memory is already paid for:** the second rank is the
+      `A13/CS1` pin already decided — **32 MB, of which a 2 MiB shadow is
+      noise.**
+
+      > **This does not break the single-master rule, and it is worth
+      > saying why.** SDRAM gains a second reader in the DMA, which looks
+      > like the thing the private-video-memory decision existed to
+      > prevent. It is not: **that argument was about a master with a hard
+      > real-time deadline.** Scanout cannot wait; **this DMA always can.**
+      > It has no deadline, reads sequentially in page-hit bursts, and
+      > yields to the CPU on demand — so it adds no latency *variance* to
+      > the path the design is organised around. **A polite second master,
+      > not a competing one.**
+
       - [ ] **Mode-selectable, not global.** DOS software writes `0xA0000`
             and expects pixels now; a shadow path adds a frame of latency
             and would break per-scanline effects. **DOS keeps the direct

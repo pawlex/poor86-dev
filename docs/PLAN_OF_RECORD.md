@@ -157,6 +157,33 @@ it — and it is another reason the memory subsystem stays open, since the
 cacheability and coherency policy is downstream of what sits behind the
 BIU.
 
+- [ ] **Masked writes, or full cache-line writes with read-fill?**
+      Does the memory controller honour byte enables via `DQM`, or does it
+      only ever write whole lines — turning any partial write into a
+      **read-modify-write**?
+
+      **The cost of getting it wrong is latency, on the path the whole
+      design is organised around.** An RMW pays a full read before the
+      write: `tRCD` + `CL` ≈ 60 ns at 66 MHz, against a 30 ns CPU cycle.
+      **`DQM` masking costs nothing** — the two pins are already in the
+      budget and SDRAM supports it natively.
+
+      **The 32→16 split maps byte enables cleanly.** A 32-bit CPU write is
+      two 16-bit SDRAM cycles, so `BE0`/`BE1` become the first cycle's
+      `DQM[1:0]` and `BE2`/`BE3` the second. No encoding problem.
+
+      **But it is coupled to the cache policy below, and may be moot.**
+      With **write-back plus write-allocate**, partial writes land in the
+      cache and lines are written back whole — `DQM` is then barely
+      exercised. With **write-through, no-allocate, or any uncached
+      region**, partial writes reach memory directly and masking becomes
+      essential. **Decide the cache policy first; this follows from it.**
+
+      **The video path does not share the question.** QSPI PSRAM is
+      byte-addressable — a write command carries a byte address — so the
+      write-combining buffer flushes only its dirty bytes with no masking
+      and no RMW. **This is an SDRAM-side question only.**
+
 - [ ] Decide the cacheability and coherency policy when the Am5x86 front
       end is built. Note the existing BIU decision — protocol-correct,
       structured so wait states and bursts can be added later — was taken

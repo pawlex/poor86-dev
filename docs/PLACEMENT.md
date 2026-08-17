@@ -167,6 +167,13 @@ compatibility path rather than an efficient one.
          the video cards, which matters because **SDR SDRAM is
          end-of-life** and the memory is the part most likely to need
          changing.
+      3. **It restores the memory-technology experiment.**
+         [BIU_MEMSS.md](BIU_MEMSS.md) says *"measure it before choosing"*
+         and the pivot closed that by deciding instead. **A card slot
+         reopens it: SDRAM, parallel PSRAM, real SRAM, HyperRAM — each a
+         PCB and a bitstream**, with the machine intact between
+         experiments. That is the single largest deferred question in the
+         project made testable for the price of a connector.
 
       **It costs zero FPGA pins.** The 39 signals reach a connector rather
       than two packages. With **I/O the binding resource and area free**,
@@ -184,11 +191,38 @@ compatibility path rather than an efficient one.
       configuration back onto the baseboard, exactly as planned for the
       video front end.
 
-- [ ] **Size the memory connector.** 39 signals plus returns. A PCIe ×4
-      (64 contacts) leaves 25 for power and ground — thin but workable at
-      66 MHz; ×8 or ×16 is comfortable and **area is no longer a reason to
-      economise.** Prefer the same family as the CPU card so the BOM and
-      the layout practice stay shared.
+- [ ] **Size the memory connector — and this is a real trade, in the
+      binding currency.** The question is not contacts (area is free) but
+      **how many FPGA pins to commit.**
+
+      | technology | signals |
+      |---|---:|
+      | QSPI PSRAM | ~11 |
+      | HyperRAM | ~12 |
+      | **SDR SDRAM ×16** | **39** |
+      | parallel SRAM ×16 | ~44 |
+      | **parallel PSRAM ×16** | **~46** |
+
+      **Parallel parts do not multiplex their address, so they are the
+      widest.** Covering them costs **~7 pins more than SDRAM alone — 7 of
+      the 10 spare.**
+
+      **Superset at the connector beats superset at footprints**, which is
+      how this was originally attempted: one routed group serves every
+      technology, instead of committing area and traces to several
+      footprints that mostly stay unpopulated.
+
+      **The case for spending it:** the memory subsystem is the largest
+      remaining open question, and this converts it from argument into
+      measurement. **The case against:** it leaves ~3 spare pins, on a
+      board that has already had one pin-budget error go undetected.
+
+      **The `A24-A31` pin-saver is the release valve** — it returns 8 pins
+      and caps the CPU at 16 MB, which is one SDRAM rank and already the
+      SX-class ceiling. **Taking both is affordable; taking neither is
+      comfortable; the middle needs care.**
+      Prefer the same connector family as the CPU card either way, so BOM
+      and layout practice stay shared.
 
 **16 bits wide, and the bandwidth match at CPUCLK × 2 is exact rather
 than approximate:**

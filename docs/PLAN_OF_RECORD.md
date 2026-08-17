@@ -1176,6 +1176,29 @@ banked or linear framebuffer writes and would be fine.
       | DMA writes | **perfectly sequential**, so every burst is full and command overhead amortises away, where scattered CPU writes pay it constantly |
       | PSRAM | reduced to what it is best at: **write-in-bulk, read-continuously** |
 
+      **And transforms become cacheable — which is the strongest argument
+      of the three.** Unaccelerated blitting *is* read-modify-write: a ROP
+      reads the destination, combines, writes back. Every such read on the
+      direct path is a **half-duplex PSRAM read contending with scanout**,
+      microseconds each, **and it forces a write-buffer flush besides.**
+      In a cacheable SDRAM shadow those reads hit **L2 at ~1 cycle.**
+
+      | operation | direct to PSRAM | shadow in SDRAM |
+      |---|---|---|
+      | write | contended, half-duplex | ~30 ns page hit, 133 MB/s |
+      | **read (ROP, sprite mask, palette)** | **µs — and flushes the write buffer** | **L2 hit, ~1 cycle** |
+      | scanout | unchanged | unchanged |
+
+      **So the shadow does not merely make writes faster — it makes
+      transforms possible at all**, and it **removes the host-read flush
+      penalty** recorded against the PSRAM write buffer, because the CPU
+      stops reading PSRAM entirely.
+
+      > **This is what `PCD`/`PWT` were retained for.** The shadow region
+      > is marked cacheable while the PSRAM aperture stays uncached —
+      > page-level cacheability driven outward by the CPU, which is
+      > exactly the case those pins were kept to serve.
+
       **Dirty-region tracking is the enabler, not an optimisation.**
 
       | | |

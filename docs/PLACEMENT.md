@@ -85,14 +85,36 @@ Counted from the datasheet-derived CSVs, not estimated.
 | signal | count |
 |---|---:|
 | `DQ[15:0]` | 16 |
-| `A[12:0]` | 13 |
+| **`A[11:0]`** | **12** |
 | `BA[1:0]` | 2 |
 | `RAS#` `CAS#` `WE#` | 3 |
-| `CS#` | 1 |
-| `CKE` | 1 |
-| `CLK` | 1 |
-| `DQM[1:0]` | 2 |
+| **`CS#[1:0]`** — two ranks | **2** |
+| `CKE` — shared | 1 |
+| `CLK` — shared | 1 |
+| `DQM[1:0]` — shared | 2 |
 | **total** | **39** — 1 spare of the 40 allocated |
+
+> **Address capped at 12; the line goes to a second chip select instead.**
+> A free swap — same 39 signals — and better motivated than 13 address
+> lines into a single rank:
+>
+> - **Availability.** SDR SDRAM is end-of-life. **128 Mb ×16 is the
+>   commonly stocked size**; 512 Mb SDR parts are scarce and dear.
+>   `A[11:0]` addresses 4096 rows, which is exactly a 128 Mb ×16 part —
+>   **16 MB per rank, 32 MB across two.**
+> - **Rank interleaving, which is a latency win.** With a row open in each
+>   rank, **a precharge on one overlaps an access to the other**, cutting
+>   the effective page-miss cost. That serves the latency-first argument
+>   directly, where a larger single rank would not.
+> - **Population options.** One device for a cheap build, two for the full
+>   32 MB — and no board change between them.
+>
+> **It also lines up with the CPU address decision.** The `A24-A31`
+> pin-saver caps the CPU at 16 MB, which is **exactly one rank**. Full
+> address width reaches both. The two population choices map onto the two
+> CPU configurations without either constraining the other.
+>
+> 32 MB is generous for the target anyway — period 486s shipped 4–32 MB.
 
 **16 bits wide, and the bandwidth match at CPUCLK × 2 is exact rather
 than approximate:**
@@ -108,9 +130,8 @@ relationship the clocking section argues for. **16-bit at 2× and 32-bit
 at 1× are the same memory; the 16-bit version costs 17 fewer pins.**
 A 32-bit interface would need **57** and does not fit the budget anyway.
 
-**Capacity: up to 64 MB.** 13 address plus 2 bank lines reach 512 Mb with
-×16 parts — 8192 rows × 1024 columns × 4 banks × 16 bits. Well above
-anything the machine needs; period 486s shipped 4–32 MB.
+**Capacity: 16 MB per rank, 32 MB populated.** `A[11:0]` gives 4096 rows
+× 512 columns × 4 banks × 16 bits = 128 Mb per device.
 
 ### 66 MHz is conservative — take the lowest CL
 

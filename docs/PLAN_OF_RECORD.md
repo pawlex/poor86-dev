@@ -1138,11 +1138,30 @@ banked or linear framebuffer writes and would be fine.
       > it.** That is the right shape if acceleration is ever *offloaded*
       > — to the ESP32 or a soft core — rather than implemented in RTL.
       >
-      > **Mutually exclusive with the current approach.** The design
-      > presents period register interfaces that software already has
-      > drivers for. A ring buffer needs a **bespoke driver on the guest
-      > side**, which no period software will ever have. It is an
-      > alternative architecture, not an addition to this one.
+      > **The guest-driver requirement is exclusive; the device is not.**
+      > QXL embeds `VGACommonState` — **the same VGA core `-vga std`
+      > uses** — so QXL is, structurally, *bochs VGA plus a ring offload*.
+      > A ring could therefore be **added on top later** exactly as QXL
+      > builds it on top of VGA. What stays exclusive is the driver:
+      > **no period software will ever submit to a ring**, so it buys
+      > nothing for the target workload.
+      >
+      > **DECIDED — parked in favour of the write path.** The only
+      > conceivable consumer is Win 3.11 or 9x, and those already work
+      > unaccelerated. **Effort goes instead to LFB support in `bochsvga`
+      > and a strong write-combining buffer in the VGA memory core**,
+      > because **both target paths are write-bound**:
+      >
+      > | path | bottleneck |
+      > |---|---|
+      > | DOS | writes the framebuffer directly |
+      > | Windows, unaccelerated driver | CPU blits — memcpy to framebuffer |
+      > | ring buffer | **neither — no period driver exists to use it** |
+      >
+      > **The write buffer is leverage on three questions at once:** DOS
+      > speed, Windows tolerability, and — by making unaccelerated Windows
+      > acceptable — **it weakens the case for the Cirrus blitter too.**
+      > A ring is leverage on none of them.
 
       > **Note — DOS uses the linear framebuffer too.** It is not a
       > Linux-era feature. **VBE 2.0 introduced the LFB for DOS

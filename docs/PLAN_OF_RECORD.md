@@ -1161,8 +1161,8 @@ banked or linear framebuffer writes and would be fine.
       > CRTC — appropriate anyway, since output is a fixed HDMI mode with
       > scaling.
 
-      > **And weigh it against the modernisation principle, not only
-      > against effort.** *"Program the CRTC yourself"* is the **old
+      > **And weigh it against the design philosophy, not only against
+      > effort.** *"Program the CRTC yourself"* is the **old
       > way**; Bochs VBE's *"tell it the resolution"* is the new one.
       > Adopting Cirrus to gain a blitter means **taking a step backwards
       > on the axis this project is explicitly organised around** —

@@ -1106,6 +1106,7 @@ fabrication.
 | | |
 |---|---|
 | **Build quantity** | **five prototype boards** — calibrates rework, assembly and part-cost decisions throughout |
+| **Binding resource** | **FPGA I/O, not board area.** Preliminary layout finds area is not a constraint on 170 mm²; the pin budget sits at **195 of 205, 10 spare.** Spend area freely; guard pins |
 | Form factor | **mini-ITX, 170 × 170 mm** |
 | Rear I/O | standard shield window, 159 × 44.5 mm |
 | Sockets | **none** — every part soldered, including the CPU |

@@ -153,9 +153,17 @@ CPU card.
 are reached and capacity is fractional. Workable, but it is a
 compatibility path rather than an efficient one.
 
-- [ ] Decide against the area budget once the first placement pass is
-      further along. **The timing risk is low; the question is whether a
-      socket is smaller than the two parts it replaces.**
+- [x] **Resolved — SDRAM stays soldered on the baseboard.** Preliminary
+      layout finds **board area is not a constraint**, which removes the
+      motivation. The timing risk was always low, but a connector spends
+      some of the slack the `CL2` decision banked, and **there is no
+      longer anything to buy with it.**
+
+      The secondary arguments — swappable capacity, adopting a different
+      memory after SDR SDRAM's end of life — survive but are weak on their
+      own: 32 MB is generous for the target, and a memory change would
+      likely want a different controller anyway. **Revisit only if one of
+      those becomes a real requirement.**
 
 **16 bits wide, and the bandwidth match at CPUCLK × 2 is exact rather
 than approximate:**

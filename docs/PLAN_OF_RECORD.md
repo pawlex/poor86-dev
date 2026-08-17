@@ -700,6 +700,44 @@ common clock is retained: all three run at the same rate and ignore it
 while deselected, so the separation costs data lines and selects rather
 than a second clock domain.
 
+##### The framebuffer is not a coherency domain
+
+**The consumer does not care**, and that single fact carries more of this
+design than it first appears.
+
+**A stale read differs in *category*, not degree:**
+
+| | stale read means |
+|---|---|
+| main memory | wrong computation — silent corruption, wrong results, possibly a crash |
+| **framebuffer** | **one frame shows old pixels** — a tear, gone on the next refresh |
+
+**So scanout neither snoops nor flushes.** No comparator on the hot path,
+no stall waiting for a buffer to drain, and **the real-time deadline is
+protected structurally rather than by careful arbitration.** The write
+buffer is free to be as lazy as it likes — which is precisely what makes
+it coalesce well.
+
+**This is the period contract, not a compromise.** Video hardware never
+promised coherency. That is why `while (inp(0x3DA) & 8);` exists — a DOS
+programmer waits for vertical retrace because synchronisation was always
+the software's job. **A program that wrote during active scanout tore on
+a real VGA, and will tear here, for the same reason.** Matching that is
+authenticity rather than laziness, and any driver writer already knows
+the rule: **get the frame into memory before scanout reaches it, or own
+the result.**
+
+**The boundary is precise: coherency is required where data is *computed
+on*, not where it is *displayed*.** A host read-modify-write — XOR
+sprites, masked blits — is arithmetic and must see written data. That is
+why host reads flush the buffer and scanout reads bypass it.
+
+> **And it is what made the single-master architecture possible.** Had the
+> framebuffer required coherency with the CPU's view of main memory,
+> giving video its own memory would have created a coherency problem
+> spanning two controllers. **Because it does not, the separation is
+> free** — the whole private-video-memory decision rests on this property.
+
 ##### Clock it at 66 MHz — CPUCLK × 2, the SDRAM domain
 
 **Ganged ×8 delivers one full byte per data clock.** At **66 MHz that is

@@ -17,7 +17,7 @@ Counted from the datasheet-derived CSVs, not estimated.
 | block | pins |
 |---|---:|
 | CPU bus — Am5x86, decided set (G1) | **99** |
-| SDRAM, wide group — **CPUCLK × 2** (~66 MHz) | 40 |
+| SDRAM, 16-bit — **CPUCLK × 2** (66.67 MHz) — see breakdown below | 40 |
 | ~~HyperRAM, narrow group~~ | ~~12~~ **dropped** |
 | HDMI, 4 differential pairs | 8 |
 | config EEPROM (bank 8, hard SPI) | 6 |
@@ -79,6 +79,68 @@ Counted from the datasheet-derived CSVs, not estimated.
 > **The board is tighter than recorded: 7 spare, not 15.**
 
 **With the `A24-A31` pin-saver** (CPU bus 91): **total 190, spare 15.**
+
+### SDRAM group — signal breakdown
+
+| signal | count |
+|---|---:|
+| `DQ[15:0]` | 16 |
+| `A[12:0]` | 13 |
+| `BA[1:0]` | 2 |
+| `RAS#` `CAS#` `WE#` | 3 |
+| `CS#` | 1 |
+| `CKE` | 1 |
+| `CLK` | 1 |
+| `DQM[1:0]` | 2 |
+| **total** | **39** — 1 spare of the 40 allocated |
+
+**16 bits wide, and the bandwidth match at CPUCLK × 2 is exact rather
+than approximate:**
+
+```
+SDRAM   16 bits × 66.67 MHz = 133.3 MB/s
+CPU     32 bits × 33.33 MHz = 133.3 MB/s
+```
+
+A 32-bit CPU access is two SDRAM cycles at double rate — the same
+wall-clock time, no clock-domain crossing, and the fixed integer phase
+relationship the clocking section argues for. **16-bit at 2× and 32-bit
+at 1× are the same memory; the 16-bit version costs 17 fewer pins.**
+A 32-bit interface would need **57** and does not fit the budget anyway.
+
+**Capacity: up to 64 MB.** 13 address plus 2 bank lines reach 512 Mb with
+×16 parts — 8192 rows × 1024 columns × 4 banks × 16 bits. Well above
+anything the machine needs; period 486s shipped 4–32 MB.
+
+### 66 MHz is conservative — take the lowest CL
+
+**The interface runs far below any SDR SDRAM speed grade.** PC133 parts
+are specified at 7.5 ns; the period here is **15 ns**. That slack should
+be spent on **latency, not margin**, since the plan of record makes CPU
+latency the fixed constraint and bandwidth the free variable.
+
+**Target `CL2`**, and every other timing at its minimum integer clock
+count:
+
+| timing | typical | clocks @15 ns |
+|---|---|:-:|
+| **`CL`** | — | **2** — 30 ns |
+| `tRCD` | 15–20 ns | 2 |
+| `tRP` | 15–20 ns | 2 |
+| `tRAS` | 42–45 ns | 3 |
+
+Which gives, against a 30 ns CPU cycle:
+
+| access | clocks | time | CPU cycles |
+|---|:-:|---:|:-:|
+| **page hit** | `CL` = 2 | **30 ns** | **1** |
+| page miss | `tRP` + `tRCD` + `CL` = 6 | 90 ns | 3 |
+
+**A page-hit read costs one CPU cycle.** That is the number the cache
+design should be built against, and it is only available because the
+interface is run well inside its grade. `CL3` would make every read 50%
+slower for no benefit — **the setting is a mode-register write, so this
+costs nothing but remembering to do it.**
 
 **G10 — carrying both HDMI front ends** costs 8 more balls, since the two
 paths need separate pairs to keep the comparison clean:

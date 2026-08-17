@@ -498,6 +498,13 @@ Everything below follows from those four.
   `CE`/`OE`/`ADV`), so the wide group is specified as the **superset**
   and unused signals are simply not driven.
 
+  > **Superseded — the superset requirement is retired.** Both the narrow
+  > group and parallel PSRAM were dropped with the memory pivot, so the
+  > wide group serves **SDRAM only** and needs no accommodation for
+  > `CE`/`OE`/`ADV`. **The 40-pin figure survives, but its reasoning does
+  > not:** it is now simply a 16-bit SDRAM interface at 39 signals with
+  > one spare. Breakdown in [PLACEMENT.md](PLACEMENT.md).
+
   One caveat worth taking seriously: **"DDR of any kind" spans two very
   different layout problems.** SDR SDRAM and HyperRAM are tractable at
   this level. DDR2/DDR3 bring matched-length routing, termination and

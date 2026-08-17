@@ -184,6 +184,34 @@ BIU.
       write-combining buffer flushes only its dirty bytes with no masking
       and no RMW. **This is an SDRAM-side question only.**
 
+      **Worth exploring — a write-allocate queue.** Rather than draining a
+      partial write immediately, hold it briefly and see whether adjacent
+      writes follow. Sequential patterns — `REP STOSD`, `memcpy`, structure
+      initialisation — then coalesce into **full lines, which need neither
+      masking nor RMW.**
+
+      **Not write-back caching.** No tag array, no coherency claim, no
+      snoop obligation outward; a bounded queue that drains eagerly on
+      idle, on fill, or on a read that touches it. It sits *below* the
+      cache and therefore does not complicate the cache policy — which is
+      what makes it explorable independently of the decision above.
+
+      > **The same structure as the video write-combining buffer**, one
+      > level over: lines, dirty masks, flush when full. **Two instances of
+      > one design rather than two designs** — worth building it
+      > parameterised.
+
+      **One difference from the video instance.** There, reads are rare and
+      *flush-on-read* is the cheap correct rule. Here **CPU reads are
+      constant, so the queue must be snooped** — but at four to eight
+      entries that is a comparator array, not a CAM in the expensive sense.
+
+      **It reduces how often masking is needed; it does not remove the
+      need.** Genuinely scattered byte writes still reach memory alone.
+      **So `DQM[1:0]` stays in the SDRAM pin allocation and is assumed
+      required** — it costs 2 pins already counted in the group of 40, and
+      the queue only makes the residual case rarer.
+
 - [ ] Decide the cacheability and coherency policy when the Am5x86 front
       end is built. Note the existing BIU decision — protocol-correct,
       structured so wait states and bursts can be added later — was taken

@@ -1115,6 +1115,35 @@ banked or linear framebuffer writes and would be fine.
       entirely. **Cirrus acceleration then lives only on the mezzanine,
       in the real chip, for anyone who wants Windows.**
 
+      **The field was surveyed before choosing.** Every freely available
+      model was examined, and `bochsvga` survives on merit rather than by
+      default:
+
+      | model | verdict |
+      |---|---|
+      | **Bochs VBE / `bochsvga`** | **chosen.** 11 registers, 2 I/O ports, VESA LFB, DOS-complete, Win9x drivers exist |
+      | **Cirrus `CL-GD54xx`** | period-correct and the original target, but the blitter is ~⅓ of QEMU's model in RTL — **deferred, not rejected** |
+      | **QXL** | **rejected** — PCI-only, a SPICE shim rather than a controller, no DOS or Win9x drivers |
+      | real `CL-GD5428` on the mezzanine | still available, in **real silicon**, if period authenticity is wanted |
+
+      **The intended arc, recorded so the sequence is deliberate rather
+      than reactive:**
+
+      1. **Now — `bochsvga`.** Smallest thing that is DOS-complete and
+         drives Windows unaccelerated.
+      2. **When features are needed — the dual-framebuffer model.** Shadow
+         in cacheable SDRAM, dirty-tile DMA to PSRAM.
+      3. **Then — BLIT and cursor on the shadow**, and with them the
+         **pivot to the Cirrus model.**
+
+      > **Which is where the project wanted to be from the start.** The
+      > Cirrus path was never abandoned — it was **deferred until the
+      > infrastructure that makes it cheap exists.** Building the shadow
+      > first turns the blitter from "a third of QEMU's model against
+      > PSRAM" into "a second writer of cacheable SDRAM." **Same
+      > destination, reached at a fraction of the cost, and nothing along
+      > the way is thrown out.**
+
       - [x] **DECIDED — `bochsvga` is the video model.** VESA VBE with a
             linear framebuffer, DOS-complete, eleven registers behind two
             I/O ports. **Windows 9x works via `vmdisp9x`/VBEMP**,

@@ -78,7 +78,12 @@ Counted from the datasheet-derived CSVs, not estimated.
 > arithmetic error that had been carried since the table was written.
 > **The board is tighter than recorded: 7 spare, not 15.**
 
-**With the `A24-A31` pin-saver** (CPU bus 91): **total 190, spare 15.**
+**With the `A24-A31` pin-saver** (CPU bus 91): **total 187, spare 18.**
+
+> **This figure has now gone stale twice** — once on an arithmetic slip,
+> once when the NOR moved to its own data bus and only the full-width
+> total was re-derived. **Recompute both columns from the line items on
+> every change**; do not carry either forward by hand.
 
 ### SDRAM group — signal breakdown
 
@@ -312,7 +317,7 @@ made two of them:
   it was never in the budget.
 - **A "pin saver option" is annotated on the FPGA and Am5x86 sheets**:
   dropping `A24-A31` reduces the address space to 16 MB and the CPU bus
-  to **91 pins**, taking the total to **190 of 205 — 15 spare.** 16 MB is
+  to **91 pins**, taking the total to **187 of 205 — 18 spare.** 16 MB is
   already the ceiling on the SX-class path, so this makes the two CPU
   variants agree rather than diverge.
 

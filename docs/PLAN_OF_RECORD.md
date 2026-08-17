@@ -1163,6 +1163,49 @@ banked or linear framebuffer writes and would be fine.
       > acceptable — **it weakens the case for the Cirrus blitter too.**
       > A ring is leverage on none of them.
 
+      **Idea worth exploring — shadow framebuffer in SDRAM, DMA to
+      PSRAM.** For Windows specifically: **let the CPU write the
+      framebuffer into main memory**, and have a background DMA move dirty
+      regions into the QSPI PSRAM.
+
+      **Both sides get the memory that suits them:**
+
+      | | |
+      |---|---|
+      | CPU writes | land in **SDRAM — ~30 ns page hits, 133 MB/s, cacheable** — instead of contended half-duplex PSRAM |
+      | DMA writes | **perfectly sequential**, so every burst is full and command overhead amortises away, where scattered CPU writes pay it constantly |
+      | PSRAM | reduced to what it is best at: **write-in-bulk, read-continuously** |
+
+      **Dirty-region tracking is the enabler, not an optimisation.**
+
+      | | |
+      |---|---:|
+      | write budget during blanking (4.57 ms @ 62 MB/s) | ~283 KB |
+      | spare during active scan (12.1 ms @ ~13 MB/s) | ~157 KB |
+      | **per frame** | **~440 KB** |
+      | full 1024×768×8 frame | **768 KB** |
+
+      **A whole frame does not fit in a frame's budget**, so blind copying
+      fails. A tile-dirty bitmap is cheap — 64×64 tiles gives 192 bits —
+      and typical GUI updates sit far inside the budget.
+
+      - [ ] **Mode-selectable, not global.** DOS software writes `0xA0000`
+            and expects pixels now; a shadow path adds a frame of latency
+            and would break per-scanline effects. **DOS keeps the direct
+            path; Windows uses the shadow.**
+      - [ ] **Coherency: the DMA must see the CPU's writes.** If the
+            shadow region is cacheable and write-back, the DMA reads
+            stale data. Either mark it **write-through**, or have the DMA
+            snoop. Write-through to SDRAM is still far faster than
+            anything the PSRAM path offers.
+      - [ ] Costs: a DMA engine, the dirty bitmap, **double storage** (768
+            KB in each memory — both have room), and one frame of latency.
+
+      **This is the shadow-framebuffer/deferred-I/O pattern** that QEMU and
+      Linux `fbdev` both use, which is a point in its favour: well-trodden,
+      and it fits the machine's existing split of fast-writes memory versus
+      stream-out memory.
+
       > **Note — DOS uses the linear framebuffer too.** It is not a
       > Linux-era feature. **VBE 2.0 introduced the LFB for DOS
       > extenders**, and protected-mode DOS software used it heavily.

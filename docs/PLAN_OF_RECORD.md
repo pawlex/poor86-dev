@@ -1115,10 +1115,18 @@ banked or linear framebuffer writes and would be fine.
       entirely. **Cirrus acceleration then lives only on the mezzanine,
       in the real chip, for anyone who wants Windows.**
 
-      - [ ] Decide between **`vgabios-cirrus.bin`** (commits the FPGA to
-            Cirrus register compatibility, and eventually to this
-            question) and **`bochsvga`** (VESA LFB, DOS-complete, no
-            blitter question at all).
+      - [x] **DECIDED — `bochsvga` is the video model.** VESA VBE with a
+            linear framebuffer, DOS-complete, eleven registers behind two
+            I/O ports. **Windows 9x works via `vmdisp9x`/VBEMP**,
+            unaccelerated. The blitter question does not arise.
+
+            **The Cirrus model stays available for blit and cursor
+            support later, if and when it is deemed necessary** — built on
+            the SDRAM shadow, per the note above. **Nothing gates on it**,
+            and it needs no hardware change, so it can be taken up at any
+            point or never.
+
+            *Costs one `#define`* — see below.
 
       > **`bochsvga` needs one `#define` changed from stock.** Its LFB
       > address is compile-time:

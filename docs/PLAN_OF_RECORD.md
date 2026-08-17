@@ -1175,16 +1175,21 @@ banked or linear framebuffer writes and would be fine.
       > directly** — 320×240, unchained VGA, split-screen and panning
       > tricks. Doom and much of the demoscene depend on it.
       >
-      > **So the real question is prior to Cirrus:**
+      > **Resolved — and it was a false choice.** `bochsvga` is not *"the
+      > DISPI interface instead of VGA"*. It is **the complete legacy VGA
+      > core — CRTC, sequencer, chain-4, planar modes — *plus* DISPI**
+      > bolted on for high resolutions. That is exactly why **Doom runs
+      > under `-vga std`**: Mode Y's unchaining and CRTC pokes are served
+      > by the VGA core underneath, not by the VBE extension.
       >
-      > | are tweaked modes in scope? | consequence |
-      > |---|---|
-      > | **yes** | real CRTC behaviour is owed **regardless**, and Cirrus costs nothing extra on this axis |
-      > | **no** — everything pattern-matches to known modes | **Cirrus is a genuine regression**, and the modernisation objection stands |
+      > **So the CRTC is owed by the `bochsvga` path itself**, the moment
+      > DOS compatibility is in scope. Cirrus never introduced it.
       >
-      > - [ ] **Decide tweaked-mode support first.** It determines whether
-      >       the Cirrus pivot is a step backwards or merely a step
-      >       already taken.
+      > **What Cirrus actually adds on this axis is incremental**:
+      > *extended* CRTC registers (`CR19`/`CR1A`/`CR1B`, addressing
+      > overflow) on top of a CRTC that already exists. **The design-philosophy
+      > objection therefore largely evaporates** — the step was taken when
+      > DOS compatibility was accepted, and it was taken knowingly.
 
       > **Which is where the project wanted to be from the start.** The
       > Cirrus path was never abandoned — it was **deferred until the

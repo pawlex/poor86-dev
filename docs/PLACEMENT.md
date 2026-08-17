@@ -741,10 +741,32 @@ and **PR** facing the CPU.
       > the chosen side (PL = banks 6/7, PR = banks 2/3) over spanning
       > two.
 
-      - [ ] **Confirm against the open toolchain specifically.** Whether
-            `nextpnr`/`prjtrellis` expose `LVCMOS33D` the way Diamond does
-            is a separate question from what the silicon supports, and this
-            project uses the open flow.
+      - [x] **Confirmed supported in the open flow.** `LVCMOS33D` is in
+            `nextpnr/ecp5/iotypes.inc` alongside `LVCMOS25D`, `LVDS` and
+            `LVDS25E`; verified against the installed `nextpnr-ecp5`
+            **0.11.1**. **Not a non-starter.**
+
+            > **Constrain the P signal to the `PIOA` ball only.** nextpnr
+            > drives the complement onto the paired `PIOB` automatically —
+            > do not assign it. Constraining the N side trips an assertion
+            > (`pio == "PIOA"`, nextpnr issue #544).
+
+            **Pair sites available per bank** (`LFE5U-85F` CABGA381, from
+            the local Trellis `iodb.json`):
+
+            | side | bank | A/B pairs |
+            |---|---:|---:|
+            | **PL** | 6 | **8** |
+            | **PL** | 7 | **8** |
+            | **PR** | 2 | **9** |
+            | **PR** | 3 | **8** |
+            | PT | 0 / 1 | 13 / 16 |
+            | PB | 8 | 6 — reserved |
+
+            **Four pairs fit inside a single geared bank**, so the
+            same-bank-group rule needs no spanning of 6+7 or 2+3. Example,
+            PL bank 6: `G2/F1`, `J4/J5`, `K2/J1`, `K4/K5`, `M4/N5`,
+            `N2/M1`, `N3/M3`, `P1/P2`.
 
 - [ ] **Trace-length budget, FPGA → HDMI connector.** No figure recorded.
       Starting position, to be confirmed:

@@ -1192,6 +1192,28 @@ banked or linear framebuffer writes and would be fine.
       > acceptable — **it weakens the case for the Cirrus blitter too.**
       > A ring is leverage on none of them.
 
+      > **PHASING — stub now, implement during optimisation.**
+      >
+      > | phase | video memory path | cost |
+      > |---|---|---|
+      > | **1 — bring-up** | **CPU reads and writes PSRAM directly** | **slow, and accepted.** Correct, simple, and enough to get pixels on a screen |
+      > | **2 — optimisation** | shadow in cacheable SDRAM, dirty-tile DMA | fast; added when schedule allows |
+      >
+      > **Design the stub in phase 1**: the framebuffer aperture decode
+      > should be **switchable between PSRAM-direct and shadow**, and the
+      > DMA should have its hook present but unpopulated. **No hardware
+      > impact either way** — both paths use the same pins, so this gates
+      > nothing on the board.
+      >
+      > **Two notes so phase 2 costs no rework:**
+      >
+      > - **"Host reads always come from main memory" is a phase-2
+      >   property, not a day-one rule.** In phase 1 host reads do hit
+      >   PSRAM, slowly.
+      > - **So the write buffer's host-read flush rule is needed in phase
+      >   1** and simply **stops being exercised in phase 2.** Implement
+      >   it; it becomes dead code rather than something to remove.
+
       **Idea worth exploring — shadow framebuffer in SDRAM, DMA to
       PSRAM.** For Windows specifically: **let the CPU write the
       framebuffer into main memory**, and have a background DMA move dirty

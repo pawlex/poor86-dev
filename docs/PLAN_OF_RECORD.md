@@ -1088,6 +1088,25 @@ banked or linear framebuffer writes and would be fine.
       | **CL-GD5428 on the mezzanine** | **in real silicon — nothing to implement** |
       | **FPGA video**, if it claims to be a Cirrus | **~a third of QEMU's model, in RTL** |
 
+      > **If BitBLT or the hardware cursor are ever built, build them on
+      > the shadow.** *Tinker-later, not now.*
+      >
+      > A blitter operating on the **cacheable SDRAM master copy** is a
+      > far smaller problem than one operating on PSRAM: reads hit L2,
+      > writes are page hits, and **the blitter never touches PSRAM at
+      > all** — the existing dirty-tile DMA propagates the result exactly
+      > as it does for CPU drawing. Same for a hardware cursor, which is
+      > composited into the shadow.
+      >
+      > **So acceleration reduces to "a second writer of the shadow"**,
+      > reusing the whole path already designed rather than needing a
+      > parallel one. And the register interface stays **era-correct**, so
+      > period drivers drive it unmodified.
+      >
+      > - [ ] **Tinker later.** Not on any critical path. Recorded so that
+      >       if the blitter is ever attempted, it is attempted on the
+      >       right side of the DMA.
+
       **There is a clean way out.** SeaVGABIOS also ships **`bochsvga`** —
       plain VGA plus VBE with a linear framebuffer, no acceleration.
       That covers **every DOS mode** and sidesteps Cirrus emulation

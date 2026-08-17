@@ -1059,7 +1059,45 @@ banked or linear framebuffer writes and would be fine.
       no expansion-ROM BAR, so the BIOS finds it by scanning — which is
       exactly what `isapc` does (`Running option rom at c000:0003`).
       That makes the VGA BIOS another reset-vector-placed image.
-- [ ] Decide whether BitBLT is ever in scope, or explicitly out.
+- [ ] **Decide whether BitBLT and the hardware cursor are in scope.**
+
+      > **Correction to an earlier claim.** It was argued that neither is
+      > needed *because SeaBIOS does nothing with them*. **The premise is
+      > true and the reasoning is wrong** — firmware was never the
+      > consumer that matters.
+
+      **Verified from source:**
+
+      | | finding |
+      |---|---|
+      | SeaVGABIOS `clext.c` | only **resets** the blitter at init (`GR31 ← 0x04, 0x00`); never draws with it |
+      | SeaVGABIOS cursor | uses **`swcursor.c`**, a software cursor XOR'd onto the framebuffer |
+      | QEMU `cirrus_vga.c` | **implements both**; the blitter is roughly a third of the file — ROP tables, pattern fill, colour expand, CPU→video and video→video |
+
+      **The real consumer is Windows 3.x with the Cirrus driver** — window
+      blits, and the hardware cursor for the mouse pointer. **A 486 with
+      32 MB and SVGA is a natural Windows 3.11 machine**, so this is not a
+      hypothetical. DOS applications overwhelmingly write the framebuffer
+      directly and never touch the blitter.
+
+      **So the question is really: is Windows in scope?** And the two video
+      paths answer it differently:
+
+      | path | blitter |
+      |---|---|
+      | **CL-GD5428 on the mezzanine** | **in real silicon — nothing to implement** |
+      | **FPGA video**, if it claims to be a Cirrus | **~a third of QEMU's model, in RTL** |
+
+      **There is a clean way out.** SeaVGABIOS also ships **`bochsvga`** —
+      plain VGA plus VBE with a linear framebuffer, no acceleration.
+      That covers **every DOS mode** and sidesteps Cirrus emulation
+      entirely. **Cirrus acceleration then lives only on the mezzanine,
+      in the real chip, for anyone who wants Windows.**
+
+      - [ ] Decide between **`vgabios-cirrus.bin`** (commits the FPGA to
+            Cirrus register compatibility, and eventually to this
+            question) and **`bochsvga`** (VESA LFB, DOS-complete, no
+            blitter question at all).
 
 ## Direction: sound synthesis is software
 

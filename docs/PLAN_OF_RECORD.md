@@ -208,9 +208,43 @@ BIU.
 
       **It reduces how often masking is needed; it does not remove the
       need.** Genuinely scattered byte writes still reach memory alone.
-      **So `DQM[1:0]` stays in the SDRAM pin allocation and is assumed
-      required** — it costs 2 pins already counted in the group of 40, and
-      the queue only makes the residual case rarer.
+
+      > **HARDWARE DECIDED: `DQM[1:0]` enabled, masked writes supported in
+      > silicon.** Two pins, already counted inside the group of 40. **This
+      > does not wait on the protocol below** — the pins are the
+      > irreversible layer and the protocol is RTL, so the board is built
+      > for the capability and the RTL decides whether to use it. Same
+      > ordering the mezzanine specification follows.
+
+- [ ] **OPEN — where does the write-allocate queue sit in the coherency
+      protocol?** This is the part still to reconcile, and it is separate
+      from the cache policy question below.
+
+      **The queue is a third place data can live** — after the 486's
+      internal write-back L1 and the FPGA's L2 — and anything that reads
+      memory must account for it.
+
+      | reader | obligation |
+      |---|---|
+      | CPU reads | snoop the queue — comparator array, 4–8 entries |
+      | the L2 | ordering against a line that is both cached and queued |
+      | external masters / DMA | must not read stale memory behind a pending write |
+      | video scanout | **none** — separate PSRAM, never CPU traffic |
+
+      **Three shapes to choose between:**
+
+      1. **Flush before any external access.** Simplest and obviously
+         correct; costs latency on every DMA touch.
+      2. **Snoop the queue alongside the L2.** No flush penalty, more
+         logic, and the queue joins the `AHOLD`/`EADS`/`HITM`/`INV`
+         machinery rather than hiding beneath it.
+      3. **Keep it non-coherent and CPU-region-only.** Cheapest, but
+         limits where it may be used and needs the boundary defined.
+
+      **Decide this before the queue is built, not after** — it determines
+      whether the queue is a private optimisation beneath the coherency
+      domain or a participant inside it, and that is structural rather than
+      tunable.
 
 - [ ] Decide the cacheability and coherency policy when the Am5x86 front
       end is built. Note the existing BIU decision — protocol-correct,

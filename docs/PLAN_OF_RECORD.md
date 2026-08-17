@@ -201,10 +201,28 @@ BIU.
       > one design rather than two designs** — worth building it
       > parameterised.
 
-      **One difference from the video instance.** There, reads are rare and
-      *flush-on-read* is the cheap correct rule. Here **CPU reads are
-      constant, so the queue must be snooped** — but at four to eight
-      entries that is a comparator array, not a CAM in the expensive sense.
+      **One difference from the video instance — and it is not read
+      volume.** The video memory controller is **read-dominated**: scanout
+      streams ~47 MB/s at 1024×768 and is by far its heaviest traffic.
+      What is rare there is *host* reads coming back up.
+
+      **The distinction that matters is which reads must be coherent with
+      pending writes:**
+
+      | | dominant reader | needs coherency with the buffer? |
+      |---|---|---|
+      | **video MC** | **scanout** | **no** — a pixel one frame late is invisible |
+      | | host read-modify-write | yes, but rare → *flush-on-read* is cheap |
+      | **main memory MC** | **CPU** | **yes, always** → must snoop |
+
+      > **So "flush on read" on the video side means *host* reads only.**
+      > Applying it to scanout would flush the buffer on every burst and
+      > **destroy the write combining it exists for.** The dominant reader
+      > deliberately bypasses the buffer entirely.
+
+      On the main-memory side the dominant reader is also the one needing
+      coherency, so **snooping is mandatory** — at four to eight entries a
+      comparator array, not a CAM in the expensive sense.
 
       **It reduces how often masking is needed; it does not remove the
       need.** Genuinely scattered byte writes still reach memory alone.

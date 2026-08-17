@@ -209,12 +209,16 @@ BIU.
       **It reduces how often masking is needed; it does not remove the
       need.** Genuinely scattered byte writes still reach memory alone.
 
-      > **HARDWARE DECIDED: `DQM[1:0]` enabled, masked writes supported in
-      > silicon.** Two pins, already counted inside the group of 40. **This
-      > does not wait on the protocol below** — the pins are the
-      > irreversible layer and the protocol is RTL, so the board is built
-      > for the capability and the RTL decides whether to use it. Same
-      > ordering the mezzanine specification follows.
+      > **HARDWARE DECIDED: `DQM[1:0]` are *present* — routed to the
+      > connector and to the FPGA.** Two pins, already counted inside the
+      > group of 40.
+      >
+      > **Present, not enabled.** Whether the controller drives them
+      > meaningfully is an RTL question and stays open below. **This does
+      > not wait on the protocol** — the pins are the irreversible layer,
+      > the protocol is not, so the board carries the capability and the
+      > RTL decides whether to exercise it. Same ordering the mezzanine
+      > specification follows.
 
 - [ ] **OPEN — where does the write-allocate queue sit in the coherency
       protocol?** This is the part still to reconcile, and it is separate

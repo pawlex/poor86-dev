@@ -1115,6 +1115,36 @@ banked or linear framebuffer writes and would be fine.
       entirely. **Cirrus acceleration then lives only on the mezzanine,
       in the real chip, for anyone who wants Windows.**
 
+      **Cost measured, not estimated.** ao486's full VGA
+      (`rtl/soc/vga.v`, 1721 lines — CRTC, sequencer, graphics and
+      attribute controllers, chain-4, planar read/write modes, colour
+      compare, text mode) synthesised for ECP5 with Yosys:
+
+      | | |
+      |---|---:|
+      | `LUT4` | **2310** |
+      | `CCU2C` / `PFUMX` / `L6MUX21` | 266 / 596 / 146 |
+      | `TRELLIS_FF` | 1084 |
+      | dual-port RAMs (→ `DP16KD`) | 6 |
+
+      **Add ~150–250 LUT4 for DISPI** — eleven registers, a decode and
+      mode select — so **call the target ~2500–2700 LUT4.**
+
+      > **Against ~84 K LUTs on the 85F that is under 4%. Video is not
+      > what sizes the FPGA** — the CPU bus, memory controllers, cache and
+      > soft core are. Useful for the density question still open
+      > elsewhere: **FPGA video is not a reason to need the 85F.**
+
+      **BRAM is the real cost, and it is negotiable.** ao486 keeps all
+      four 64 KB planes on-chip — **256 KB against the 85F's 468 KB**,
+      which collides directly with the L2 budget. With QSPI PSRAM as the
+      framebuffer, **only the legacy 64 KB window need stay on-chip** and
+      linear modes live in PSRAM, which changes that figure substantially.
+
+      **Conclusion: the video core sits entirely in the FPGA**, and stays
+      there until something demands better. The `CL-GD5428` mezzanine
+      remains an **escape hatch rather than a plan.**
+
       **The field was surveyed before choosing.** Every freely available
       model was examined, and `bochsvga` survives on merit rather than by
       default:

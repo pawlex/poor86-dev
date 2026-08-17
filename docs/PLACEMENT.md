@@ -725,10 +725,21 @@ and **PR** facing the CPU.
       uses `ELVDS_OBUF`, which is the first. **Both work; they are not the
       same thing**, which would explain the contradiction.
 
-      **Working position: use pair sites.** At 650 Mb/s the UI is ~1.54 ns,
-      so the intra-pair skew budget is on the order of tens of picoseconds
-      — and a pair site gives that matching *on-die*, free. Arbitrary pins
-      make it a routing problem instead.
+      > **DECIDED — treat pairs as required.** Not because the silicon
+      > forbids otherwise, but because at 650 Mb/s the UI is ~1.54 ns and
+      > the intra-pair skew budget is tens of picoseconds. **A pair site
+      > delivers that matching on-die, free; arbitrary pins turn it into a
+      > hand-solved routing problem.** A practical rule rather than a
+      > hard one — **designed to as if hard, to avoid disaster.**
+      >
+      > **AND: all four pairs in the same bank group — PL *or* PR, never
+      > split across sides.** This one is closer to a hard rule:
+      > **the gearing runs off edge clock resources, which are per-side.**
+      > Pairs on opposite sides sit in different `ECLK` domains, so the
+      > serialisers stop being synchronous with each other — **a
+      > functional failure, not merely skew.** Prefer a single bank within
+      > the chosen side (PL = banks 6/7, PR = banks 2/3) over spanning
+      > two.
 
       - [ ] **Confirm against the open toolchain specifically.** Whether
             `nextpnr`/`prjtrellis` expose `LVCMOS33D` the way Diamond does

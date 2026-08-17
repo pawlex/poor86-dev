@@ -1161,6 +1161,31 @@ banked or linear framebuffer writes and would be fine.
       > CRTC — appropriate anyway, since output is a fixed HDMI mode with
       > scaling.
 
+      > **And weigh it against the modernisation principle, not only
+      > against effort.** *"Program the CRTC yourself"* is the **old
+      > way**; Bochs VBE's *"tell it the resolution"* is the new one.
+      > Adopting Cirrus to gain a blitter means **taking a step backwards
+      > on the axis this project is explicitly organised around** —
+      > *period where it has to be, modern where it can be.* That cost is
+      > real and belongs in the decision, not just the RTL estimate.
+      >
+      > **But the CRTC question may already be latent in the DOS
+      > requirement.** Period software does not only set modes through
+      > `INT 10h`: **Mode X and the tweaked modes reprogram the CRTC
+      > directly** — 320×240, unchained VGA, split-screen and panning
+      > tricks. Doom and much of the demoscene depend on it.
+      >
+      > **So the real question is prior to Cirrus:**
+      >
+      > | are tweaked modes in scope? | consequence |
+      > |---|---|
+      > | **yes** | real CRTC behaviour is owed **regardless**, and Cirrus costs nothing extra on this axis |
+      > | **no** — everything pattern-matches to known modes | **Cirrus is a genuine regression**, and the modernisation objection stands |
+      >
+      > - [ ] **Decide tweaked-mode support first.** It determines whether
+      >       the Cirrus pivot is a step backwards or merely a step
+      >       already taken.
+
       > **Which is where the project wanted to be from the start.** The
       > Cirrus path was never abandoned — it was **deferred until the
       > infrastructure that makes it cheap exists.** Building the shadow

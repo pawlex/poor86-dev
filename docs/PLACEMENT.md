@@ -217,6 +217,19 @@ compatibility path rather than an efficient one.
       measurement. **The case against:** it leaves ~3 spare pins, on a
       board that has already had one pin-budget error go undetected.
 
+      > **The marginal pins buy exactly one technology.** A group sized
+      > for SDRAM at 39 already covers **QSPI PSRAM, HyperRAM and SDRAM** —
+      > three of the four candidates. **Only parallel parts push past it**,
+      > because they alone do not multiplex their address. So the question
+      > is narrower than it first looks: *is parallel SRAM/PSRAM worth
+      > ~7 pins and most of the remaining margin, given the other three are
+      > free?*
+      >
+      > **Deferred — approach to be decided.** Preliminary layout indicates
+      > the connector under consideration does not have the contacts for a
+      > parallel part regardless, so the answer may be settled by the
+      > connector rather than by the budget.
+
       **The `A24-A31` pin-saver is the release valve** — it returns 8 pins
       and caps the CPU at 16 MB, which is one SDRAM rank and already the
       SX-class ceiling. **Taking both is affordable; taking neither is

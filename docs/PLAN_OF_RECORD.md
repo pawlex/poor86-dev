@@ -1099,6 +1099,30 @@ banked or linear framebuffer writes and would be fine.
             question) and **`bochsvga`** (VESA LFB, DOS-complete, no
             blitter question at all).
 
+      > **`bochsvga` needs one `#define` changed from stock.** Its LFB
+      > address is compile-time:
+      >
+      > ```c
+      > u32 lfb_addr = VBE_DISPI_LFB_PHYSICAL_ADDRESS;   // 0xE0000000
+      > if (CONFIG_VGA_PCI && bdf >= 0) { ... }          // PCI BAR only
+      > SET_VGA(VBE_framebuffer, lfb_addr);
+      > ```
+      >
+      > With no PCI the constant stands. **Drivers take `PhysBasePtr` from
+      > the VBE mode-info block, so they follow the VGA BIOS** — only
+      > `VBE_DISPI_LFB_PHYSICAL_ADDRESS` in `vgasrc/bochsvga.h` needs
+      > changing, not the drivers.
+      >
+      > **What it costs depends on where it is pointed:**
+      >
+      > | LFB | address bus | memory hole |
+      > |---|---|---|
+      > | stock `0xE0000000` | **full 32-bit** | none — sits above RAM |
+      > | patched inside 16 MB | **pin-saver survives** | **hole carved from RAM** |
+      >
+      > **Against the stated goal of unmodified firmware this is a fork**,
+      > though about the smallest one available.
+
       > **Note — DOS uses the linear framebuffer too.** It is not a
       > Linux-era feature. **VBE 2.0 introduced the LFB for DOS
       > extenders**, and protected-mode DOS software used it heavily.

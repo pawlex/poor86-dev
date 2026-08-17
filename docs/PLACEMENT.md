@@ -712,6 +712,47 @@ and **PR** facing the CPU.
       be *explored on real hardware*, where on PT it cannot be explored at
       all. **Wrong choice here is a respin; right choice is free.**
 
+- [ ] **Does fake TMDS require true P/N pair sites, or any two pins?**
+      Conflicting evidence in the field — and the two examples are
+      probably doing **different things**:
+
+      | approach | needs a pair site? | skew |
+      |---|:-:|---|
+      | vendor differential I/O type (`LVCMOS33D`, Gowin `ELVDS_OBUF`) | **yes** — the tool assigns A/B and generates the complement | **matched on-die** |
+      | two independent `LVCMOS33` outputs driven complementarily | **no** — any two pins | **yours to manage** |
+
+      The ULX3S `fake_differential.v` looks like the second; the Tang Nano
+      uses `ELVDS_OBUF`, which is the first. **Both work; they are not the
+      same thing**, which would explain the contradiction.
+
+      **Working position: use pair sites.** At 650 Mb/s the UI is ~1.54 ns,
+      so the intra-pair skew budget is on the order of tens of picoseconds
+      — and a pair site gives that matching *on-die*, free. Arbitrary pins
+      make it a routing problem instead.
+
+      - [ ] **Confirm against the open toolchain specifically.** Whether
+            `nextpnr`/`prjtrellis` expose `LVCMOS33D` the way Diamond does
+            is a separate question from what the silicon supports, and this
+            project uses the open flow.
+
+- [ ] **Trace-length budget, FPGA → HDMI connector.** No figure recorded.
+      Starting position, to be confirmed:
+
+      - **Intra-pair match: tight.** Tens of ps against a 1.54 ns UI,
+        which at ~150 ps/inch on FR4 means **matching within ~0.3 mm.**
+      - **Inter-pair skew: loose.** The sink deskews per channel, so
+        millimetres between pairs are fine.
+      - **Absolute length: keep it short.** An emulated differential output
+        through AC coupling drives more weakly than real TMDS. **Target
+        under ~100 mm total, preferably under 50 mm** on the baseboard.
+      - **100 Ω differential impedance**, which interacts with the stackup
+        decision still open in [BOARD.md](BOARD.md).
+
+      **Note the path is now two-part** — FPGA → connector → card → HDMI
+      connector, since video moved to a mezzanine. **The budget is the sum
+      of both**, so the card's own routing is not free and belongs in the
+      card specification.
+
 - [ ] **Preserve 4 adjacent A/B pair sites on the chosen edge.** PL has 16
       pair sites and SDRAM takes 40 of its 65 balls, so the memory
       allocation must be made **without fragmenting four contiguous

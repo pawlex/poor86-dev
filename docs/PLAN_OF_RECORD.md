@@ -1099,6 +1099,45 @@ banked or linear framebuffer writes and would be fine.
             question) and **`bochsvga`** (VESA LFB, DOS-complete, no
             blitter question at all).
 
+      > **Note — DOS uses the linear framebuffer too.** It is not a
+      > Linux-era feature. **VBE 2.0 introduced the LFB for DOS
+      > extenders**, and protected-mode DOS software used it heavily.
+      > The split is by vintage, not by operating system:
+      >
+      > | path | used by |
+      > |---|---|
+      > | 64 KB banked window at `0xA0000`, via `BANK` | **VBE 1.2, real-mode DOS** |
+      > | linear framebuffer at a high address | **VBE 2.0, protected-mode DOS** (DOS4GW-era titles) |
+      >
+      > **Both are DOS paths, so the FPGA owes both.** Banking is not
+      > legacy dead weight that can be skipped.
+
+      **Windows 9x drivers for the Bochs adapter exist and are
+      maintained** — [vmdisp9x](https://github.com/JHRobotics/vmdisp9x)
+      (explicitly supports Bochs VBE and QEMU `std-vga`),
+      [VBEMP 9x](https://bearwindows.zcm.com.au/vbe9x.htm),
+      [boxv9x](https://github.com/phkelley/boxv9x), and `qemumini.drv`.
+      **So choosing `bochsvga` does not cost Windows support.**
+
+      **What it costs is acceleration.** Every one of those drivers is an
+      unaccelerated framebuffer driver: each blit is a CPU memory copy.
+
+      | | Windows | drawing |
+      |---|---|---|
+      | **Bochs VBE + VBEMP/vmdisp9x** | works, high res | **CPU-bound** — drags, scrolls, menus all memcpy |
+      | **Cirrus, real GD5428 on mezzanine** | works | **blitter does it**, no CPU |
+      | Cirrus emulated in FPGA | works | blitter in RTL |
+
+      **Sharper here than on a PC**: a 640×480×8 full-screen blit is
+      ~300 KB against a ~62 MB/s video path **shared with scanout**, so
+      multiple milliseconds per operation with the CPU stalled throughout.
+
+      **But keep perspective — Windows on a 486 was sluggish on real
+      hardware.** Win 3.11 was the realistic target for this class of
+      machine, and unaccelerated may be period-honest rather than a
+      failure. **That judgement, not the RTL cost, is what should decide
+      this.**
+
 ## Direction: sound synthesis is software
 
 The SB16 / AdLib **register interface** is period-correct, like every

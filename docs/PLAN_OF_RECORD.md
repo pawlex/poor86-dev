@@ -1123,6 +1123,27 @@ banked or linear framebuffer writes and would be fine.
       > **Against the stated goal of unmodified firmware this is a fork**,
       > though about the smallest one available.
 
+      > **QXL — inspected, rejected.** Three independent
+      > disqualifications: it is **PCI-only** (five BARs, config space,
+      > PCI interrupts) and this machine has no PCI; it is a **SPICE
+      > shim rather than a display controller**, calling
+      > `spice_qxl_*` to hand commands to a server that does the actual
+      > rendering; and it has **no DOS or Win9x drivers** — a DOS guest
+      > falls back to plain VGA even under QEMU. Category-mismatched
+      > rather than merely unsuitable.
+      >
+      > **Worth keeping from it: the ring-buffer model.** The guest writes
+      > commands into a ring in shared memory and the device consumes them
+      > asynchronously, so **the CPU queues work instead of stalling on
+      > it.** That is the right shape if acceleration is ever *offloaded*
+      > — to the ESP32 or a soft core — rather than implemented in RTL.
+      >
+      > **Mutually exclusive with the current approach.** The design
+      > presents period register interfaces that software already has
+      > drivers for. A ring buffer needs a **bespoke driver on the guest
+      > side**, which no period software will ever have. It is an
+      > alternative architecture, not an addition to this one.
+
       > **Note — DOS uses the linear framebuffer too.** It is not a
       > Linux-era feature. **VBE 2.0 introduced the LFB for DOS
       > extenders**, and protected-mode DOS software used it heavily.

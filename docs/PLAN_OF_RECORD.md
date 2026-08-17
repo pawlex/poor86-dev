@@ -1103,9 +1103,11 @@ banked or linear framebuffer writes and would be fine.
       > parallel one. And the register interface stays **era-correct**, so
       > period drivers drive it unmodified.
       >
-      > - [ ] **Tinker later.** Not on any critical path. Recorded so that
-      >       if the blitter is ever attempted, it is attempted on the
-      >       right side of the DMA.
+      > **Nice-to-have. Not required, not gating, and it needs no hardware
+      > changes** — it is entirely RTL on the shadow side of the DMA, so
+      > nothing about it constrains the board, the pin budget or the
+      > prototype. Recorded only so that if the blitter is ever attempted,
+      > it is attempted on the right side of the DMA.
 
       **There is a clean way out.** SeaVGABIOS also ships **`bochsvga`** —
       plain VGA plus VBE with a linear framebuffer, no acceleration.

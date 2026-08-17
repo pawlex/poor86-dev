@@ -1136,6 +1136,31 @@ banked or linear framebuffer writes and would be fine.
       3. **Then — BLIT and cursor on the shadow**, and with them the
          **pivot to the Cirrus model.**
 
+      > **Cirrus is *not* a superset of Bochs VBE — checked.** They are
+      > two different extension schemes over a shared VGA core:
+      >
+      > | | extension mechanism |
+      > |---|---|
+      > | Bochs VBE | **separate ports** `0x1CE`/`0x1CF`, own 11-register space |
+      > | Cirrus | **the existing VGA ports** — `0x3C4/5` sequencer, `0x3CE/F` graphics — with extended indices |
+      >
+      > QEMU's Cirrus registers only `0x3B0–0x3DF` and references DISPI
+      > nowhere. **So the pivot replaces the register layer rather than
+      > extending it.**
+      >
+      > **What carries over is the expensive part**: legacy VGA decode,
+      > framebuffer, scanout, palette, banking window, and the entire
+      > shadow / DMA / write-buffer infrastructure, which lives below the
+      > register layer.
+      >
+      > **What does not: mode setting — and it is a bigger step than the
+      > blitter.** Bochs VBE is *"tell it the resolution"*; **Cirrus is
+      > *"program the CRTC yourself"***, which is what the `ccrtc_*` tables
+      > in `clext.c` are doing. Mitigation: **pattern-match programmed CRTC
+      > values against known modes** rather than implementing a general
+      > CRTC — appropriate anyway, since output is a fixed HDMI mode with
+      > scaling.
+
       > **Which is where the project wanted to be from the start.** The
       > Cirrus path was never abandoned — it was **deferred until the
       > infrastructure that makes it cheap exists.** Building the shadow

@@ -1212,6 +1212,25 @@ banked or linear framebuffer writes and would be fine.
       fails. A tile-dirty bitmap is cheap — 64×64 tiles gives 192 bits —
       and typical GUI updates sit far inside the budget.
 
+      > **INVARIANT: host reads always come from main memory.** The CPU
+      > never reads PSRAM — there is no path for it to. That single rule
+      > collapses several problems rather than mitigating them:
+      >
+      > - **The host-read flush rule is deleted, not reduced.** It was
+      >   recorded against the PSRAM write buffer as a real cost; with this
+      >   invariant no host read can reach PSRAM, so the rule is vacuous.
+      > - **The PSRAM sees exactly two access patterns** — sequential DMA
+      >   writes, sequential scanout reads. **No read arbitration, no
+      >   snoop, no flush logic.** Two masters with fixed, non-overlapping
+      >   roles.
+      > - **SDRAM is authoritative; PSRAM is derived state.** Nothing ever
+      >   reads back from it, so a corrupted tile **self-heals on the next
+      >   dirty update and cannot propagate** into the machine.
+      >
+      > It also sharpens the earlier principle: the framebuffer is not a
+      > coherency domain because **there is nothing left to be coherent
+      > with.**
+
       **Refined — two copies, synchronised at two different rates.**
 
       | | |

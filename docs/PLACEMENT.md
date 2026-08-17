@@ -88,7 +88,7 @@ Counted from the datasheet-derived CSVs, not estimated.
 | **`A[11:0]`** | **12** |
 | `BA[1:0]` | 2 |
 | `RAS#` `CAS#` `WE#` | 3 |
-| **`CS#[1:0]`** — two ranks | **2** |
+| **`CS#[1:0]`** — two ranks, **one pin marked `A13/CS1`** | **2** |
 | `CKE` — shared | 1 |
 | `CLK` — shared | 1 |
 | `DQM[1:0]` — shared | 2 |
@@ -115,6 +115,47 @@ Counted from the datasheet-derived CSVs, not estimated.
 > CPU configurations without either constraining the other.
 >
 > 32 MB is generous for the target anyway — period 486s shipped 4–32 MB.
+>
+> **Mark the swapped pin `A13/CS1` on the schematic and pin map.** It is
+> the one FPGA ball whose role is not yet fixed: **`CS1` for two 128 Mb
+> ranks, or `A13` for a single larger part** if the supply picture changes.
+> Labelling it dual-purpose keeps both configurations reachable and costs
+> nothing but a net name — **and makes the choice visible to whoever does
+> the layout**, rather than buried in a table.
+
+### Open — SDRAM on a mezzanine too?
+
+*Raised during preliminary layout. Not decided.*
+
+**The precedent is overwhelming and should be stated first:** every PC of
+this era ran SDRAM **through a socket** at these speeds — SIMMs, then
+PC66/100/133 DIMMs. A connector in the memory path at 66 MHz is not a
+novel risk; it is what the entire industry shipped.
+
+**What it would buy:** baseboard area on a board that is proving tight,
+swappable capacity, and — since SDR SDRAM is end-of-life — a way to adopt
+a different memory later without a board spin. The same argument as the
+CPU card.
+
+**Two things to weigh against it:**
+
+- **This is the path the `CL2` decision spent its slack on.** The
+  latency-first argument runs through this interface, and a connector
+  consumes some of what was banked. Small — an extra nanosecond is ~3% of
+  a 30 ns page hit — but it is spent where the design is least willing.
+- **Two `TSOP-54` parts soldered are more compact than any socket.** If
+  the motivation is area, a socket may not win.
+
+**And if a card is wanted, the industry already made it.** A **144-pin
+`SO-DIMM`** is the ready-made SDRAM card: standard, abundant, cheap, and
+~67 mm rather than a 133 mm desktop DIMM. The catch is width — it carries
+**64 data lines and this design uses 16**, so only a quarter of its chips
+are reached and capacity is fractional. Workable, but it is a
+compatibility path rather than an efficient one.
+
+- [ ] Decide against the area budget once the first placement pass is
+      further along. **The timing risk is low; the question is whether a
+      socket is smaller than the two parts it replaces.**
 
 **16 bits wide, and the bandwidth match at CPUCLK × 2 is exact rather
 than approximate:**

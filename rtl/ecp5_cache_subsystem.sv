@@ -1,3 +1,16 @@
+// ============================================================================
+// NOTE — this sketch predates the memory architecture now decided.
+// See docs/PLAN_OF_RECORD.md. Two things changed underneath it:
+//
+//   * MAIN MEMORY IS SDRAM, not serial PSRAM. 16-bit at CPUCLK x2
+//     (66.67 MHz), CL2, two ranks via CS#[1:0]. The downstream port below
+//     still models a PSRAM line-streaming interface.
+//   * QSPI PSRAM IS VIDEO-ONLY now, on its own buses, and never carries
+//     CPU traffic. The two masters were separated precisely so this
+//     controller could stay single-master.
+//
+// The cache structure above the memory port is unaffected by either.
+// ============================================================================
 module ecp5_cache_subsystem (
     input  logic        clk,
     input  logic        rst_n,
@@ -7,8 +20,41 @@ module ecp5_cache_subsystem (
     input  logic        cpu_write,
     input  logic [31:0] cpu_addr,
     input  logic [31:0] cpu_wdata,
+    // OPEN: no byte-enable input exists here, so this interface cannot
+    // express a partial write at all -- the question below is currently
+    // answered by omission. A 486 drives BE0-3 and writes 1, 2, 3 or 4
+    // bytes; something must carry that. Add `input logic [3:0] cpu_be`.
     output logic [31:0] cpu_rdata,
     output logic        cpu_done,
+
+    // ------------------------------------------------------------------
+    // OPEN -- MASKED WRITES, OR FULL-LINE WRITES WITH READ-FILL?
+    //
+    // Does this controller honour byte enables on the way out, or does it
+    // only ever write whole lines -- making every partial write a
+    // READ-MODIFY-WRITE?
+    //
+    //   cost of RMW : a full read before the write, tRCD + CL ~= 60 ns at
+    //                 66 MHz, against a 30 ns CPU cycle. Two CPU cycles
+    //                 spent on a byte write, on the latency-critical path.
+    //   cost of DQM : nothing. The two pins are already budgeted and
+    //                 SDRAM masks natively.
+    //
+    // 32->16 MAPPING IS CLEAN: a 32-bit CPU write is two 16-bit SDRAM
+    // cycles, so BE0/BE1 become the first cycle's DQM[1:0] and BE2/BE3 the
+    // second. No encoding problem.
+    //
+    // COUPLED TO CACHE POLICY, AND POSSIBLY MOOT: with write-back plus
+    // write-allocate, partial writes land in the cache and lines are
+    // written back whole, so DQM is barely exercised. With write-through,
+    // no-allocate, or any uncached region, partial writes reach memory
+    // directly and masking is essential. DECIDE THE CACHE POLICY FIRST --
+    // this follows from it, not the other way round.
+    //
+    // NOT A QUESTION FOR THE VIDEO PATH: QSPI PSRAM is byte-addressable,
+    // so the write-combining buffer flushes only its dirty bytes with
+    // neither masking nor RMW. Do not generalise the answer here onto it.
+    // ------------------------------------------------------------------
 
     // Downstream Serial PSRAM Streaming Interface
     output logic        psram_req,

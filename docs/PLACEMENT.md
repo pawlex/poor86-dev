@@ -153,17 +153,42 @@ CPU card.
 are reached and capacity is fractional. Workable, but it is a
 compatibility path rather than an efficient one.
 
-- [x] **Resolved — SDRAM stays soldered on the baseboard.** Preliminary
-      layout finds **board area is not a constraint**, which removes the
-      motivation. The timing risk was always low, but a connector spends
-      some of the slack the `CL2` decision banked, and **there is no
-      longer anything to buy with it.**
+- [x] **Resolved — SDRAM goes on a mezzanine, for the prototype.**
 
-      The secondary arguments — swappable capacity, adopting a different
-      memory after SDR SDRAM's end of life — survive but are weak on their
-      own: 32 MB is generous for the target, and a memory change would
-      likely want a different controller anyway. **Revisit only if one of
-      those becomes a real requirement.**
+      **Reopened on a better basis than the one that closed it.** Area was
+      never the real argument; two are:
+
+      1. **The connector infrastructure is already bought.** The CPU is on
+         a card, so the connector, its footprint, its pinout discipline and
+         the layout practice all exist. **A memory card is marginal cost on
+         infrastructure already in the BOM**, not a new mechanism.
+      2. **Memory swap then follows the established model** — a low-cost
+         PCB, a little hand-soldering, a bitstream change. The same loop as
+         the video cards, which matters because **SDR SDRAM is
+         end-of-life** and the memory is the part most likely to need
+         changing.
+
+      **It costs zero FPGA pins.** The 39 signals reach a connector rather
+      than two packages. With **I/O the binding resource and area free**,
+      this is nearly free in the currency that is actually scarce.
+
+      > **Correction — the timing objection above was overstated.** At
+      > 66 MHz the period is 15 ns and `tAC` for a PC133 part at `CL2` is
+      > ~6 ns, leaving several nanoseconds of slack. A connector plus a few
+      > centimetres of path is **well under a nanosecond.** And every PC of
+      > the era ran SDRAM through sockets loaded with **eight** chips; a
+      > card carrying two TSOPs is a *lighter* load than the standard case,
+      > not a heavier one.
+
+      **Scoped to the prototype.** Production may fold the winning
+      configuration back onto the baseboard, exactly as planned for the
+      video front end.
+
+- [ ] **Size the memory connector.** 39 signals plus returns. A PCIe ×4
+      (64 contacts) leaves 25 for power and ground — thin but workable at
+      66 MHz; ×8 or ×16 is comfortable and **area is no longer a reason to
+      economise.** Prefer the same family as the CPU card so the BOM and
+      the layout practice stay shared.
 
 **16 bits wide, and the bandwidth match at CPUCLK × 2 is exact rather
 than approximate:**
